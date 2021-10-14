@@ -1,0 +1,113 @@
+version: '3'
+services: 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - /etc/localtime:/etc/localtime/:ro
+      - ./backend/:/app/:rw # для правки кода без перезагрузки
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      DEBUG: ${DEBUG}
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.test-compress.compress=true" 
+      - "traefik.http.middlewares.backend-stripprefix.stripprefix.prefixes=/backend" # declare middleware
+      - "traefik.http.routers.backend.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/backend`)"
+      - "traefik.http.routers.backend.middlewares=test-compress,backend-stripprefix" # apply middleware
+
+  traefik: # Ingress and gateway
+    image: "traefik:v2.5.1"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--ping"
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.exposedbydefault=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.secure.address=:443"
+      # - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      # - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      # - "--certificatesresolvers.myresolver.acme.email=tony.brekhov@gmail.com"
+      # - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    labels:
+      - "traefik.http.middlewares.test-compress.compress=true"
+      - "traefik.http.middlewares.auth.basicauth.users=abrekhov:$$1$$w6OraKMT$$1jLUBTthmJK8MI/yWM2y01"
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`localhost`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.middlewares=test-compress,auth"
+      # openssl passwd -1
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+
+  ml-serving:
+    build:
+      context: ./ml
+      dockerfile: Dockerfile
+    volumes:
+      - /etc/localtime:/etc/localtime/:ro
+      - ./ml/:/app/:rw # для правки кода без перезагрузки
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      DEBUG: ${DEBUG}
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.test-compress.compress=true" 
+      - "traefik.http.middlewares.ml-stripprefix.stripprefix.prefixes=/ml" # declare middleware
+      - "traefik.http.routers.ml.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/ml`)"
+      - "traefik.http.routers.ml.middlewares=test-compress,ml-stripprefix" # apply middleware
+
+  front:
+    image: nginx:alpine
+    volumes: 
+      - "./front/build:/usr/share/nginx/html:ro" # if application is static and without SSR. Otherwise use psm2 and volume as "./front:/app" and build your image with CMD ["node", "app.js"] https://pm2.keymetrics.io/docs/usage/docker-pm2-nodejs/ 
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.test-compress.compress=true" 
+      - "traefik.http.routers.front.rule=Host(`${HOST:-localhost}`)"
+      - "traefik.http.routers.front.middlewares=test-compress" # apply middleware
+      # - "traefik.http.routers.back.middlewares=test-compress" # apply middleware
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      # POSTGRES_USER: admin
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    labels: # endpoint only for dev
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.test-compress.compress=true" 
+      - "traefik.http.middlewares.db-stripprefix.stripprefix.prefixes=/db" # declare middleware
+      - "traefik.http.routers.db.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/db`)"
+      - "traefik.http.routers.db.middlewares=test-compress,db-stripprefix" # apply middleware
+    # check with docker run -it --rm --network rolling_drones_default postgres psql -h db -U postgres
