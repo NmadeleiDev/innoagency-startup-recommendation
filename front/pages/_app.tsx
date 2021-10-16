@@ -13,7 +13,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Head>
         <title>Innoagency Startup Recommendation</title>
         <meta name="description" content="Recommendation system for startups" />
-        <link rel="image_src" href="" />
         <link
           rel="apple-touch-icon"
           sizes="180x180"
