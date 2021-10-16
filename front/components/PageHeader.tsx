@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useRouter } from 'next/dist/client/router';
-import { ArrowIcon } from 'components/Icon';
+import { BackIcon } from 'components/Icon';
+import theme from 'styles/theme';
 
 interface Props {
   title: string;
@@ -8,7 +9,7 @@ interface Props {
 }
 
 const StyledDiv = styled.div`
-  margin: 1rem;
+  margin: 1rem 2rem;
   position: relative;
 
   h2 {
@@ -21,13 +22,12 @@ const StyledDiv = styled.div`
     position: absolute;
     top: 0;
     left: 0;
-    transform: rotateY(180deg);
     cursor: pointer;
     transition: 0.3s;
   }
 
   .back:hover {
-    transform: scale(1.1) rotateY(180deg);
+    transform: scale(1.1);
   }
 `;
 
@@ -39,7 +39,13 @@ const PageHeader = ({ title, className }: Props) => {
   };
   return (
     <StyledDiv className={className}>
-      {!isHomePage && <ArrowIcon className="back" onClick={handleBack} />}
+      {!isHomePage && (
+        <BackIcon
+          color={theme.colors.base.darkBG}
+          className="back"
+          onClick={handleBack}
+        />
+      )}
       <h2>{title}</h2>
     </StyledDiv>
   );

@@ -14,6 +14,7 @@ const light = {
       lightBG: '#F2F3F6',
       darkBG: '#24314A',
       border: '#CCCCCC',
+      hover: '#EEEEEE',
     },
   },
 };

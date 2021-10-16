@@ -64,7 +64,7 @@ const Header = ({ className }: Props) => {
   return (
     <StyledDiv className={className}>
       <div className="aim">
-        <AimIcon width={230} height={100} className="aim-logo" />
+        <AimIcon width={230} height={100} />
       </div>
       <Link href="/">
         <a className="header-main">

@@ -59,6 +59,27 @@ export const ArrowIcon = (props: Props) => {
   );
 };
 
+export const BackIcon = (props: Props) => {
+  return (
+    <StyledIcon {...props}>
+      <svg
+        width={props.width || 30}
+        height={props.height || 30}
+        viewBox="0 0 22 22"
+        fill={props.color || theme.colors.primary}
+        xmlns="http://www.w3.org/2000/svg"
+        strokeWidth="1.4"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        stroke="none"
+      >
+        <path d="M4.72949 10.9998C4.72949 10.6057 4.87999 10.2115 5.1803 9.91084L14.6401 0.451341C15.2418 -0.150406 16.2174 -0.150406 16.8189 0.451341C17.4204 1.05285 17.4204 2.02828 16.8189 2.63008L8.44856 10.9998L16.8184 19.3699C17.4199 19.9714 17.4199 20.947 16.8184 21.5485C16.2169 22.1505 15.2415 22.1505 14.6398 21.5485L5.17996 12.0891C4.8797 11.7883 4.72949 11.3941 4.72949 10.9998Z" />
+      </svg>
+    </StyledIcon>
+  );
+};
+
 export const BurgerIcon = (props: Props) => {
   return (
     <StyledIcon {...props}>
@@ -292,6 +313,31 @@ export const StairsIcon = (props: Props) => {
         <path d="M1.04346 13.4742V9.27802H6.97597" />
         <path d="M6.97621 9.27801V5.09631H12.9087" />
         <path d="M12.9085 5.09631V0.900146H18.8265" />
+      </svg>
+    </StyledIcon>
+  );
+};
+
+export const StarIcon = (props: Props & { favorite: boolean }) => {
+  return (
+    <StyledIcon {...props}>
+      <svg
+        width={props.width || 40}
+        height={props.height || 40}
+        viewBox="0 0 35 35"
+        fill={props.favorite ? theme.colors.secondary : 'none'}
+        xmlns="http://www.w3.org/2000/svg"
+        strokeWidth="1.4"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        stroke={
+          props.favorite
+            ? theme.colors.secondary
+            : props.color || theme.colors.primary
+        }
+      >
+        <path d="M15.572 1.31085C15.9079 0.474382 17.0921 0.47438 17.428 1.31085L20.792 9.68798C20.935 10.0442 21.2693 10.2871 21.6523 10.313L30.659 10.9237C31.5583 10.9847 31.9242 12.1109 31.2325 12.6888L24.3049 18.4769C24.0103 18.723 23.8827 19.116 23.9763 19.4883L26.1787 28.2428C26.3986 29.117 25.4406 29.813 24.6772 29.3337L17.0317 24.5338C16.7066 24.3297 16.2934 24.3297 15.9683 24.5338L8.32279 29.3337C7.55937 29.813 6.60138 29.117 6.8213 28.2428L9.0237 19.4883C9.11735 19.116 8.98965 18.723 8.69508 18.4769L1.7675 12.6889C1.07577 12.1109 1.44169 10.9847 2.34102 10.9237L11.3477 10.313C11.7307 10.2871 12.065 10.0442 12.208 9.68798L15.572 1.31085Z" />
       </svg>
     </StyledIcon>
   );

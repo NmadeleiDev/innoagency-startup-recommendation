@@ -5,17 +5,19 @@ import NextLink from 'components/Link';
 import PageHeader from 'components/PageHeader';
 
 const StyledDiv = styled.div`
-  padding: 1rem;
+  padding: 1rem 0;
 
   .page-header {
     grid-area: header;
   }
 
   .col1 {
+    margin: 0 1rem;
     grid-area: col1;
   }
 
   .col2 {
+    margin: 0 1rem;
     grid-area: col2;
   }
 
