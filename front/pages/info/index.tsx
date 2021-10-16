@@ -1,9 +1,8 @@
 import styled from 'styled-components';
-import { useRouter } from 'next/dist/client/router';
-import { ArrowIcon } from 'components/Icon';
 import Input from 'components/Input';
 import Button from 'components/Button';
 import NextLink from 'components/Link';
+import PageHeader from 'components/PageHeader';
 
 const StyledDiv = styled.div`
   padding: 1rem;
@@ -32,28 +31,6 @@ const StyledDiv = styled.div`
     'col2'
     'button';
 
-  .page-header {
-    margin: 1rem;
-    display: grid;
-    grid-template-columns: 0 1fr;
-
-    h2 {
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-
-    .back {
-      transform: rotateY(180deg);
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .back:hover {
-      transform: scale(1.1) rotateY(180deg);
-    }
-  }
-
   .button {
     display: flex;
     justify-content: center;
@@ -68,17 +45,9 @@ const StyledDiv = styled.div`
 `;
 
 const Info = () => {
-  const router = useRouter();
-  const handleBack = () => {
-    router.back();
-  };
-
   return (
     <StyledDiv>
-      <div className="page-header">
-        <ArrowIcon className="back" onClick={handleBack} />
-        <h2>Анкета</h2>
-      </div>
+      <PageHeader title="Анкета" className="page-header" />
       <div className="col1">
         <Input placeholder="Поле ввода" />
         <Input placeholder="Поле ввода" />
