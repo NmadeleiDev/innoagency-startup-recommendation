@@ -5,7 +5,7 @@ import 'public/TT Firs/stylesheet.css';
 import 'styles/globals.css';
 import { ThemeProvider } from 'styled-components';
 import theme from 'styles/theme';
-import Header from 'components/Header';
+import { Layout } from 'components';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -39,8 +39,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#1f5eff" />
       </Head>
 
-      <Header />
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </ThemeProvider>
   );
 }
