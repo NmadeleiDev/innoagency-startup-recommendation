@@ -12,8 +12,8 @@ interface Props {
 }
 
 const StyledIcon = styled.div<Props>`
-  width: ${({ width = 30 }) => width};
-  height: ${({ height = 30 }) => height};
+  width: ${({ width = 30 }) => `${width}px`};
+  height: ${({ height = 30 }) => `${height}px`};
   color: ${({ color, theme }) => color || theme.colors.white};
 `;
 
@@ -55,6 +55,29 @@ export const ArrowIcon = (props: Props) => {
         stroke={props.color || theme.colors.primary}
       >
         <path d="M11.9643 2.37051L20.1875 10.5938M20.1875 10.5938L11.9643 18.817M20.1875 10.5938H1" />
+      </svg>
+    </StyledIcon>
+  );
+};
+
+export const BurgerIcon = (props: Props) => {
+  return (
+    <StyledIcon {...props}>
+      <svg
+        width={props.width || 30}
+        height={props.height || 30}
+        viewBox="0 0 22 22"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        strokeWidth="1.4"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        stroke={props.color || theme.colors.primary}
+      >
+        <path d="M1 1.37524H20.7505" />
+        <path d="M1 8.37524H20.7505" />
+        <path d="M1 15.3752H20.7505" />
       </svg>
     </StyledIcon>
   );
