@@ -4,6 +4,7 @@ import Link from 'next/link';
 import styled from 'styled-components';
 import startupLogo from 'public/startup-guide-logo.svg';
 import { AimIcon } from './Icon';
+import Button from './Button';
 
 const StyledDiv = styled.div`
   display: grid;
@@ -22,17 +23,6 @@ const StyledDiv = styled.div`
 
   .header-logo {
     display: flex;
-  }
-
-  .button {
-    background-color: ${({ theme }) => theme.colors.base.darkBG};
-    color: ${({ theme }) => theme.colors.text.lighter};
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1rem;
-    font-weight: 500;
-    text-transform: uppercase;
   }
 
   @media (min-width: 770px) {
@@ -88,7 +78,7 @@ const Header = ({ className }: Props) => {
           </h1>
         </a>
       </Link>
-      <div className="button">Личный кабинет</div>
+      <Button variant="secondary">Личный кабинет</Button>
     </StyledDiv>
   );
 };
