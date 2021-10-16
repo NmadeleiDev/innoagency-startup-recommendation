@@ -2,41 +2,26 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styled from 'styled-components';
-import aimLogo from 'public/aim-logo.svg';
 import startupLogo from 'public/startup-guide-logo.svg';
+import { AimIcon } from './Icon';
 
 const StyledDiv = styled.div`
-  width: 100vw;
-  height: 93px;
-  position: static;
-  top: 0;
-  left: 0;
-  z-index: 10;
   display: grid;
-  grid-template-columns: 200px 1fr 300px;
+  grid-template-columns: 350px 1fr;
 
   .aim {
-    width: 200px;
     background-color: ${({ theme }) => theme.colors.primary};
     display: grid;
     align-content: center;
+    padding: 1.5rem;
   }
 
-  .main {
-    display: flex;
-    align-items: center;
-    padding: 1rem 2rem 1rem 4rem;
+  .header-main {
+    display: none;
   }
 
-  .main-header {
+  .header-logo {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 300;
-    padding-left: 30px;
   }
 
   .button {
@@ -49,36 +34,63 @@ const StyledDiv = styled.div`
     font-weight: 500;
     text-transform: uppercase;
   }
+
+  @media (min-width: 770px) {
+    grid-template-columns: 300px 1fr 300px;
+    .header-main {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 1rem;
+    }
+
+    .header-title {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 300;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .header-main {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .header-title {
+      justify-content: center;
+      padding-left: 30px;
+    }
+  }
 `;
 
-function Header() {
+interface Props {
+  className?: string;
+}
+
+const Header = ({ className }: Props) => {
   return (
-    <StyledDiv>
+    <StyledDiv className={className}>
       <div className="aim">
-        <Image
-          className="aim-logo"
-          src={aimLogo}
-          alt="Лого Агенства Инноваций Москвы"
-        />
+        <AimIcon width={230} height={100} className="aim-logo" />
       </div>
-      <div className="main">
-        <Link href="/">
-          <a>
-            <Image className="main-logo" src={startupLogo} alt="Логотип" />
-          </a>
-        </Link>
-        <Link href="/">
-          <a>
-            <h1 className="main-header">
-              <span>Навигатор по</span>
-              <span>стартап-экосистеме Москвы</span>
-            </h1>
-          </a>
-        </Link>
-      </div>
+      <Link href="/">
+        <a className="header-main">
+          <div className="header-logo">
+            <Image src={startupLogo} alt="Логотип" />
+          </div>
+          <h1 className="header-title">
+            <span>Навигатор по</span>
+            <span>стартап-экосистеме Москвы</span>
+          </h1>
+        </a>
+      </Link>
       <div className="button">Личный кабинет</div>
     </StyledDiv>
   );
-}
+};
 
 export default Header;
