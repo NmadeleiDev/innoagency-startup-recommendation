@@ -1,17 +1,15 @@
-import React from 'react';
-import Link from 'next/link'
+import Link from 'next/link';
 
 interface Props {
-    href: string;
-    text: string;
+  href: string;
 }
 
-function NextLink({href, text}:Props) {
-    return (
-        <Link href={href} >
-            <a>{text}</a>
-        </Link>
-    );
-}
+const NextLink: React.FC<Props> = ({ href, children }) => {
+  return (
+    <Link href={href}>
+      <a>{children}</a>
+    </Link>
+  );
+};
 
 export default NextLink;

@@ -21,13 +21,13 @@ const StyledInput = styled.div<{ width?: number }>`
   margin: 1rem;
   padding: 5px;
   background-color: ${({ theme }) => theme.colors.white};
-  width: ${({ width = 200 }) => `calc(${width}px + 10px)`};
+  width: 'calc(100% - 10px)';
   border: ${({ theme }) => `1px solid ${theme.colors.base.border}`};
   border-radius: 10px;
 
   .input {
     color: ${({ theme }) => theme.colors.base.darkBG};
-    width: ${({ width = 200 }) => width + 'px'};
+    width: 100%;
     background-color: inherit;
     font-size: 1rem;
     padding: 1rem;

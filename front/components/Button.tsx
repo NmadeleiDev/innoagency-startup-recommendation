@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
 
 interface Props {
@@ -6,9 +6,6 @@ interface Props {
 }
 
 const StyledDiv = styled.button<Props>`
-  display: flex;
-  justify-content: center;
-  align-items: center;
   font-size: 1rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -23,9 +20,7 @@ const StyledDiv = styled.button<Props>`
   cursor: pointer;
 `;
 
-const Button: React.FC<Props & React.HTMLProps<HTMLButtonElement>> = (
-  props
-) => {
+const Button: FC<Props & React.HTMLProps<HTMLButtonElement>> = (props) => {
   return (
     <StyledDiv variant={props.variant} onClick={props.onClick}>
       {props.children}

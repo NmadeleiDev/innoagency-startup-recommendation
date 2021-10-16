@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 import theme from 'styles/theme';
@@ -33,10 +32,10 @@ MyDocument.getInitialProps = async (ctx) => {
     return {
       ...initialProps,
       styles: (
-        <React.Fragment>
+        <>
           {initialProps.styles}
           {sheet.getStyleElement()}
-        </React.Fragment>
+        </>
       ),
     };
   } finally {

@@ -1,7 +1,7 @@
-import Button from 'components/Button';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import styled from 'styled-components';
+import Button from 'components/Button';
 
 const StyledDiv = styled.div`
   display: flex;

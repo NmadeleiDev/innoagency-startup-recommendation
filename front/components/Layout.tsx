@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { Header, Sidebar } from 'components';
+import Header from 'components/Header';
+import Sidebar from 'components/Sidebar';
 
 const StyledDiv = styled.div`
   .header {
