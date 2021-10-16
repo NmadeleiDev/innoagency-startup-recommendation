@@ -15,10 +15,12 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-redux": "^7.2.5",
+    "sanitize-html": "^2.5.2",
     "styled-components": "^5.3.1"
   },
   "devDependencies": {
     "@types/react": "17.0.30",
+    "@types/sanitize-html": "^2.3.2",
     "@types/styled-components": "^5.1.15",
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.2",
