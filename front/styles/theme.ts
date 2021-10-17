@@ -13,6 +13,8 @@ const light = {
     base: {
       lightBG: '#F2F3F6',
       darkBG: '#24314A',
+      footerBG: '#1d2435',
+      darkerBG: '#171E2D',
       border: '#CCCCCC',
       hover: '#EEEEEE',
     },

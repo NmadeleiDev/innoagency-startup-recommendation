@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import Header from 'components/Header';
 import Sidebar from 'components/Sidebar';
+import Footer from './Footer';
 
 const StyledDiv = styled.div`
   .header {
@@ -39,7 +40,7 @@ const Layout: React.FC = ({ children }) => {
       <Header className="header" />
       <Sidebar className="sidebar" />
       <main className="main">{children}</main>
-      <div className="footer">Footer</div>
+      <Footer />
     </StyledDiv>
   );
 };
