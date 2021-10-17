@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 import {
   ArrowBoxIcon,
@@ -20,6 +21,28 @@ const StyledDiv = styled.div`
 
   .list {
     display: none;
+
+    .item {
+      display: flex;
+      align-items: center;
+      margin: 1rem 0;
+    }
+
+    .text {
+      display: block;
+      margin-left: 1rem;
+      text-transform: uppercase;
+      margin-left: 1rem;
+      font-weight: 300;
+    }
+  }
+
+  .show {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
   }
 
   @media (min-width: 400px) {
@@ -29,20 +52,6 @@ const StyledDiv = styled.div`
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
-
-      .item {
-        display: flex;
-        align-items: center;
-        margin: 1rem 0;
-      }
-
-      .text {
-        display: block;
-        margin-left: 1rem;
-        text-transform: uppercase;
-        margin-left: 1rem;
-        font-weight: 300;
-      }
     }
 
     .burger-button {
@@ -113,10 +122,16 @@ const menu: IMenuItem[] = [
 ];
 
 const Sidebar = ({ className }: Props) => {
+  const [show, setShow] = useState(false);
+
+  const handleToggleShow = () => {
+    setShow((state) => !state);
+  };
+
   return (
     <StyledDiv className={className}>
-      <BurgerIcon className="burger-button" />
-      <div className="list">
+      <BurgerIcon onClick={handleToggleShow} className="burger-button" />
+      <div className={show ? 'list show' : 'list'}>
         {menu.map((item) => (
           <div key={item.text} className="item">
             {item.icon}
