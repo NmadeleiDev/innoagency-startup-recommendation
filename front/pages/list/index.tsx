@@ -6,6 +6,7 @@ import Button from 'components/Button';
 import PageHeader from 'components/PageHeader';
 import AcceleratorListItem from 'components/AcceleratorListItem';
 import { Accelerator } from 'models/Accelerator';
+import NextLink from 'components/Link';
 
 const StyledDiv = styled.div`
   padding: 1rem 0;
@@ -14,12 +15,8 @@ const StyledDiv = styled.div`
     grid-area: header;
   }
 
-  .col1 {
-    grid-area: col1;
-  }
-
-  .col2 {
-    grid-area: col2;
+  .list {
+    grid-area: list;
   }
 
   .button {
@@ -65,7 +62,9 @@ const ListPage = ({ accelerators }: Props) => {
       <div className="list">
         {accelerators &&
           accelerators.map((item) => (
-            <AcceleratorListItem key={item.name} accelerator={item} />
+            <NextLink key={item.name} href={`/accelerator/${item.id}`}>
+              <AcceleratorListItem accelerator={item} />
+            </NextLink>
           ))}
       </div>
       <div className="button">

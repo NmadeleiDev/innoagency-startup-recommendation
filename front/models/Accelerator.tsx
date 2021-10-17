@@ -1,4 +1,5 @@
 export interface Accelerator {
+  id: number;
   logo: string;
   name: string;
   description: string;
