@@ -4,10 +4,11 @@ import styled from 'styled-components';
 import startupLogo from 'public/startup-guide-logo.svg';
 import { AimIcon } from './Icon';
 import Button from './Button';
+import NextLink from './Link';
 
 const StyledDiv = styled.div`
   display: grid;
-  grid-template-columns: 350px 1fr;
+  grid-template-columns: 1fr 1fr;
 
   .aim {
     background-color: ${({ theme }) => theme.colors.primary};
@@ -22,6 +23,11 @@ const StyledDiv = styled.div`
 
   .header-logo {
     display: flex;
+  }
+
+  .personal {
+    width: 100%;
+    height: 100%;
   }
 
   @media (min-width: 770px) {
@@ -77,7 +83,11 @@ const Header = ({ className }: Props) => {
           </h1>
         </a>
       </Link>
-      <Button variant="secondary">Личный кабинет</Button>
+      <NextLink href="/personal">
+        <Button className="personal" variant="secondary">
+          Личный кабинет
+        </Button>
+      </NextLink>
     </StyledDiv>
   );
 };

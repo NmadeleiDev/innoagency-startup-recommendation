@@ -1,15 +1,12 @@
 import styled from 'styled-components';
 import {
   ArrowBoxIcon,
-  ArrowIcon,
   BurgerIcon,
   ConnectIcon,
   HouseIcon,
   LayersIcon,
   LeavesIcon,
   PlaneIcon,
-  PlusIcon,
-  QuestionIcon,
   RoomIcon,
   StairsIcon,
   WrenchIcon,
@@ -18,6 +15,7 @@ import {
 const StyledDiv = styled.div`
   .burger-button {
     display: block;
+    margin: 1rem;
   }
 
   .list {
@@ -31,15 +29,20 @@ const StyledDiv = styled.div`
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
-    }
 
-    .list .item {
-      display: flex;
-      align-items: center;
-    }
+      .item {
+        display: flex;
+        align-items: center;
+        margin: 1rem 0;
+      }
 
-    .list .text {
-      display: none;
+      .text {
+        display: block;
+        margin-left: 1rem;
+        text-transform: uppercase;
+        margin-left: 1rem;
+        font-weight: 300;
+      }
     }
 
     .burger-button {
@@ -48,37 +51,78 @@ const StyledDiv = styled.div`
   }
 
   @media (min-width: 700px) {
-    .list .text {
-      display: block;
-      margin-left: 1rem;
-    }
+    padding: 1rem;
   }
 `;
 
 interface Props {
   className?: string;
 }
+interface IMenuItem {
+  text: string;
+  icon: JSX.Element;
+  link: string;
+}
+
+const menu: IMenuItem[] = [
+  {
+    text: 'Стартапы и тех. компании',
+    icon: <ArrowBoxIcon />,
+    link: '/',
+  },
+  {
+    text: 'Корпорации',
+    icon: <ConnectIcon />,
+    link: '/',
+  },
+  {
+    text: 'Венчурные фонды',
+    icon: <LayersIcon />,
+    link: '/',
+  },
+  {
+    text: 'Акселераторы',
+    icon: <StairsIcon />,
+    link: '/',
+  },
+  {
+    text: 'Бизнес-инкубаторы',
+    icon: <LeavesIcon />,
+    link: '/',
+  },
+  {
+    text: 'Институты развития',
+    icon: <HouseIcon />,
+    link: '/',
+  },
+  {
+    text: 'Инжиниринговые центры',
+    icon: <WrenchIcon />,
+    link: '/',
+  },
+  {
+    text: 'Коворкинги и офисы',
+    icon: <RoomIcon />,
+    link: '/',
+  },
+  {
+    text: 'Площадки пилотного тестирования',
+    icon: <PlaneIcon />,
+    link: '/',
+  },
+];
 
 const Sidebar = ({ className }: Props) => {
   return (
     <StyledDiv className={className}>
       <BurgerIcon className="burger-button" />
       <div className="list">
-        <div className="item">
-          <ArrowBoxIcon />
-          <span className="text">Arrow</span>
-        </div>
-        <ArrowIcon />
-        <ConnectIcon />
-        <HouseIcon />
-        <LayersIcon />
-        <LeavesIcon />
-        <PlaneIcon />
-        <PlusIcon />
-        <QuestionIcon />
-        <RoomIcon />
-        <StairsIcon />
-        <WrenchIcon />
+        {menu.map((item) => (
+          <div key={item.text} className="item">
+            {item.icon}
+            <span className="text">{item.text}</span>
+          </div>
+        ))}
       </div>
     </StyledDiv>
   );

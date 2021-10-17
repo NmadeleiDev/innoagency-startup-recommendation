@@ -22,7 +22,11 @@ const StyledDiv = styled.button<Props>`
 
 const Button: FC<Props & React.HTMLProps<HTMLButtonElement>> = (props) => {
   return (
-    <StyledDiv variant={props.variant} onClick={props.onClick}>
+    <StyledDiv
+      className={props.className}
+      variant={props.variant}
+      onClick={props.onClick}
+    >
       {props.children}
     </StyledDiv>
   );

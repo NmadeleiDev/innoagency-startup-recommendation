@@ -6,7 +6,6 @@ interface Props {
   height?: number;
   color?: string;
   className?: string;
-  // onClick?: MouseEventHandler<HTMLDivElement> & ((e: MouseEvent) => void);
   onClick?: () => void;
 }
 
@@ -26,7 +25,7 @@ export const ArrowBoxIcon = (props: Props) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         stroke={props.color || theme.colors.primary}
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -47,7 +46,7 @@ export const ArrowIcon = (props: Props) => {
         viewBox="0 0 22 22"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -109,10 +108,10 @@ export const ConnectIcon = (props: Props) => {
       <svg
         width={props.width || 30}
         height={props.height || 30}
-        viewBox="0 0 21 21"
+        viewBox="0 0 17 15"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -135,10 +134,10 @@ export const HouseIcon = (props: Props) => {
       <svg
         width={props.width || 30}
         height={props.height || 30}
-        viewBox="0 0 21 21"
+        viewBox="0 0 18 15"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -160,10 +159,10 @@ export const LayersIcon = (props: Props) => {
       <svg
         width={props.width || 30}
         height={props.height || 30}
-        viewBox="0 0 21 21"
+        viewBox="0 0 21 18"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -183,10 +182,10 @@ export const LeavesIcon = (props: Props) => {
       <svg
         width={props.width || 30}
         height={props.height || 30}
-        viewBox="0 0 21 21"
+        viewBox="0 0 17 21"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -207,10 +206,10 @@ export const PlaneIcon = (props: Props) => {
       <svg
         width={props.width || 30}
         height={props.height || 30}
-        viewBox="0 0 21 21"
+        viewBox="0 0 19 17"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -232,7 +231,7 @@ export const PlusIcon = (props: Props) => {
         viewBox="0 0 21 21"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -278,10 +277,10 @@ export const RoomIcon = (props: Props) => {
       <svg
         width={props.width || 30}
         height={props.height || 30}
-        viewBox="0 0 21 21"
+        viewBox="0 0 19 19"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -301,10 +300,10 @@ export const StairsIcon = (props: Props) => {
       <svg
         width={props.width || 30}
         height={props.height || 30}
-        viewBox="0 0 21 21"
+        viewBox="0 0 18 18"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -327,7 +326,7 @@ export const StarIcon = (props: Props & { favorite: boolean }) => {
         viewBox="0 0 35 35"
         fill={props.favorite ? theme.colors.secondary : 'none'}
         xmlns="http://www.w3.org/2000/svg"
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -349,10 +348,10 @@ export const WrenchIcon = (props: Props) => {
       <svg
         width={props.width || 30}
         height={props.height || 30}
-        viewBox="0 0 21 21"
+        viewBox="0 0 19 17"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        strokeWidth="1.4"
+        strokeWidth="1"
         strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
