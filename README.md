@@ -10,19 +10,13 @@ Folers for parts of the project. Each part has its own Dockerfile inside. All pa
 
 ```bash
 # On every completed milestone
-docker-compose pull
-docker-compose up -d
+docker-compose build [<service>]
+docker-compose up -d [<service>]
 ```
 
 ### ML
 
 Folder for ML Part.
-
-> Check ResNet serving
-
-```bash
-curl -F "image=@ml/coffee.jpg" -XPOST http://localhost/ml/model/predict
-```
 
 ### Backend
 

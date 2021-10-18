@@ -89,9 +89,12 @@ services:
   #     - "traefik.http.routers.ml.middlewares=test-compress,ml-stripprefix" # apply middleware
 
   front:
-    image: nginx:alpine
-    volumes: 
-      - "./front/build:/usr/share/nginx/html:ro" # if application is static and without SSR. Otherwise use psm2 and volume as "./front:/app" and build your image with CMD ["node", "app.js"] https://pm2.keymetrics.io/docs/usage/docker-pm2-nodejs/ 
+    #image: nginx:alpine
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    #volumes: 
+      #- "./front/build:/usr/share/nginx/html:ro" # if application is static and without SSR. Otherwise use psm2 and volume as "./front:/app" and build your image with CMD ["node", "app.js"] https://pm2.keymetrics.io/docs/usage/docker-pm2-nodejs/ 
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.test-compress.compress=true" 
