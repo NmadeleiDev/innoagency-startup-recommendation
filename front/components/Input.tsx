@@ -5,18 +5,22 @@ import DatePicker, { registerLocale } from 'react-datepicker';
 import ru from 'date-fns/locale/ru';
 import 'react-datepicker/dist/react-datepicker.css';
 import defaultLogo from 'public/defaultLogo.png';
+import { KeyValue } from 'models/Startup';
 
-type IInputType = 'text' | 'password' | 'date' | 'file';
+type IInputType = 'text' | 'number' | 'password' | 'date' | 'file' | 'select';
 
 interface IInputProps {
   width?: number;
   startIcon?: Element;
   endIcon?: Element;
   value?: string | number;
+  options?: KeyValue[];
+  values?: string[];
   type?: IInputType;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   onDateChange?: (date: Date) => void;
   onFileUpload?: (url: string) => void;
+  onSelectChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
   onHover?: () => void;
 }
 
@@ -45,6 +49,11 @@ const StyledInput = styled.div<{ width?: number }>`
     padding: 1rem;
     outline: none;
     border: none;
+  }
+
+  .option {
+    font-size: 1rem;
+    padding: 5px;
   }
 `;
 
@@ -105,8 +114,35 @@ const Input = (props: Props) => {
           showMonthDropdown
           showYearDropdown
           dropdownMode="select"
-          placeholderText="Введите дату создания компании"
+          placeholderText={props.placeholder}
         />
+      </StyledInput>
+    );
+  }
+
+  if (props.type === 'select') {
+    return (
+      <StyledInput width={props.width}>
+        <select
+          multiple={props.multiple}
+          name={props.name}
+          placeholder={props.placeholder}
+          className="input"
+          onChange={props.onSelectChange}
+          value={props.values}
+        >
+          {props.options &&
+            props.options.map((option) => (
+              <option
+                key={option.id}
+                className="option"
+                // selected={props.values?.includes(option.id)}
+                value={option.id}
+              >
+                {option.text}
+              </option>
+            ))}
+        </select>
       </StyledInput>
     );
   }
