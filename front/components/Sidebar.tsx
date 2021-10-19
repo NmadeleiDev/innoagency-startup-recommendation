@@ -14,6 +14,10 @@ import {
 } from './Icon';
 
 const StyledDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
   .burger-button {
     display: block;
     margin: 1rem;
@@ -25,7 +29,13 @@ const StyledDiv = styled.div`
     .item {
       display: flex;
       align-items: center;
-      margin: 1rem 0;
+      padding: 1rem;
+      width: 100%;
+      cursor: pointer;
+
+      &:hover {
+        background-color: ${({ theme }) => theme.colors.base.lightBG};
+      }
     }
 
     .text {
@@ -38,20 +48,24 @@ const StyledDiv = styled.div`
   }
 
   .show {
-    padding: 10px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
   }
 
-  @media (min-width: 400px) {
+  @media (min-width: 700px) {
+    align-items: center;
     .list {
-      padding: 10px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
+
+      .text {
+        display: none;
+      }
     }
 
     .burger-button {
@@ -59,8 +73,10 @@ const StyledDiv = styled.div`
     }
   }
 
-  @media (min-width: 700px) {
-    padding: 1rem;
+  @media (min-width: 1000px) {
+    .list .text {
+      display: block;
+    }
   }
 `;
 
