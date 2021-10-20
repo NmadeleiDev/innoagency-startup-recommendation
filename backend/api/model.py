@@ -22,9 +22,23 @@ class EntityTags(BaseModel):
     businessModel: Optional[List[int]]
     averageCheque: Optional[List[int]]
 
+class MetricHistory(BaseModel):
+    ago0Period: Optional[float]
+    ago1Period: Optional[float]
+    ago2Period: Optional[float]
+
 class StartupDetails(BaseModel):
     companyProducts: Optional[List[str]]
     companyCity: Optional[str]
+    okvedCodeMain: Optional[str]
+    okvedCodeSecondary: Optional[List[str]]
+    mspCategory: Optional[str]
+    isInnovationCompany: Optional[bool]
+    isStartup: Optional[bool]
+
+    investments: Optional[MetricHistory]
+    revenue: Optional[MetricHistory]
+    quantityEmployeesMean: Optional[MetricHistory]
 
 class EntityContacts(BaseModel):
     email: Optional[str]

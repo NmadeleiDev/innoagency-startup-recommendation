@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 from db.manager import DbManager
@@ -22,6 +23,14 @@ app = FastAPI(
     openapi_url="/openapi.json",
     docs_url="/docs",
     root_path="/backend"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 apply_handlers(app, db)
