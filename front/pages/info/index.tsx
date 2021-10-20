@@ -55,10 +55,18 @@ const StyledDiv = styled.div`
     margin: 0 1rem;
   }
 
+  .label {
+    margin-left: 1rem;
+    display: block;
+  }
+
   .inputGroupHeader {
+    width: 100%;
     font-weight: 500;
     font-size: 1rem;
     margin: 1rem;
+    display: flex;
+    justify-content: center;
   }
 
   .button {
@@ -206,6 +214,7 @@ const Info = () => {
       </div>
       <div className="tags inputGroup">
         <span className="inputGroupHeader">Теги</span>
+        <label className="label">Рынки</label>
         <Input
           type="select"
           multiple
@@ -215,8 +224,10 @@ const Info = () => {
           values={state.tags.markets}
           placeholder="Рынки"
         />
+        <label className="label">Технологии</label>
         <Input
           type="select"
+          id="technologies"
           multiple
           name="technologies"
           onSelectChange={handleTagsChange}
@@ -224,6 +235,7 @@ const Info = () => {
           values={state.tags.technologies}
           placeholder="Технологии"
         />
+        <label className="label">Бизнес-модель</label>
         <Input
           type="select"
           multiple
@@ -249,6 +261,7 @@ const Info = () => {
           value={state.details.companyCity}
           placeholder="Город компании"
         />
+        <label className="label">Этап проекта</label>
         <Input
           type="select"
           name="projectStage"
@@ -259,6 +272,7 @@ const Info = () => {
           value={state.details.projectStage}
           placeholder="Этап проекта"
         />
+        <label className="label">Раунд инвестирования</label>
         <Input
           type="select"
           name="investmentRound"
