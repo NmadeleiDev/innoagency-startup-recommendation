@@ -14,17 +14,17 @@ class DbManager():
         self.user = os.getenv('MONGO_USER')
         self.password = os.getenv('MONGO_PASSWORD')
 
-        self.users_db = 'guide_users'
+        self.db_name = 'guide_data'
         self.users_collection = 'user'
         self.enums_collection = 'enums'
 
     def init_connection(self):
         logging.debug("Connecting to mongo on ({}:{}, {}:{})".format(self.host, self.port, self.user, self.password))
-        self.conn = pymongo.MongoClient("mongodb://{}:{}@{}:{}/".format(self.user, self.password, self.host, self.port))
+        self.conn = pymongo.MongoClient("mongodb://{}:{}@{}:{}/{}?authSource=admin".format(self.user, self.password, self.host, self.port, self.db_name))
         logging.debug("Connected to mongo!")
 
     def init_indexes(self):
-        self.conn[self.users_db][self.users_collection].create_index("inn", unique=True)
+        self.conn[self.db_name][self.users_collection].create_index("inn", unique=True)
 
     def close_conn(self):
         self.conn.close()
@@ -34,11 +34,11 @@ class DbManager():
         jsons_path = './db/entity_enums'
         for f in os.listdir(jsons_path):
             js = loads(open(path.join(jsons_path, f), 'r').read())['config']
-            self.conn[self.users_db][self.enums_collection].insert_many(js)
+            self.conn[self.db_name][self.enums_collection].insert_many(js)
 
     def save_entity(self, entity: dict) -> str:
         try:
-            res = self.conn[self.users_db][self.users_collection].insert_one(entity)
+            res = self.conn[self.db_name][self.users_collection].insert_one(entity)
         except Exception as e:
             logging.warn("Failed to insert entity: {}".format(e))
             return ""
@@ -46,7 +46,7 @@ class DbManager():
 
     def edit_entity(self, id: str, entity: dict) -> bool:
         try:
-            self.conn[self.users_db][self.users_collection].update_one({'_id': ObjectId(id)}, {'$set': entity}, upsert=False)
+            self.conn[self.db_name][self.users_collection].update_one({'_id': ObjectId(id)}, {'$set': entity}, upsert=False)
         except Exception as e:
             logging.warn("Failed to edit entity: {}".format(e))
             return False
@@ -54,7 +54,7 @@ class DbManager():
 
     def get_entity(self, id: str) -> Union[dict, bool]:
         try:
-            res = self.conn[self.users_db][self.users_collection].find_one({'_id': ObjectId(id)})
+            res = self.conn[self.db_name][self.users_collection].find_one({'_id': ObjectId(id)})
         except Exception as e:
             logging.warn("Failed to find entity: {}".format(e))
             return {}, False
@@ -62,7 +62,7 @@ class DbManager():
 
     def get_all_entities_ids(self, type_filter: str = None) -> List[str]:
         try:
-            res = self.conn[self.users_db][self.users_collection].find({} if type_filter is None else {'type': type_filter}, {"_id": 1})
+            res = self.conn[self.db_name][self.users_collection].find({} if type_filter is None else {'type': type_filter}, {"_id": 1})
         except Exception as e:
             logging.warn("Failed get_all_entities_ids: {}".format(e))
             return [], False
