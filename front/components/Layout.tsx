@@ -26,6 +26,14 @@ const StyledDiv = styled.div`
     'footer';
 
   @media (min-width: 700px) {
+    grid-template-columns: 80px 220px 3fr;
+    grid-template-areas:
+      'header header  header'
+      'sidebar main main'
+      'footer footer footer';
+  }
+
+  @media (min-width: 1000px) {
     grid-template-columns: 300px 3fr;
     grid-template-areas:
       'header  header'
