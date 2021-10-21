@@ -8,7 +8,7 @@ from .model import *
 
 
 def apply_handlers(app: FastAPI, db: DbManager):
-    possible_types = Union[StartupModel, VentureFondModel, AccelerationProgramModel, CoworkingModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporateModel]
+    possible_types = Union[CompanyModel, VentureFondModel, AccelerationProgramModel, CoworkingModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporateModel]
 
     @app.get("/test", status_code=200, response_model=DefaultResponseModel[dict], include_in_schema=False)
     def test_handler():
@@ -35,8 +35,8 @@ def apply_handlers(app: FastAPI, db: DbManager):
             response.status_code = status.HTTP_404_NOT_FOUND
             return error_response('failed to find entity')
         
-        if b['type'] == 'Startup':
-            return success_response(StartupModel(**b))
+        if b['type'] == 'Company':
+            return success_response(CompanyModel(**b))
         elif b['type'] == 'VentureFond':
             return success_response(VentureFondModel(**b))
         elif b['type'] == 'AccelerationProgram':
@@ -55,11 +55,11 @@ def apply_handlers(app: FastAPI, db: DbManager):
     @app.put("/entity/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
     def update_entity_by_id(entity: possible_types, id: str, response: Response):
         """
-        Обновить сущность по id. Принимает структуру любой сущности сервиса (StartupModel, VentureFondModel, AccelerationProgramModel, CoworkingModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporateModel).
+        Обновить сущность по id. Принимает структуру любой сущности сервиса (CompanyModel, VentureFondModel, AccelerationProgramModel, CoworkingModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporateModel).
         """
         entity = entity.dict()
-        if entity['type'] == 'Startup':
-            data = StartupModel(**entity)
+        if entity['type'] == 'Company':
+            data = CompanyModel(**entity)
         elif entity['type'] == 'VentureFond':
             data = VentureFondModel(**entity)
         elif entity['type'] == 'AccelerationProgram':
@@ -84,12 +84,12 @@ def apply_handlers(app: FastAPI, db: DbManager):
     @app.post("/entity", status_code=status.HTTP_201_CREATED, response_model=DefaultResponseModel[dict])
     def create_entity(entity: possible_types, response: Response):
         """
-        Создать сущность. Принимает структуру любой сущности сервиса (StartupModel, VentureFondModel, AccelerationProgramModel, CoworkingModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporateModel).
+        Создать сущность. Принимает структуру любой сущности сервиса (CompanyModel, VentureFondModel, AccelerationProgramModel, CoworkingModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporateModel).
         Возвращает id созданной сущности.
         """
         entity = entity.dict()
-        if entity['type'] == 'Startup':
-            data = StartupModel(**entity)
+        if entity['type'] == 'Company':
+            data = CompanyModel(**entity)
         elif entity['type'] == 'VentureFond':
             data = VentureFondModel(**entity)
         elif entity['type'] == 'AccelerationProgram':

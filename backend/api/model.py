@@ -27,7 +27,7 @@ class MetricHistory(BaseModel):
     ago1Period: Optional[float]
     ago2Period: Optional[float]
 
-class StartupDetails(BaseModel):
+class CompanyDetails(BaseModel):
     companyProducts: Optional[List[str]]
     companyCity: Optional[str]
     okvedCodeMain: Optional[str]
@@ -97,10 +97,10 @@ class CorporateDetails(BaseModel):
     focus: Optional[List[str]] = []
     corporationInnovation: Optional[CorporationInnovationModel] = None
 
-class StartupModel(BaseEntityModel):
+class CompanyModel(BaseEntityModel):
     tags: Optional[EntityTags] = None
     owner: Optional[PersonData] = None
-    details: Optional[StartupDetails] = None
+    details: Optional[CompanyDetails] = None
 
 class VentureFondModel(BaseEntityModel):
     fondCapital: Optional[float]
