@@ -13,7 +13,10 @@ db.init_connection()
 db.init_indexes()
 db.init_enums()
 
-copy_local_dataset_to_db()
+try:
+    copy_local_dataset_to_db()
+except Exception as e:
+    logging.error(e)
 
 app = FastAPI(
     title="StartupGuide API",
