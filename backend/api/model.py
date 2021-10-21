@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple, Generic, TypeVar, Union
 from pydantic import BaseModel
 from pydantic.generics import GenericModel
+from datetime import datetime, date
 
 DataT = TypeVar('DataT')
 
@@ -8,6 +9,7 @@ class DefaultResponseModel(GenericModel, Generic[DataT]):
     status: bool
     error: Optional[str] = None
     data: DataT
+
 
 class PersonData(BaseModel):
     name: Optional[str]
@@ -17,9 +19,9 @@ class PersonData(BaseModel):
     marriage: Optional[bool]
 
 class EntityTags(BaseModel):
-    markets: Optional[List[int]]
-    technologies: Optional[List[int]]
-    businessModel: Optional[List[int]]
+    markets: Optional[List[str]]
+    technologies: Optional[List[str]]
+    businessModel: Optional[List[str]]
     averageCheque: Optional[List[int]]
 
 class MetricHistory(BaseModel):
@@ -43,7 +45,7 @@ class CompanyDetails(BaseModel):
 class EntityContacts(BaseModel):
     email: Optional[str]
     phone: Optional[str]
-    site: Optional[str]
+    sites: Optional[List[str]]
 
 class BaseEntityModel(BaseModel):
     type: str
@@ -55,38 +57,49 @@ class BaseEntityModel(BaseModel):
     foundationDate: Optional[int]
 
 class VentureFondDetails(BaseModel):
-    investmentRound: Optional[int] = 0
-    ventureFondType: Optional[int] = 0
+    investmentRound: Optional[str] = 0
+    ventureFondType: Optional[str] = 0
     ventureFondCountry: Optional[str] = ''
-    focus: Optional[str] = ''
+    techFocus: Optional[List[str]]
     childFonds: Optional[List[BaseEntityModel]] = []
+    technologies: Optional[List[str]]
+    companyStages: Optional[List[str]] = None
 
 class AccelerationProgramStages(BaseEntityModel):
-    stageDateApplications: Optional[int]
-    stageDatePrepare: Optional[int]
-    stageDateStart: Optional[int]
-    stageDateDemo: Optional[int]
-    stageDatePost: Optional[int]
+    stageDateApplications: Optional[str]
+    stageDatePrepare: Optional[str]
+    stageDateStart: Optional[str]
+    stageDateDemo: Optional[str]
+    stageDatePost: Optional[str]
 
 class AccelerationProgramDetails(BaseModel):
-    programStatus: Optional[int] = 0
-    participationConditions: Optional[int] = 0
+    participationConditions: Optional[str]
     organizatorName: Optional[str] = ''
-    operatorName: Optional[str] = ''
-    focus: Optional[str] = ''
+    operatorName: Optional[str]
+    techFocus: Optional[List[str]]
+    technologies: Optional[List[str]]
+    requirements: Optional[List[str]]
+    market: Optional[List[str]]
+    companyStages: Optional[List[str]] = None
     programStages: Optional[AccelerationProgramStages] = None
 
 class BusinessIncubatorDetails(BaseModel):
-    focus: Optional[List[str]] = []
+    participationConditions: Optional[str] = ''
+    techFocus: Optional[List[str]]
+    technologies: Optional[List[str]]
+    market: Optional[List[str]]
+    companyStages: Optional[List[str]] = None
     incubatorForWhom: Optional[str] = ''
 
 class EngeneeringCenterDetails(BaseModel):
-    focus: Optional[List[str]] = []    
+    technologies: Optional[List[str]]
+    market: Optional[List[str]]   
+    techFocus: Optional[List[str]]
 
 class CoworkingDetails(BaseModel):
     address: Optional[str] = ''
-    coworkingFormat: Optional[List[int]] = []
-    coworkingServices: Optional[List[int]] = []
+    coworkingFormat: Optional[List[str]] = []
+    coworkingServices: Optional[List[str]] = []
     photos: Optional[List[str]] = []
 
 class CorporationInnovationModel(BaseModel):
@@ -94,7 +107,11 @@ class CorporationInnovationModel(BaseModel):
     link: Optional[str] = ''
 
 class CorporateDetails(BaseModel):
-    focus: Optional[List[str]] = []
+    technologies: Optional[List[str]]
+    market: Optional[List[str]]   
+    businessModel: Optional[str]
+    okvedCodeMain: Optional[str]
+    okvedCodeSecondary: Optional[List[str]]
     corporationInnovation: Optional[CorporationInnovationModel] = None
 
 class CompanyModel(BaseEntityModel):
@@ -103,7 +120,7 @@ class CompanyModel(BaseEntityModel):
     details: Optional[CompanyDetails] = None
 
 class VentureFondModel(BaseEntityModel):
-    fondCapital: Optional[float]
+    fondCapitalMlnDollars: Optional[float]
     details: Optional[VentureFondDetails] = None
 
 class AccelerationProgramModel(BaseEntityModel):
@@ -123,4 +140,17 @@ class CoworkingModel(BaseEntityModel):
 
 class CorporateModel(BaseEntityModel):
     details: Optional[CorporateDetails] = None
+
+class DealModel(BaseModel):
+    dealDate: Optional[date]
+    source: Optional[str]
+    inn: Optional[str]
+    govFund: Optional[str]
+    corpFund: Optional[str]
+    corpInvestor: Optional[str]
+    businessAngel: Optional[str]
+    foreginInvestor: Optional[str]
+    finalDealPriceRub: Optional[float]
+    finalDealPriceDollar: Optional[float]
+    comments: Optional[str]
 

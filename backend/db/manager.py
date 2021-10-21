@@ -16,6 +16,7 @@ class DbManager():
 
         self.db_name = 'guide_data'
         self.users_collection = 'user'
+        self.deals_collection = 'deal'
         self.enums_collection = 'enums'
 
     def init_connection(self):
@@ -43,6 +44,26 @@ class DbManager():
             logging.warn("Failed to insert entity: {}".format(e))
             return ""
         return str(res.inserted_id)
+
+    def save_entities(self, entities: List[dict]):
+        try:
+            self.conn[self.db_name][self.users_collection].insert_many(entities)
+        except Exception as e:
+            logging.warn("Failed to insert entity: {}".format(e))
+
+    def save_deal(self, entity: dict) -> str:
+        try:
+            res = self.conn[self.db_name][self.deals_collection].insert_one(entity)
+        except Exception as e:
+            logging.warn("Failed to insert deal: {}".format(e))
+            return ""
+        return str(res.inserted_id)
+
+    def save_deals(self, entities: List[dict]):
+        try:
+            self.conn[self.db_name][self.deals_collection].insert_many(entities)
+        except Exception as e:
+            logging.warn("Failed to insert entity: {}".format(e))
 
     def edit_entity(self, id: str, entity: dict) -> bool:
         try:

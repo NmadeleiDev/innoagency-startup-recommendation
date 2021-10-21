@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 from db.manager import DbManager
+from db.copy_dataset import copy_local_dataset_to_db
 from api.handlers import apply_handlers
 
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S :', level=logging.DEBUG)
@@ -11,6 +12,8 @@ db = DbManager()
 db.init_connection()
 db.init_indexes()
 db.init_enums()
+
+copy_local_dataset_to_db()
 
 app = FastAPI(
     title="StartupGuide API",
