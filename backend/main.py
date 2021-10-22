@@ -10,13 +10,13 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S
 
 db = DbManager()
 db.init_connection()
-db.init_indexes()
-db.init_enums()
+# db.init_indexes()
+# db.init_enums()
 
-try:
-    copy_local_dataset_to_db()
-except Exception as e:
-    logging.error(e)
+# try:
+copy_local_dataset_to_db()
+# except Exception as e:
+#     logging.error(e)
 
 app = FastAPI(
     title="StartupGuide API",

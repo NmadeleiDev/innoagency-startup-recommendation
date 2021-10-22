@@ -8,7 +8,7 @@ from .model import *
 
 
 def apply_handlers(app: FastAPI, db: DbManager):
-    possible_types = Union[CompanyModel, VentureFondModel, AccelerationProgramModel, CoworkingModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporateModel]
+    possible_types = Union[CompanyModel, VentureFundModel, AcceleratorModel, ProgressInstituteModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporationModel]
 
     @app.get("/test", status_code=200, response_model=DefaultResponseModel[dict], include_in_schema=False)
     def test_handler():
@@ -38,17 +38,17 @@ def apply_handlers(app: FastAPI, db: DbManager):
         if b['type'] == 'Company':
             return success_response(CompanyModel(**b))
         elif b['type'] == 'VentureFond':
-            return success_response(VentureFondModel(**b))
+            return success_response(VentureFundModel(**b))
         elif b['type'] == 'AccelerationProgram':
-            return success_response(AccelerationProgramModel(**b))
-        elif b['type'] == 'Coworking':
-            return success_response(CoworkingModel(**b))
+            return success_response(AcceleratorModel(**b))
         elif b['type'] == 'EngeneeringCenter':
             return success_response(EngeneeringCenterModel(**b))
         elif b['type'] == 'BusinessIncubator':
             return success_response(BusinessIncubatorModel(**b))
         elif b['type'] == 'Corporate':
-            return success_response(CorporateModel(**b))
+            return success_response(CorporationModel(**b))
+        elif b['type'] == 'ProgressInstitute':
+            return success_response(ProgressInstituteModel(**b))
         else:
             return error_response('Failed to find model for type={}'.format(b['type']))
 
@@ -61,17 +61,17 @@ def apply_handlers(app: FastAPI, db: DbManager):
         if entity['type'] == 'Company':
             data = CompanyModel(**entity)
         elif entity['type'] == 'VentureFond':
-            data = VentureFondModel(**entity)
+            data = VentureFundModel(**entity)
         elif entity['type'] == 'AccelerationProgram':
-            data = AccelerationProgramModel(**entity)
-        elif entity['type'] == 'Coworking':
-            data = CoworkingModel(**entity)
+            data = AcceleratorModel(**entity)
+        elif entity['type'] == 'ProgressInstitute':
+            data = ProgressInstituteModel(**entity)
         elif entity['type'] == 'EngeneeringCenter':
             data = EngeneeringCenterModel(**entity)
         elif entity['type'] == 'BusinessIncubator':
             data = BusinessIncubatorModel(**entity)
         elif entity['type'] == 'Corporate':
-            data = CorporateModel(**entity)
+            data = CorporationModel(**entity)
         else:
             response.status_code = status.HTTP_400_BAD_REQUEST
             return error_response('Failed to find model for type={}'.format(entity['type']))
@@ -91,21 +91,21 @@ def apply_handlers(app: FastAPI, db: DbManager):
         if entity['type'] == 'Company':
             data = CompanyModel(**entity)
         elif entity['type'] == 'VentureFond':
-            data = VentureFondModel(**entity)
+            data = VentureFundModel(**entity)
         elif entity['type'] == 'AccelerationProgram':
-            data = AccelerationProgramModel(**entity)
-        elif entity['type'] == 'Coworking':
-            data = CoworkingModel(**entity)
+            data = AcceleratorModel(**entity)
+        elif entity['type'] == 'ProgressInstitute':
+            data = ProgressInstituteModel(**entity)
         elif entity['type'] == 'EngeneeringCenter':
             data = EngeneeringCenterModel(**entity)
         elif entity['type'] == 'BusinessIncubator':
             data = BusinessIncubatorModel(**entity)
         elif entity['type'] == 'Corporate':
-            data = CorporateModel(**entity)
+            data = CorporationModel(**entity)
         else:
             response.status_code = status.HTTP_400_BAD_REQUEST
             return error_response('Failed to find model for type={}'.format(entity['type']))
-        id = db.save_entity(data.dict())
+        id = db.save_service(data.dict())
         if id == "":
             response.status_code = status.HTTP_406_NOT_ACCEPTABLE
             return error_response('entity with such inn already exists')

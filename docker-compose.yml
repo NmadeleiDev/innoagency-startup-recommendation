@@ -124,6 +124,8 @@ services:
   db-mongo:
     image: mongo:5.0.3
     restart: always
+    volumes:
+      - ./db_data:/data/db
     ports:
       - ${MONGO_PORT}:27017
     environment:

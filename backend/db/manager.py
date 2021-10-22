@@ -15,7 +15,8 @@ class DbManager():
         self.password = os.getenv('MONGO_PASSWORD')
 
         self.db_name = 'guide_data'
-        self.users_collection = 'user'
+        self.service_collection = 'service'
+        self.company_collection = 'company'
         self.deals_collection = 'deal'
         self.enums_collection = 'enums'
 
@@ -25,7 +26,7 @@ class DbManager():
         logging.debug("Connected to mongo!")
 
     def init_indexes(self):
-        self.conn[self.db_name][self.users_collection].create_index("inn", unique=True)
+        self.conn[self.db_name][self.service_collection].create_index("inn", unique=True)
 
     def close_conn(self):
         self.conn.close()
@@ -37,19 +38,33 @@ class DbManager():
             js = loads(open(path.join(jsons_path, f), 'r').read())['config']
             self.conn[self.db_name][self.enums_collection].insert_many(js)
 
-    def save_entity(self, entity: dict) -> str:
+    def save_service(self, entity: dict) -> str:
         try:
-            res = self.conn[self.db_name][self.users_collection].insert_one(entity)
+            res = self.conn[self.db_name][self.service_collection].insert_one(entity)
         except Exception as e:
-            logging.warn("Failed to insert entity: {}".format(e))
+            logging.warn("Failed to insert service: {}".format(e))
             return ""
         return str(res.inserted_id)
 
-    def save_entities(self, entities: List[dict]):
+    def save_services(self, entities: List[dict]):
         try:
-            self.conn[self.db_name][self.users_collection].insert_many(entities)
+            self.conn[self.db_name][self.service_collection].insert_many(entities)
         except Exception as e:
-            logging.warn("Failed to insert entity: {}".format(e))
+            logging.warn("Failed to insert services: {}".format(e))
+
+    def save_company(self, entity: dict) -> str:
+        try:
+            res = self.conn[self.db_name][self.company_collection].insert_one(entity)
+        except Exception as e:
+            logging.warn("Failed to insert company: {}".format(e))
+            return ""
+        return str(res.inserted_id)
+
+    def save_companies(self, entities: List[dict]):
+        try:
+            self.conn[self.db_name][self.company_collection].insert_many(entities)
+        except Exception as e:
+            logging.warn("Failed to insert companies: {}".format(e))
 
     def save_deal(self, entity: dict) -> str:
         try:
@@ -63,11 +78,11 @@ class DbManager():
         try:
             self.conn[self.db_name][self.deals_collection].insert_many(entities)
         except Exception as e:
-            logging.warn("Failed to insert entity: {}".format(e))
+            logging.warn("Failed to insert deals: {}".format(e))
 
     def edit_entity(self, id: str, entity: dict) -> bool:
         try:
-            self.conn[self.db_name][self.users_collection].update_one({'_id': ObjectId(id)}, {'$set': entity}, upsert=False)
+            self.conn[self.db_name][self.service_collection].update_one({'_id': ObjectId(id)}, {'$set': entity}, upsert=False)
         except Exception as e:
             logging.warn("Failed to edit entity: {}".format(e))
             return False
@@ -75,7 +90,7 @@ class DbManager():
 
     def get_entity(self, id: str) -> Union[dict, bool]:
         try:
-            res = self.conn[self.db_name][self.users_collection].find_one({'_id': ObjectId(id)})
+            res = self.conn[self.db_name][self.service_collection].find_one({'_id': ObjectId(id)})
         except Exception as e:
             logging.warn("Failed to find entity: {}".format(e))
             return {}, False
@@ -83,7 +98,7 @@ class DbManager():
 
     def get_all_entities_ids(self, type_filter: str = None) -> List[str]:
         try:
-            res = self.conn[self.db_name][self.users_collection].find({} if type_filter is None else {'type': type_filter}, {"_id": 1})
+            res = self.conn[self.db_name][self.service_collection].find({} if type_filter is None else {'type': type_filter}, {"_id": 1})
         except Exception as e:
             logging.warn("Failed get_all_entities_ids: {}".format(e))
             return [], False
