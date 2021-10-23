@@ -1,47 +1,44 @@
-import { MongoClient, Collection } from 'mongodb';
 import { DSN } from './config';
 import log from '../../logger/logger';
+import mongoose, { Connection } from 'mongoose';
+import { ServiceModel } from './models';
 
 export class Mongo {
-  private client = null;
-  private db = null;
-  private collections: { service: Collection; company: Collection } = {
-    service: null,
-    company: null,
-  };
+  private db: Connection = null;
 
   constructor() {
     this.connect();
   }
 
   connect() {
-    return MongoClient.connect(DSN, (err, client) => {
-      if (err) {
-        log.error('Connection to MongoDB error: ', err);
-        throw err;
-      }
+    mongoose.connect(DSN);
+    this.db = mongoose.connection;
+    log.info('connected to mongo with DSN', DSN);
 
-      log.info(`Connected to MongoDB on DSN ${DSN}`);
-
-      this.client = client;
-    });
+    this.db.on('error', log.error.bind(log, 'MongoDB connection error: '));
   }
 
-  initDatabase() {
-    const db_name = 'parse_data';
-    const service_collection = 'service';
-    const company_collection = 'company';
+  //   async connect() {
+  //     this.client = new MongoClient(DSN);
+  //     log.debug('mongo client', this.client);
 
-    this.db = this.client.db(db_name);
-    this.collections.service = this.db.createCollection(service_collection);
-    this.collections.company = this.db.createCollection(company_collection);
+  //     await this.client.connect();
+  //     this.db = this.client.db(this.db_name);
+  //     await this.client.db(this.db_name).command({ ping: 1 });
+  //     console.log('Connected successfully to server');
+  //   }
+
+  //   async close() {
+  //     await this.client.close();
+  //   }
+
+  async insertService(service) {
+    const doc = new ServiceModel();
+    return await doc.save(service);
   }
 
-  insertService(service) {
-    this.collections.service.insertOne(service);
-  }
-
-  insertServices(services) {
-    this.collections.service.insertMany(services);
+  async insertServices(services) {
+    const doc = new ServiceModel();
+    return await doc.save(services);
   }
 }
