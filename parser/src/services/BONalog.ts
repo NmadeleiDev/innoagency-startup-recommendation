@@ -3,7 +3,7 @@ import log from '../logger/logger';
 import { parse } from 'node-html-parser';
 import axios from 'axios';
 import path from 'path/posix';
-import { delay, joinObjects, logResult } from './utils';
+import { delay, joinObjects, logResult } from '../server/utils';
 import {
   IBasicInfo,
   IBFO,
@@ -11,6 +11,7 @@ import {
   ISearch,
   IServiceResult,
 } from '../Models/NalogModel';
+import columnNames from './names.json';
 
 const convertToRows = (obj: any, columnNames: {}, period: number) =>
   Object.entries(obj).reduce((acc, cur) => {
@@ -45,9 +46,9 @@ const convertToRows = (obj: any, columnNames: {}, period: number) =>
     return acc;
   }, {});
 
-const getColumnNames = async () => {
+export const getColumnNames = async () => {
   log.info('parsing file');
-  const html = await fs.readFile(path.join(__dirname, 'report.html'), 'utf-8');
+  const html = await fs.readFile(path.join(__dirname, 'report2'), 'utf-8');
   const dom = parse(html);
   const report = dom
     .querySelectorAll('.tabulator-selectable')
@@ -108,7 +109,7 @@ export class BONalogService {
    * @param inn number
    * @return : Promise<IServiceResult>
    */
-  static async getInfoByInn(inn: number): Promise<IServiceResult> {
+  static async getInfoByInn(inn: number | string): Promise<IServiceResult> {
     const info: IServiceResult = {
       inn: `${inn}`,
       search: null,
@@ -122,9 +123,9 @@ export class BONalogService {
       );
       logResult(`Found data by INN ${inn}`, search.data);
       info.search = search.data;
-      const id = search.data.content[0].id;
+      const id = search.data.content?.[0]?.id;
       if (!id) {
-        return log.error('Id for INN %d not found!', inn);
+        return log.error(`Id for INN ${inn} not found!`);
       }
 
       const basicInfo = await axios.get<IBasicInfo>(
@@ -142,7 +143,7 @@ export class BONalogService {
         period: el.period,
       }));
       log.debug(`Found bfo IDs:`, bfoIds);
-      const columnNames = await getColumnNames();
+      //   const columnNames = await getColumnNames();
 
       for (let bfoId of bfoIds) {
         const details: any = await axios(
