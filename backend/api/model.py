@@ -158,7 +158,7 @@ class VentureFundModel(CommonEntityModel):
     def from_dataset(record: dict):
         naming_dict = {
             'ИНН организации': ('inn', lambda x: str(int(to_num(x)))),
-            'Название фонда': ('name', to_str),
+            'Название объекта': ('name', to_str),
 
             'Стадия стартапа': ('startup_stage', split_by_n1),
             'Рынок': ('market', split_by_n1),
