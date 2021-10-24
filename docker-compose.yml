@@ -62,61 +62,15 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
-
-  # ml-serving:
-  #   build:
-  #     context: ./ml
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - /etc/localtime:/etc/localtime/:ro
-  #     - ./ml/:/app/:rw # для правки кода без перезагрузки
-  #   environment:
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #     POSTGRES_USER: ${POSTGRES_USER}
-  #     POSTGRES_DB: ${POSTGRES_DB}
-  #     POSTGRES_HOST: ${POSTGRES_HOST}
-  #     POSTGRES_PORT: ${POSTGRES_PORT}
-  #     DEBUG: ${DEBUG}
-  #   restart: always
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.middlewares.test-compress.compress=true" 
-  #     - "traefik.http.middlewares.ml-stripprefix.stripprefix.prefixes=/ml" # declare middleware
-  #     - "traefik.http.routers.ml.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/ml`)"
-  #     - "traefik.http.routers.ml.middlewares=test-compress,ml-stripprefix" # apply middleware
-
   front:
-    #image: nginx:alpine
     build:
       context: ./front
       dockerfile: Dockerfile
-    #volumes: 
-      #- "./front/build:/usr/share/nginx/html:ro" # if application is static and without SSR. Otherwise use psm2 and volume as "./front:/app" and build your image with CMD ["node", "app.js"] https://pm2.keymetrics.io/docs/usage/docker-pm2-nodejs/ 
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.test-compress.compress=true" 
       - "traefik.http.routers.front.rule=Host(`${HOST:-localhost}`)"
       - "traefik.http.routers.front.middlewares=test-compress" # apply middleware
-      # - "traefik.http.routers.back.middlewares=test-compress" # apply middleware
-  db-postgres:
-    image: postgres
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      # POSTGRES_USER: admin
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    labels: # endpoint only for dev
-      - "traefik.enable=true"
-      - "traefik.http.middlewares.test-compress.compress=true" 
-      - "traefik.http.middlewares.db-postgres-stripprefix.stripprefix.prefixes=/db-postgres" # declare middleware
-      - "traefik.http.routers.db-postgres.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/db-postgres`)"
-      - "traefik.http.routers.db-postgres.middlewares=test-compress,db-postgres-stripprefix" # apply middleware
-
   db-mongo:
     image: mongo:5.0.3
     restart: always
@@ -133,3 +87,19 @@ services:
       - "traefik.http.middlewares.db-mongo-stripprefix.stripprefix.prefixes=/db-mongo" # declare middleware
       - "traefik.http.routers.db-mongo.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/db-mongo`)"
       - "traefik.http.routers.db-mongo.middlewares=test-compress,db-mongo-stripprefix" # apply middleware
+  parser:
+    build:
+      context: ./parser
+      dockerfile: Dockerfile
+    environment:
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+
+      DEBUG: ${DEBUG}
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.test-compress.compress=true" 
+      - "traefik.http.routers.parser.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/parser`)"

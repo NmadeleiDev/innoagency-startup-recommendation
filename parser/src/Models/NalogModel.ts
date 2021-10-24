@@ -26,33 +26,33 @@ export interface IDataRow {
   column: string;
 }
 
+export interface IContent {
+  active: boolean;
+  bfo: IBFO[];
+  building: null;
+  city: null;
+  district: null;
+  house: string;
+  id: number;
+  index: string;
+  inn: string;
+  office: string;
+  ogrn: string;
+  okato: null;
+  okfs: { id: number; name: string };
+  okopf: { id: number; name: string };
+  okpo: string;
+  okved: null;
+  okved2: { id: string; name: string };
+  primary: boolean;
+  region: string;
+  score: number;
+  settlement: null;
+  shortName: string;
+}
+
 export interface ISearch {
-  content: [
-    {
-      active: boolean;
-      bfo: IBFO[];
-      building: null;
-      city: null;
-      district: null;
-      house: string;
-      id: number;
-      index: string;
-      inn: string;
-      office: string;
-      ogrn: string;
-      okato: null;
-      okfs: { id: number; name: string };
-      okopf: { id: number; name: string };
-      okpo: string;
-      okved: null;
-      okved2: { id: string; name: string };
-      primary: boolean;
-      region: string;
-      score: number;
-      settlement: null;
-      shortName: string;
-    }
-  ];
+  content: IContent[];
   pageable: {
     sort: {
       empty: boolean;
@@ -144,4 +144,65 @@ export interface IServiceResult {
   basicInfo: IBasicInfo;
   rowDetails?: any[];
   details: IDetails;
+}
+
+export interface IService {
+  _id: string;
+  inn: string;
+  name: string;
+  shortName?: string;
+  ogrn?: string;
+  startup_stage?: string[];
+  market?: string[];
+  services?: string[];
+  technologies?: string[];
+  investition_from_dol?: number;
+  investition_to_dol?: number;
+  tech_focus?: string[];
+  geography?: string[];
+  study_format?: string;
+  num_of_people_in_company_from?: number;
+  num_of_people_in_company_to?: number;
+  num_of_participants?: number;
+  address?: {
+    index?: string;
+    region?: string;
+    district?: string;
+    city?: string;
+    settlement?: string;
+    street?: string;
+    house?: string;
+    building?: string;
+    office?: string;
+  };
+  active?: boolean;
+  primary?: boolean;
+  okved?: { id: string; name: string };
+  okved2?: { id: string; name: string };
+  okopf?: { id: number; name: string };
+  okfs?: { id: number; name: string };
+  kpp?: string;
+  registrationDate?: string;
+  location?: {
+    id?: number;
+    name?: string;
+    code?: number;
+    latitude?: number;
+    longitude?: number;
+    type?: number;
+    parentId?: number;
+  };
+  authorizedCapital?: number;
+  balance?: {
+    [id: string]: IDataRow;
+  };
+  financialResult?: {
+    [id: string]: IDataRow;
+  };
+  capitalChange?: {
+    [id: string]: IDataRow;
+  };
+  fundsMovement?: {
+    [id: string]: IDataRow;
+  };
 }

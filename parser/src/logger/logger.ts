@@ -40,42 +40,42 @@ const getFullStackTrace = () => {
   return initiator;
 };
 
-const logger = {
-  trace: (...rest) => {
+const log = {
+  trace: (...rest): null => {
     if (LEVEL[level] <= LEVEL.TRACE) {
       console.log(cyan(`${time()} : T : ${getFileAndLineNumber()} `), ...rest);
-      return null;
     }
+    return null;
   },
-  debug: (...rest) => {
+  debug: (...rest): null => {
     if (LEVEL[level] <= LEVEL.DEBUG) {
       console.log(
         magenta(`${time()} : D : ${getFileAndLineNumber()} `),
         ...rest
       );
-      return null;
     }
+    return null;
   },
-  info: (...rest) => {
+  info: (...rest): null => {
     if (LEVEL[level] <= LEVEL.INFO) {
       console.log(blue(`${time()} : I : ${getFileAndLineNumber()} `), ...rest);
-      return null;
     }
+    return null;
   },
-  warn: (...rest) => {
+  warn: (...rest): null => {
     if (LEVEL[level] <= LEVEL.WARN) {
       console.log(
         yellow(`${time()} : W : ${getFileAndLineNumber()} `),
         ...rest
       );
-      return null;
     }
+    return null;
   },
-  error: (...rest) => {
+  error: (...rest): null => {
     if (LEVEL[level] <= LEVEL.ERROR) {
       console.log(red(`${time()} : E : \n${getFullStackTrace()} `), ...rest);
-      return null;
     }
+    return null;
   },
   all: (...rest) => {
     console.log(cyan(`${time()} : A : ${getFileAndLineNumber()} `), ...rest);
@@ -85,4 +85,4 @@ const logger = {
 
 // export const log = logger.all;
 
-export default logger;
+export default log;

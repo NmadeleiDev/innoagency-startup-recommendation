@@ -1,44 +1,137 @@
-import { DSN } from './config';
+import { MongoClient, UpdateResult, InsertOneResult } from 'mongodb';
 import log from '../../logger/logger';
-import mongoose, { Connection } from 'mongoose';
-import { ServiceModel } from './models';
+import { IService, IServiceResult } from '../../Models/NalogModel';
+import { DSN, DB_NAME } from './config';
 
-export class Mongo {
-  private db: Connection = null;
+export class MongoUser {
+  private _client = null;
+  private _connection = null;
 
-  constructor() {
-    this.connect();
+  constructor(doInit = false) {
+    if (doInit) this.initConnection().catch(console.warn);
   }
 
-  connect() {
-    mongoose.connect(DSN);
-    this.db = mongoose.connection;
-    log.info('connected to mongo with DSN', DSN);
-
-    this.db.on('error', log.error.bind(log, 'MongoDB connection error: '));
+  async initConnection() {
+    try {
+      this._connection = await MongoClient.connect(DSN);
+      log.info('Mongo connection succeded!');
+    } catch (e) {
+      log.error('Failed to connect to mongo: ', e);
+      throw 'Connection error!';
+    }
   }
 
-  //   async connect() {
-  //     this.client = new MongoClient(DSN);
-  //     log.debug('mongo client', this.client);
-
-  //     await this.client.connect();
-  //     this.db = this.client.db(this.db_name);
-  //     await this.client.db(this.db_name).command({ ping: 1 });
-  //     console.log('Connected successfully to server');
-  //   }
-
-  //   async close() {
-  //     await this.client.close();
-  //   }
-
-  async insertService(service) {
-    const doc = new ServiceModel();
-    return await doc.save(service);
+  get connection(): MongoClient {
+    return this._client;
   }
 
-  async insertServices(services) {
-    const doc = new ServiceModel();
-    return await doc.save(services);
+  get isConnected(): boolean {
+    return this._client && this._client.isConnected();
+  }
+
+  async updateServiceByInn(service: IService): Promise<UpdateResult> {
+    try {
+      const res = await this._connection
+        .db(DB_NAME)
+        .collection('service')
+        .updateOne(
+          { inn: service.inn },
+          {
+            $set: {
+              shortName: service.shortName,
+              ogrn: service.ogrn,
+              address: service.address,
+              active: service.active,
+              primary: service.primary,
+              okved: service.okved,
+              okved2: service.okved2,
+              okopf: service.okopf,
+              okfs: service.okfs,
+              kpp: service.kpp,
+              registrationDate: service.registrationDate,
+              location: service.location,
+              authorizedCapital: service.authorizedCapital,
+              balance: service.balance,
+              financialResult: service.financialResult,
+              capitalChange: service.capitalChange,
+              fundsMovement: service.fundsMovement,
+            },
+            $setOnInsert: {
+              inn: service.inn,
+              name: service.name,
+            },
+          },
+          { upsert: true }
+        );
+      log.debug('DB updated: ', res);
+      // this could not be safe to return database query
+      // because database type could be predicted
+      // leave it here for verbose responce, remove in produnction
+      // Maybe replace with (service: IService) => Promise<Boolean>
+      return res;
+    } catch (e) {
+      log.error('Update service error: ', e);
+      throw e;
+    }
+  }
+
+  async insertServiceByInn(service: IService): Promise<InsertOneResult> {
+    try {
+      const res = await this._connection
+        .db(DB_NAME)
+        .collection('service')
+        .insertOne(
+          {
+            inn: service.inn,
+            name: service.name,
+            shortName: service.shortName,
+            ogrn: service.ogrn,
+            address: service.address,
+            active: service.active,
+            primary: service.primary,
+            okved: service.okved,
+            okved2: service.okved2,
+            okopf: service.okopf,
+            okfs: service.okfs,
+            kpp: service.kpp,
+            registrationDate: service.registrationDate,
+            location: service.location,
+            authorizedCapital: service.authorizedCapital,
+            balance: service.balance,
+            financialResult: service.financialResult,
+            capitalChange: service.capitalChange,
+            fundsMovement: service.fundsMovement,
+          },
+          { upsert: true }
+        );
+      log.debug('Value inserted: ', res);
+      return res;
+    } catch (e) {
+      log.error('Update service error: ', e);
+      throw e;
+    }
+  }
+
+  async findServiceByInn(inn: string): Promise<IServiceResult | null> {
+    try {
+      const res = await this._connection
+        .db(DB_NAME)
+        .collection('')
+        .findOne({ name: name });
+      return res as IServiceResult;
+    } catch (e) {
+      console.warn('Error find task by name: ', e);
+      return null;
+    }
+  }
+
+  async closeConnection() {
+    if (!this.isConnected) return;
+
+    try {
+      await this._client.close();
+    } catch (e) {
+      console.log('Error closing mongo con: ', e);
+    }
   }
 }
