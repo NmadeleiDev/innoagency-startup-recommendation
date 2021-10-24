@@ -49,39 +49,37 @@ make up-c # с очисткой БД
 - investor_classifier.ipynb - создание и обучение модели рекомендации сервиса для компании
 - type_classifier.ipynb - создание и обучение модели рекомендации типа сервиса для компании
 
+#### Как готовили данные:
+
+- Категориальные метрики: Onehot кодирование (<https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelBinarizer.html>, <https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html>)
+- Числовые метрики: Скейлинг (<https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html>)
+
+
 #### Проверка гипотез
 
-Мы тестировали следующие гипотезы:
+Мы тестировали следующие гипотезы для классификации компании к сервисам:
 
 - Метод линейной регрессии
 - Метод опорных векторов
 - Решающие деревья
 
-Ссылки:
-
-- <https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelBinarizer.html>
-- <https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html>
-- <https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html>
-
-Ни одна из гипотез не сработала.
+Указанные методы сработали не очень хорошо. Мы решили, что стандарные методы плохо подходят для такой задачи и разработали свою кастомную модель. 
 
 ##### Что сработало хорошо?
 
-В TensorFlow тестировали:
-
-- Построение пространств компаний и сервисов и отображение вектора компании в пространстве сервисов.
-
-Модель:
-
-- <https://www.tensorflow.org/api_docs/python/tf/keras/Sequential>
-
-##### Работа нашей модели
-
-Мы создали custom модель. С помощью нее мы ищем подходящие сервисы для компании.
+Мы создали кастомную модель. С помощью нее мы ищем подходящие сервисы для компании.
 
 Под капотом она сделана следующим образом:
 
 Системе предоставляют данные новой компании, а модель генерирует для нее "идеальный" сервис или фонд. После этого система ищет в БД существующий фонд/сервис, который наиболее близок по параметрам к "идеальному".
+
+##### Работа нашей модели
+
+Строго говоря, мы строим отображение из пространства компаний в пространство сервисов, и в последнем для каждой компании ищем ближайший сервис, используя L2 норму.
+
+В TensorFlow использовали Sequential модель с 1 внутренним слоем в 64 нейрона (<https://www.tensorflow.org/api_docs/python/tf/keras/Sequential>)
+
+Далее, при помощи пакета numpy.linalg и функции norm искали сервисы, близки к образу компании на пространство сервисов.
 
 ### Backend
 
