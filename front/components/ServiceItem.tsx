@@ -71,6 +71,10 @@ const StyledDiv = styled.div`
     grid-area: button;
   }
 
+  .tech {
+    grid-area: tech;
+  }
+
   display: grid;
   grid-row-gap: 1rem;
   grid-template-areas:
@@ -78,6 +82,7 @@ const StyledDiv = styled.div`
     'list'
     'description'
     'market'
+    'tech'
     'focus'
     'services'
     'button';
@@ -123,13 +128,13 @@ const StyledDiv = styled.div`
       'list list'
       'description description'
       'market services'
-      'focus focus'
+      'tech focus'
       'button button';
 
     .list {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: space-evenly;
     }
 
     .item {
@@ -137,6 +142,32 @@ const StyledDiv = styled.div`
     }
   }
 `;
+
+const TagListWrapper = styled.ul`
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .item {
+    padding: 10px;
+    border: ${({ theme }) => `1px solid ${theme.colors.base.darkBG}`};
+    color: ${({ theme }) => theme.colors.base.darkBG};
+  }
+`;
+interface TagListProps {
+  tags?: string[];
+}
+const TagList = ({ tags }: TagListProps) => {
+  return tags ? (
+    <TagListWrapper>
+      {tags.map((tag) => (
+        <li key={tag} className="item">
+          {tag}
+        </li>
+      ))}
+    </TagListWrapper>
+  ) : null;
+};
 
 interface Props {
   item: AcceleratorModel | VentureFondModel;
@@ -179,43 +210,29 @@ const ServiceItem = ({ item }: Props) => {
   const content = item ? (
     <>
       <div className="list">
-        <Category header="Направление" className="type item">
+        <Category header="Тип" className="type item">
           {item.type}
         </Category>
-        {/* <Category header="Раунд инвестирования" className="status item">
-          {item.market}
-        </Category> */}
-        {/* <Category header="Тип фонда" className="ownership item">
-          {item.type_of_ownership}
-        </Category> */}
+        <Category header="Раунд инвестирования" className="status item">
+          {item.startup_stage?.join(', ')}
+        </Category>
+        {/* {item.type_of_ownership && (
+          <Category header="Тип фонда" className="ownership item">
+            {item.type_of_ownership}
+          </Category>
+        )} */}
       </div>
       <Category header="Рынки" className="market item">
-        <ul>
-          {item.market?.map((service) => (
-            <li key={service} className="service">
-              {service}
-            </li>
-          ))}
-        </ul>
+        <TagList tags={item.market} />
       </Category>
-      <Category header="Технический фокус" className="focus item">
-        <ul>
-          {item.tech_focus?.map((service) => (
-            <li key={service} className="service">
-              {service}
-            </li>
-          ))}
-        </ul>
+      <Category header="Технологии" className="tech item">
+        <TagList tags={item.technologies} />
       </Category>
-      {/* <div className="description">{item.description}</div> */}
-      <Category header="Сервисы" className="services">
-        <ul>
-          {item.services?.map((service) => (
-            <li key={service} className="service">
-              {service}
-            </li>
-          ))}
-        </ul>
+      <Category header="Сервисы" className="services item">
+        <TagList tags={item.services} />
+      </Category>
+      <Category header="Тех фокус" className="focus item">
+        <TagList tags={item.tech_focus} />
       </Category>
       <div className="button">
         <Button onClick={handleSubmit}>Подать заявку</Button>
