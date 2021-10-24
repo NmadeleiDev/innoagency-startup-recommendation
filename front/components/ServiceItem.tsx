@@ -1,12 +1,16 @@
-import path from 'path';
-import { promises as fs } from 'fs';
 import { GetStaticProps } from 'next';
-import Image from 'next/image';
 import styled from 'styled-components';
 import Button from 'components/Button';
 import PageHeader from 'components/PageHeader';
-import { Accelerator } from 'models/Accelerator';
 import { FC } from 'react';
+import {
+  AcceleratorModel,
+  ServiceModel,
+  VentureFondModel,
+} from 'models/Startup';
+import { api, IApiResponse } from 'axiosConfig';
+import { useAppDispatch } from 'store/store';
+import { setDispayedService } from 'store/features/services';
 
 const StyledCategory = styled.div`
   display: flex;
@@ -55,6 +59,14 @@ const StyledDiv = styled.div`
     grid-area: services;
   }
 
+  .focus {
+    grid-area: focus;
+  }
+
+  .market {
+    grid-area: market;
+  }
+
   .button {
     grid-area: button;
   }
@@ -65,6 +77,8 @@ const StyledDiv = styled.div`
     'header'
     'list'
     'description'
+    'market'
+    'focus'
     'services'
     'button';
 
@@ -75,13 +89,13 @@ const StyledDiv = styled.div`
   .description {
     padding: 0 2rem;
   }
+  ul {
+    padding-left: 1.2rem;
+    list-style: none;
+  }
 
   .services {
     padding: 0 2rem;
-
-    ul {
-      padding-left: 1.2rem;
-    }
   }
 
   .list {
@@ -104,6 +118,14 @@ const StyledDiv = styled.div`
   }
 
   @media (min-width: 1000px) {
+    grid-template-areas:
+      'header header'
+      'list list'
+      'description description'
+      'market services'
+      'focus focus'
+      'button button';
+
     .list {
       display: flex;
       align-items: center;
@@ -116,48 +138,15 @@ const StyledDiv = styled.div`
   }
 `;
 
-export async function getStaticPaths() {
-  const pwd = path.join(process.cwd(), 'pages', 'api');
-  const filePath = path.join(pwd, 'mock.json');
-  const accelerators = JSON.parse(
-    await fs.readFile(filePath, 'utf-8')
-  ) as Accelerator[];
-  const paths = accelerators.map((accelerator) => ({
-    params: { id: `${accelerator.id}` },
-  }));
-  console.log('[getStaticPaths]', paths);
-
-  return {
-    paths,
-    fallback: false,
-  };
-}
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  console.log('[getStaticProps]', params);
-
-  try {
-    const pwd = path.join(process.cwd(), 'pages', 'api');
-    const filePath = path.join(pwd, 'mock.json');
-    const results = JSON.parse(
-      await fs.readFile(filePath, 'utf-8')
-    ) as Accelerator[];
-    const accelerator = results.find((el) => `${el.id}` === params?.id);
-    console.log('[getStaticProps]', accelerator);
-    return { props: { accelerator } };
-  } catch (e) {
-    console.error(e);
-    return { props: { accelerator: [] } };
-  }
-};
-
 interface Props {
-  accelerator: Accelerator;
+  item: AcceleratorModel | VentureFondModel;
 }
 
-const AcceleratorItemPage = ({ accelerator }: Props) => {
+const ServiceItem = ({ item }: Props) => {
+  const dispatch = useAppDispatch();
+
   const handleSubmit = () => {
-    console.log(accelerator);
+    console.log(item);
   };
 
   /**
@@ -183,35 +172,45 @@ const AcceleratorItemPage = ({ accelerator }: Props) => {
     }
   };
 
-  return (
-    <StyledDiv>
-      <PageHeader title={accelerator.name} className="page-header" />
+  const handleBack = () => {
+    dispatch(setDispayedService(null));
+  };
+
+  const content = item ? (
+    <>
       <div className="list">
-        <div className="image">
-          <Image
-            width={350}
-            height={350}
-            src={accelerator.logo}
-            alt={`${accelerator.name} logo`}
-          />
-        </div>
         <Category header="Направление" className="type item">
-          {accelerator.type}
+          {item.type}
         </Category>
-        <Category header="Статус" className="status item">
-          {accelerator.status}
-        </Category>
-        <Category header="Участие" className="participation item">
-          {accelerator.participation}
-        </Category>
-        <Category header="Возраст стартапов" className="age item">
-          {formatAge(accelerator.averageStartupAge)}
-        </Category>
+        {/* <Category header="Раунд инвестирования" className="status item">
+          {item.market}
+        </Category> */}
+        {/* <Category header="Тип фонда" className="ownership item">
+          {item.type_of_ownership}
+        </Category> */}
       </div>
-      <div className="description">{accelerator.description}</div>
+      <Category header="Рынки" className="market item">
+        <ul>
+          {item.market?.map((service) => (
+            <li key={service} className="service">
+              {service}
+            </li>
+          ))}
+        </ul>
+      </Category>
+      <Category header="Технический фокус" className="focus item">
+        <ul>
+          {item.tech_focus?.map((service) => (
+            <li key={service} className="service">
+              {service}
+            </li>
+          ))}
+        </ul>
+      </Category>
+      {/* <div className="description">{item.description}</div> */}
       <Category header="Сервисы" className="services">
         <ul>
-          {accelerator.services.map((service) => (
+          {item.services?.map((service) => (
             <li key={service} className="service">
               {service}
             </li>
@@ -221,8 +220,19 @@ const AcceleratorItemPage = ({ accelerator }: Props) => {
       <div className="button">
         <Button onClick={handleSubmit}>Подать заявку</Button>
       </div>
+    </>
+  ) : null;
+
+  return (
+    <StyledDiv>
+      <PageHeader
+        handleBack={handleBack}
+        title={item.name || 'Сервис'}
+        className="page-header"
+      />
+      {content}
     </StyledDiv>
   );
 };
 
-export default AcceleratorItemPage;
+export default ServiceItem;

@@ -8,12 +8,15 @@ export const api = axios.create({
   validateStatus: (status) => status >= 200 && status < 500,
 });
 
-interface IData {
-  id: string;
+export interface IData {
+  id?: string;
+  funds?: string[];
+  accelerators?: string[];
+  progressInstitute?: string[];
 }
 
-export interface IApiResponse {
+export interface IApiResponse<T = IData> {
   status: boolean;
   error: string | null;
-  data: IData | null;
+  data: T | null;
 }

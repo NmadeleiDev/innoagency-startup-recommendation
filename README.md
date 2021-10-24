@@ -117,10 +117,16 @@ make up-c # с очисткой БД
 
 ### Главный экран
 
-[![main](./images/form1.png)](./images/form1.png)
+[![main](./images/frame1.png)](./images/frame1.png)
 
 ### Экран заполнения анкеты о стартапе
 
 [![form](./images/frame2.png)](./images/frame2.png)
 
 ### Экран выданных рекмендаций сервисов Москвы
+
+[![results](./images/frame3.png)](./images/frame3.png)
+
+### Экран дополнительной информации о сервисе
+
+[![info](./images/frame4.png)](./images/frame4.png)

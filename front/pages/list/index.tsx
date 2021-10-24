@@ -1,12 +1,11 @@
-import path from 'path';
-import { promises as fs } from 'fs';
-import { GetStaticProps } from 'next';
 import styled from 'styled-components';
-import Button from 'components/Button';
 import PageHeader from 'components/PageHeader';
-import AcceleratorListItem from 'components/AcceleratorListItem';
-import { Accelerator } from 'models/Accelerator';
-import NextLink from 'components/Link';
+import List from 'components/List';
+import { api, IApiResponse } from 'axiosConfig';
+import { useRouter } from 'next/dist/client/router';
+import { useEffect, useState } from 'react';
+import { useAppSelector } from 'store/store';
+import ServiceItem from 'components/ServiceItem';
 
 const StyledDiv = styled.div`
   padding: 1rem 0;
@@ -35,42 +34,41 @@ const StyledDiv = styled.div`
     justify-content: center;
   }
 `;
-export const getStaticProps: GetStaticProps = async (context) => {
-  try {
-    const pwd = path.join(process.cwd(), 'pages', 'api');
-    const filePath = path.join(pwd, 'mock.json');
-    const results = await fs.readFile(filePath, 'utf-8');
-    return { props: { accelerators: JSON.parse(results) } };
-  } catch (e) {
-    console.error(e);
-    return { props: { accelerators: [] } };
-  }
-};
 
-interface Props {
-  accelerators: Accelerator[];
-}
+const ListPage = () => {
+  const router = useRouter();
+  const { displayedItem } = useAppSelector((state) => state.services);
+  const [accelerators, setAccelerators] = useState<string[]>([]);
+  const [funds, setFunds] = useState<string[]>([]);
+  const [progressInstitutes, setProgressInstitutes] = useState<string[]>([]);
 
-const ListPage = ({ accelerators }: Props) => {
-  const handleShowMore = () => {
-    console.log(accelerators);
-  };
+  useEffect(() => {
+    const getData = async () => {
+      const query = router.asPath.split('?')[1];
+      const id = new URLSearchParams(query).get('id');
+      const { data } = await api.get<IApiResponse>(`/recommend/${id}`);
+      console.log(data);
+      if (data.data) {
+        const accels = data.data.accelerators || [];
+        const funds = data.data.funds || [];
+        const inst = data.data.progressInstitute || [];
 
-  return (
+        setAccelerators(accels);
+        setFunds(funds);
+        setProgressInstitutes(inst);
+      }
+    };
+    getData();
+  }, []);
+
+  return displayedItem === null ? (
     <StyledDiv>
       <PageHeader title="Идеальные инвесторы" className="page-header" />
-      <div className="list">
-        {accelerators &&
-          accelerators.map((item) => (
-            <NextLink key={item.name} href={`/accelerator/${item.id}`}>
-              <AcceleratorListItem accelerator={item} />
-            </NextLink>
-          ))}
-      </div>
-      <div className="button">
-        <Button onClick={handleShowMore}>Показать еще</Button>
-      </div>
+      <List items={accelerators} />
+      <List items={funds} />
     </StyledDiv>
+  ) : (
+    <ServiceItem item={displayedItem} />
   );
 };
 
