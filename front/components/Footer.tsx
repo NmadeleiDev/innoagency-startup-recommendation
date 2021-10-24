@@ -7,7 +7,6 @@ const StyledDiv = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 200px;
-  width: 100vw;
 
   .aim {
     background-color: ${({ theme }) => theme.colors.base.darkerBG};
@@ -31,6 +30,7 @@ const StyledDiv = styled.div`
 
   @media (min-width: 770px) {
     grid-template-columns: 300px 1fr;
+    width: 100vw;
   }
 `;
 
