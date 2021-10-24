@@ -208,6 +208,10 @@ class VentureFundModel(CommonEntityModel):
     num_of_investments: Optional[float]
     num_of_exits: Optional[float]
 
+    startup_stage__non_focus: Optional[List[str]]
+    tech_focus__non_focus: Optional[List[str]]
+    technologies__non_focus: Optional[List[str]]
+
 
 class AcceleratorModel(CommonEntityModel):
     @staticmethod

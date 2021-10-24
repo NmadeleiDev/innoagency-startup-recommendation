@@ -43,9 +43,43 @@ make up-c # с очисткой БД
 - Класификатор для получения наиболее подходящего типа сервиса для компании (Частный фонд, гос. фонд, акселератор, частный инвестор, корпоративный инвестор)
 - Класификатор для получения наиболее подходящего сервиса для компании
 
-dataprep.py - подготовка данных для обоих классификаторов
-investor_classifier.ipynb - создание и обучение модели рекомендации сервиса для компании
-type_classifier.ipynb - создание и обучение модели рекомендации типа сервиса для компании
+Описание notebooks и файлов:
+
+- dataprep.py - подготовка данных для обоих классификаторов
+- investor_classifier.ipynb - создание и обучение модели рекомендации сервиса для компании
+- type_classifier.ipynb - создание и обучение модели рекомендации типа сервиса для компании
+
+#### Как готовили данные:
+
+- Категориальные метрики: Onehot кодирование (<https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelBinarizer.html>, <https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html>)
+- Числовые метрики: Скейлинг (<https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html>)
+
+
+#### Проверка гипотез
+
+Мы тестировали следующие гипотезы для классификации компании к сервисам:
+
+- Метод линейной регрессии
+- Метод опорных векторов
+- Решающие деревья
+
+Указанные методы сработали не очень хорошо. Мы решили, что стандарные методы плохо подходят для такой задачи и разработали свою кастомную модель. 
+
+##### Что сработало хорошо?
+
+Мы создали кастомную модель. С помощью нее мы ищем подходящие сервисы для компании.
+
+Под капотом она сделана следующим образом:
+
+Системе предоставляют данные новой компании, а модель генерирует для нее "идеальный" сервис или фонд. После этого система ищет в БД существующий фонд/сервис, который наиболее близок по параметрам к "идеальному".
+
+##### Работа нашей модели
+
+Строго говоря, мы строим отображение из пространства компаний в пространство сервисов, и в последнем для каждой компании ищем ближайший сервис, используя L2 норму.
+
+В TensorFlow использовали Sequential модель с 1 внутренним слоем в 64 нейрона (<https://www.tensorflow.org/api_docs/python/tf/keras/Sequential>)
+
+Далее, при помощи пакета numpy.linalg и функции norm искали сервисы, близки к образу компании на пространство сервисов.
 
 ### Backend
 
@@ -59,7 +93,7 @@ type_classifier.ipynb - создание и обучение модели рек
 
 Ниже представлена диаграмма взаимодействий компонент стека.
 
-[![](https://mermaid.ink/svg/eyJjb2RlIjoiZmxvd2NoYXJ0IFRCXG4gICAgJSUgc3ViZ3JhcGggQmFja2VuZFxuICAgIEZbRnJvbnRdIC0tPnwxLiBHZXR0aW5nIGRhdGEgZnJvbSBmb3JtfCBCW0JhY2tlbmRdXG4gICAgQiA8LS0-fDIuIEZldGNoIERhdGEgQWJvdXQgU2VydmljZXN8IERCXG4gICAgQiA8LS0-fDMuIFByZXBhcmUgRGF0YSB3aXRoIHBpcGVsaW5lfCBNTFxuICAgIEIgPC0tPnw0LiBTZW5kIERhdGEgdG8gbW9kZWwgJiBnZXQgcHJlZGljdCBvZiBzZXJ2aWNlfCBNTFxuICAgICUlIGVuZFxuICAgIHN1YmdyYXBoIE1MXG4gICAgUFtTY2lraXQtbGVhcm4gUGlwZWxpbmVzXVxuICAgIE1bVGVuc29yZmxvdyBNb2RlbF1cbiAgICBlbmQiLCJtZXJtYWlkIjp7InRoZW1lIjoiZGFyayJ9LCJ1cGRhdGVFZGl0b3IiOmZhbHNlLCJhdXRvU3luYyI6dHJ1ZSwidXBkYXRlRGlhZ3JhbSI6ZmFsc2V9)](https://mermaid-js.github.io/mermaid-live-editor/edit#eyJjb2RlIjoiZmxvd2NoYXJ0IFRCXG4gICAgJSUgc3ViZ3JhcGggQmFja2VuZFxuICAgIEZbRnJvbnRdIC0tPnwxLiBHZXR0aW5nIGRhdGEgZnJvbSBmb3JtfCBCW0JhY2tlbmRdXG4gICAgQiA8LS0-fDIuIEZldGNoIERhdGEgQWJvdXQgU2VydmljZXN8IERCXG4gICAgQiA8LS0-fDMuIFByZXBhcmUgRGF0YSB3aXRoIHBpcGVsaW5lfCBNTFxuICAgIEIgPC0tPnw0LiBTZW5kIERhdGEgdG8gbW9kZWwgJiBnZXQgcHJlZGljdCBvZiBzZXJ2aWNlfCBNTFxuICAgICUlIGVuZFxuICAgIHN1YmdyYXBoIE1MXG4gICAgUFtTY2lraXQtbGVhcm4gUGlwZWxpbmVzXVxuICAgIE1bVGVuc29yZmxvdyBNb2RlbF1cbiAgICBlbmQiLCJtZXJtYWlkIjoie1xuICBcInRoZW1lXCI6IFwiZGFya1wiXG59IiwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ)
+[![](https://mermaid.ink/svg/eyJjb2RlIjoiZmxvd2NoYXJ0IFRCXG4gICAgJSUgc3ViZ3JhcGggQmFja2VuZFxuICAgIEZbRnJvbnRdIC0tPnwxLiDQlNCw0L3QvdGL0LUg0YEg0LDQvdC60LXRgtGLfCBCW0JhY2tlbmRdXG4gICAgQiAtLT58NS4g0JLQvtC30LLRgNCw0YIg0YDQtdC60L7QvNC10L3QtNCw0YbQuNC5fCBGXG4gICAgQiA8LS0-fDIuINCX0LDQv9GA0L7RgSDQtNCw0L3QvdGL0YUg0L4g0YHQtdGA0LLQuNGB0LDRhXwgREJcbiAgICBCIDwtLT58My4g0J_RgNC-0YbQtdC00YPRgNCwINC_0L7QtNCz0L7RgtC-0LLQutC4INC00LDQvdC90YvRhXwgUFxuICAgIEIgPC0tPnw0LiDQntGC0L_RgNCw0LLQutCwINC_0L7QtNCz0L7RgtC-0LLQu9C10L3QvdGL0YUg0LTQsNC90L3Ri9GFINCyINC80L7QtNC10LvRjHwgTVxuICAgICUlIGVuZFxuICAgIHN1YmdyYXBoIE1MXG4gICAgUFtTY2lraXQtbGVhcm4gUGlwZWxpbmVzXVxuICAgIE1bVGVuc29yZmxvdyBNb2RlbF1cbiAgICBlbmQiLCJtZXJtYWlkIjp7InRoZW1lIjoiZGFyayJ9LCJ1cGRhdGVFZGl0b3IiOmZhbHNlLCJhdXRvU3luYyI6dHJ1ZSwidXBkYXRlRGlhZ3JhbSI6ZmFsc2V9)](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZmxvd2NoYXJ0IFRCXG4gICAgJSUgc3ViZ3JhcGggQmFja2VuZFxuICAgIEZbRnJvbnRdIC0tPnwxLiDQlNCw0L3QvdGL0LUg0YEg0LDQvdC60LXRgtGLfCBCW0JhY2tlbmRdXG4gICAgQiAtLT58NS4g0JLQvtC30LLRgNCw0YIg0YDQtdC60L7QvNC10L3QtNCw0YbQuNC5fCBGXG4gICAgQiA8LS0-fDIuINCX0LDQv9GA0L7RgSDQtNCw0L3QvdGL0YUg0L4g0YHQtdGA0LLQuNGB0LDRhXwgREJcbiAgICBCIDwtLT58My4g0J_RgNC-0YbQtdC00YPRgNCwINC_0L7QtNCz0L7RgtC-0LLQutC4INC00LDQvdC90YvRhXwgUFxuICAgIEIgPC0tPnw0LiDQntGC0L_RgNCw0LLQutCwINC_0L7QtNCz0L7RgtC-0LLQu9C10L3QvdGL0YUg0LTQsNC90L3Ri9GFINCyINC80L7QtNC10LvRjHwgTVxuICAgICUlIGVuZFxuICAgIHN1YmdyYXBoIE1MXG4gICAgUFtTY2lraXQtbGVhcm4gUGlwZWxpbmVzXVxuICAgIE1bVGVuc29yZmxvdyBNb2RlbF1cbiAgICBlbmQiLCJtZXJtYWlkIjoie1xuICBcInRoZW1lXCI6IFwiZGFya1wiXG59IiwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ)
 
 ### Front
 
