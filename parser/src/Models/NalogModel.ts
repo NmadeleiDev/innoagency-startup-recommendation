@@ -26,33 +26,33 @@ export interface IDataRow {
   column: string;
 }
 
+export interface IContent {
+  active: boolean;
+  bfo: IBFO[];
+  building: null;
+  city: null;
+  district: null;
+  house: string;
+  id: number;
+  index: string;
+  inn: string;
+  office: string;
+  ogrn: string;
+  okato: null;
+  okfs: { id: number; name: string };
+  okopf: { id: number; name: string };
+  okpo: string;
+  okved: null;
+  okved2: { id: string; name: string };
+  primary: boolean;
+  region: string;
+  score: number;
+  settlement: null;
+  shortName: string;
+}
+
 export interface ISearch {
-  content: [
-    {
-      active: boolean;
-      bfo: IBFO[];
-      building: null;
-      city: null;
-      district: null;
-      house: string;
-      id: number;
-      index: string;
-      inn: string;
-      office: string;
-      ogrn: string;
-      okato: null;
-      okfs: { id: number; name: string };
-      okopf: { id: number; name: string };
-      okpo: string;
-      okved: null;
-      okved2: { id: string; name: string };
-      primary: boolean;
-      region: string;
-      score: number;
-      settlement: null;
-      shortName: string;
-    }
-  ];
+  content: IContent[];
   pageable: {
     sort: {
       empty: boolean;

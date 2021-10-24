@@ -28,10 +28,11 @@ export const joinObjects = (a, b) => {
   return newA;
 };
 
-export const logResult = (request: string, response: Object) => {
-  log.debug(request);
-  log.debug(response);
-};
-
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
+export const isFullfilledPromiseResult = <T>(
+  result: PromiseSettledResult<T>
+): result is PromiseFulfilledResult<T> => {
+  return result.status === 'fulfilled';
+};

@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, UpdateResult, InsertOneResult } from 'mongodb';
 import log from '../../logger/logger';
 import { IService, IServiceResult } from '../../Models/NalogModel';
 import { DSN, DB_NAME } from './config';
@@ -29,7 +29,7 @@ export class MongoUser {
     return this._client && this._client.isConnected();
   }
 
-  async updateServiceByInn(service: IService): Promise<Boolean> {
+  async updateServiceByInn(service: IService): Promise<UpdateResult> {
     try {
       const res = await this._connection
         .db(DB_NAME)
@@ -64,14 +64,18 @@ export class MongoUser {
           { upsert: true }
         );
       log.debug('DB updated: ', res);
-      return res.modifiedCount > 0 ? true : false;
+      // this could not be safe to return database query
+      // because database type could be predicted
+      // leave it here for verbose responce, remove in produnction
+      // Maybe replace with (service: IService) => Promise<Boolean>
+      return res;
     } catch (e) {
       log.error('Update service error: ', e);
       throw e;
     }
   }
 
-  async insertServiceByInn(service: IService): Promise<Boolean> {
+  async insertServiceByInn(service: IService): Promise<InsertOneResult> {
     try {
       const res = await this._connection
         .db(DB_NAME)
@@ -101,7 +105,7 @@ export class MongoUser {
           { upsert: true }
         );
       log.debug('Value inserted: ', res);
-      return true;
+      return res;
     } catch (e) {
       log.error('Update service error: ', e);
       throw e;

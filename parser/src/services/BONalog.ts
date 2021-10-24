@@ -1,17 +1,19 @@
 import { promises as fs } from 'fs';
 import log from '../logger/logger';
 import { parse } from 'node-html-parser';
-import axios from 'axios';
 import path from 'path/posix';
-import { delay, joinObjects, logResult } from '../server/utils';
+import levenshtein from 'js-levenshtein';
+import { delay, joinObjects } from '../server/utils';
 import {
   IBasicInfo,
   IBFO,
+  IContent,
   IDetails,
   ISearch,
   IServiceResult,
 } from '../Models/NalogModel';
 import columnNames from './names.json';
+import { request } from '../server/axios';
 
 const convertToRows = (obj: any, columnNames: {}, period: number) =>
   Object.entries(obj).reduce((acc, cur) => {
@@ -80,9 +82,9 @@ const flattenDetails = (details): IDetails => {
   const flattenedDetails = { ...sortedDetails[0] };
   for (let i = 1; i < sortedDetails.length; i++) {
     detailsCategories.forEach((category) => {
-      log.debug(`Flattening category ${category}`, flattenedDetails[category]);
+      log.trace(`Flattening category ${category}`, flattenedDetails[category]);
       for (let id in flattenedDetails[category]) {
-        log.debug(
+        log.trace(
           `Flattening id ${id}`,
           flattenedDetails[category][id],
           sortedDetails[i][category][id]
@@ -92,12 +94,37 @@ const flattenDetails = (details): IDetails => {
           sortedDetails[i][category][id]
         );
       }
-      log.debug(`Flatten category ${category}`, flattenedDetails[category]);
+      log.trace(`Flatten category ${category}`, flattenedDetails[category]);
     });
     flattenedDetails.period = sortedDetails[i].period;
     flattenedDetails.datePresent = sortedDetails[i].datePresent;
   }
   return flattenedDetails;
+};
+
+export const findClosestResult = (
+  result: ISearch,
+  query: string | number
+): IContent | null => {
+  if (result.content.length === 0) return null;
+  if (result.content.length === 1) return result.content[0];
+  let closestContent = result.content[0],
+    shortestDistance = Infinity;
+
+  for (let content of result.content) {
+    const distance = levenshtein(
+      `<strong>${query}</strong>`,
+      content.shortName
+    );
+    if (distance < shortestDistance) {
+      shortestDistance = distance;
+      closestContent = content;
+      log.debug(
+        `levenshtein distance : ${distance}, shortestDistance: ${shortestDistance}, closestId: ${closestContent.shortName}`
+      );
+    }
+  }
+  return closestContent;
 };
 
 /**
@@ -106,38 +133,41 @@ const flattenDetails = (details): IDetails => {
 export class BONalogService {
   /**
    * finds info by inn
-   * @param inn number
+   * @param query number
    * @return : Promise<IServiceResult>
    */
-  static async getInfoByInn(inn: number | string): Promise<IServiceResult> {
+  static async getInfo(query: string): Promise<IServiceResult> {
     const info: IServiceResult = {
-      inn: `${inn}`,
+      inn: query,
       search: null,
       basicInfo: null,
       rowDetails: [],
       details: null,
     };
     try {
-      let search = await axios.get<ISearch>(
-        `https://bo.nalog.ru/nbo/organizations/search?query=${inn}&page=0`
+      let search = await request<ISearch>(
+        `https://bo.nalog.ru/nbo/organizations/search?query=${encodeURI(
+          query
+        )}&page=0`
       );
-      logResult(`Found data by INN ${inn}`, search.data);
+      log.debug(`Found data by query ${query}`, search.data);
       info.search = search.data;
-      const id = search.data.content?.[0]?.id;
+      const content = findClosestResult(search.data, query);
+      const id = content?.id;
       if (!id) {
-        return log.error(`Id for INN ${inn} not found!`);
+        return log.warn(`Id for query ${query} not found!`);
       }
 
-      const basicInfo = await axios.get<IBasicInfo>(
+      const basicInfo = await request<IBasicInfo>(
         `https://bo.nalog.ru/nbo/organizations/${id}`
       );
-      logResult(`Found basicInfo by ID ${id}`, basicInfo.data);
+      log.debug(`Found basicInfo by ID ${id}`, basicInfo.data);
       info.basicInfo = basicInfo.data;
 
-      const bfo = await axios.get<IBFO[]>(
+      const bfo = await request<IBFO[]>(
         `https://bo.nalog.ru/nbo/organizations/${id}/bfo`
       );
-      logResult(`Found bfo by ID ${id}`, bfo.data);
+      log.debug(`Found bfo by ID ${id}`, bfo.data);
       const bfoIds: { id: number; period: string }[] = bfo.data.map((el) => ({
         id: el.id,
         period: el.period,
@@ -146,13 +176,14 @@ export class BONalogService {
       //   const columnNames = await getColumnNames();
 
       for (let bfoId of bfoIds) {
-        const details: any = await axios(
+        const details: any = await request(
           `https://bo.nalog.ru/nbo/bfo/${bfoId.id}/details`
         );
-        logResult(
+        log.debug(
           `Found details by ID ${bfoId.id} and period ${bfoId.period}`,
-          details.data
+          details?.data
         );
+        if (!details.data) continue;
         details.data[0].period = bfoId.period;
         const detailsCategories = [
           'balance',
@@ -202,14 +233,13 @@ export class BONalogService {
         });
          */
 
-        log.info(details.data[0]);
+        log.trace(details.data[0]);
         info.rowDetails.push(details.data[0]);
-        delay(100);
       }
       const flattenedDetails = flattenDetails(info.rowDetails);
       info.details = flattenedDetails;
       info.inn = `${info.inn}`;
-      log.debug(`Info by inn ${inn}\n'`, info);
+      log.debug(`Info by query ${query}\n'`, info);
       return info;
     } catch (e) {
       return log.error(e);
