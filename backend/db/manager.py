@@ -72,7 +72,7 @@ class DbManager():
         except Exception as e:
             logging.warn("Failed to insert deals: {}".format(e))
 
-    def edit_entity(self, id: str, entity: dict) -> bool:
+    def edit_service(self, id: str, entity: dict) -> bool:
         try:
             self.conn[self.db_name][self.service_collection].update_one({'_id': ObjectId(id)}, {'$set': entity}, upsert=False)
         except Exception as e:
@@ -80,15 +80,43 @@ class DbManager():
             return False
         return True
 
-    def get_entity(self, id: str) -> Union[dict, bool]:
+    def edit_company(self, id: str, entity: dict) -> bool:
+        try:
+            self.conn[self.db_name][self.company_collection].update_one({'_id': ObjectId(id)}, {'$set': entity}, upsert=False)
+        except Exception as e:
+            logging.warn("Failed to edit entity: {}".format(e))
+            return False
+        return True
+
+    def get_service(self, id: str) -> Union[dict, bool]:
         try:
             res = self.conn[self.db_name][self.service_collection].find_one({'_id': ObjectId(id)})
         except Exception as e:
             logging.warn("Failed to find entity: {}".format(e))
             return {}, False
+        if res is None:
+            return {}, False
+        return res, True
+
+    def get_company(self, id: str) -> Union[dict, bool]:
+        try:
+            res = self.conn[self.db_name][self.company_collection].find_one({'_id': ObjectId(id)})
+        except Exception as e:
+            logging.warn("Failed to find entity: {}".format(e))
+            return {}, False
+        if res is None:
+            return {}, False
         return res, True
 
     def get_all_entities_ids(self, type_filter: str = None) -> List[str]:
+        try:
+            res = self.conn[self.db_name][self.service_collection].find({} if type_filter is None else {'type': type_filter}, {"_id": 1})
+        except Exception as e:
+            logging.warn("Failed get_all_entities_ids: {}".format(e))
+            return [], False
+        return [str(x['_id']) for x in res], True
+
+    def get_all_companies_ids(self, type_filter: str = None) -> List[str]:
         try:
             res = self.conn[self.db_name][self.service_collection].find({} if type_filter is None else {'type': type_filter}, {"_id": 1})
         except Exception as e:

@@ -19,10 +19,10 @@ def apply_handlers(app: FastAPI, db: DbManager):
     def test_handler():
         return success_response({'result': 'ok'})
 
-    @app.get("/entity", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
+    @app.get("/service", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
     def get_entities(response: Response, type: str = None):
         """
-        Возвращает список id сущностей, опционально фильтруя по GET параметру type
+        Возвращает список id сервисов, опционально фильтруя по GET параметру type
         """
         ent, ok = db.get_all_entities_ids(type)
         if ok is False:
@@ -30,12 +30,23 @@ def apply_handlers(app: FastAPI, db: DbManager):
             return error_response('failed to get entities')
         return success_response({'entities': ent})
 
-    @app.get("/entity/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[possible_types])
+    @app.get("/company", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
+    def get_entities(response: Response, type: str = None):
+        """
+        Возвращает список id компаний
+        """
+        ent, ok = db.get_all_companies_ids(type)
+        if ok is False:
+            response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return error_response('failed to get entities')
+        return success_response({'entities': ent})
+
+    @app.get("/service/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[possible_types])
     def get_entity_by_id(id: str, response: Response):
         """
         Получить сущность по ее id
         """
-        entity, ok = db.get_entity(id)
+        entity, ok = db.get_service(id)
         if ok is False:
             response.status_code = status.HTTP_404_NOT_FOUND
             return error_response('failed to find entity')
@@ -56,6 +67,22 @@ def apply_handlers(app: FastAPI, db: DbManager):
             return error_response('Failed to find model for type={}'.format(b['type']))
         return success_response(data.dict())
 
+    @app.get("/company/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[possible_types])
+    def get_entity_by_id(id: str, response: Response):
+        """
+        Получить сущность по ее id
+        """
+        entity, ok = db.get_service(id)
+        if ok is False:
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return error_response('failed to find entity')
+        
+        if entity['type'] == 'Company':
+            data = CompanyModel(**entity)
+        else:
+            return error_response('Failed to find model for type={}'.format(b['type']))
+        return success_response(data.dict())
+
     @app.put("/company/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
     def update_company_by_id(entity: possible_types, id: str, response: Response):
         """
@@ -63,7 +90,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
         """
         entity = entity.dict()
         data = CompanyModel(**entity)
-        ok = db.edit_entity(id, data.dict())
+        ok = db.edit_company(id, data.dict())
         if ok is False:
             response.status_code = status.HTTP_404_NOT_FOUND
             return error_response('failed to find entity')
@@ -90,7 +117,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
         else:
             response.status_code = status.HTTP_400_BAD_REQUEST
             return error_response('Failed to find model for type={}'.format(entity['type']))
-        ok = db.edit_entity(id, data.dict())
+        ok = db.edit_service(id, data.dict())
         if ok is False:
             response.status_code = status.HTTP_404_NOT_FOUND
             return error_response('failed to find entity')
@@ -103,7 +130,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
         """
         entity = entity.dict()
         data = CompanyModel(**entity)
-        id = db.save_service(data.dict())
+        id = db.save_company(data.dict())
         if id == "":
             response.status_code = status.HTTP_406_NOT_ACCEPTABLE
             return error_response('entity with such inn already exists')
@@ -145,8 +172,8 @@ def apply_handlers(app: FastAPI, db: DbManager):
         """
         Получить рекомендации для компании по id (без передачи данных)
         """
-        entity, ok = db.get_entity(id)
-        if ok is False or entity[type] != 'Company':
+        entity, ok = db.get_company(id)
+        if ok is False or entity is None or (entity is not None and entity['type'] != 'Company'):
             response.status_code = status.HTTP_404_NOT_FOUND
             return error_response('failed to find comapny with id={}'.format(id))
         comp_frame = pd.DataFrame(entity.dict(), index=[0])
