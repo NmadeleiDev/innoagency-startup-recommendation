@@ -37,7 +37,9 @@ const StyledInput = styled.div<{ width?: number }>`
   border-radius: 10px;
   transition: 0.3s;
 
-  &:hover {
+  &:hover,
+  &:active,
+  &:focus-within {
     border: ${({ theme }) => `1px solid ${theme.colors.base.darkBG}`};
   }
 
