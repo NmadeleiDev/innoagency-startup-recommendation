@@ -173,7 +173,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
         """
 
         comp_frame = pd.DataFrame(entity.dict(), index=[0])
-        services_frame = load_services()
+        services_frame = load_services(db)
 
         reco_idxs = fund_p.predict(comp_frame, services_frame)
 

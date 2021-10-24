@@ -1,11 +1,28 @@
 from os import path
 import pandas as pd
-
-from .manager import DbManager
+import numpy as np
+from db.manager import DbManager
 from api.model import *
+import worker.parse_non_focus_investments as parse_non_focus_investments
+
 
 DATASET_PATH = '/dataset'
 
+def try_concat(arr):
+    try:
+        return np.concatenate(arr)
+    except Exception as e:
+        return []
+
+def get_fund_strategy_faults(df):
+    res = {
+        'makret': set(try_concat(df['market__company'].values)) - set(try_concat(df['market__investor'].values)),
+        'technologies': set(try_concat(df['technology__company'].values)) - set(try_concat(df['technologies__investor'].values)),
+        'tech_focus': set(try_concat(df['tech_focus__company'].values)) - set(try_concat(df['tech_focus__investor'].values)),
+        'startup_stage': set(df['stage_of_development__company'].values) - set(try_concat(df['startup_stage__investor'].values)),
+    }
+    return pd.Series(res)
+    
 def copy_local_dataset_to_db():
     deals = pd.read_excel(path.join(DATASET_PATH, 'Венчурные сделки 2017-2021.xlsx'), sheet_name=None, parse_dates=['Дата сделки (месяц)'])
     deals_buys = deals['Москва_Сделки']
@@ -38,5 +55,7 @@ def copy_local_dataset_to_db():
     db.save_services([ProgressInstituteModel.from_dataset(x).dict() for x in services['Список институтов развития'].fillna(fillna_serv).to_dict(orient='records')])
 
     db.save_companies([CompanyModel.from_dataset(x).dict() for x in companies.fillna(fillna_comp).to_dict(orient='records')])
+
+    parse_non_focus_investments.parse_and_save()
 
     db.close_conn()
