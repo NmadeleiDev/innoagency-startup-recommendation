@@ -73,6 +73,14 @@ class DbManager():
             return False
         return True
 
+    def edit_service_by_name(self, name: str, entity: dict) -> bool:
+        try:
+            self.conn[self.db_name][self.service_collection].update_one({'name': name}, {'$set': entity}, upsert=False)
+        except Exception as e:
+            logging.warn("Failed to edit entity: {}".format(e))
+            return False
+        return True
+
     def edit_company(self, id: str, entity: dict) -> bool:
         try:
             self.conn[self.db_name][self.company_collection].update_one({'_id': ObjectId(id)}, {'$set': entity}, upsert=False)
