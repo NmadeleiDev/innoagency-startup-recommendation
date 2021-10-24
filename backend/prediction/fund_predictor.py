@@ -31,7 +31,7 @@ def load_train_data():
 
     return res
 
-def train(train_data, val_data):
+def train_model(train_data, val_data):
     pre_X = load(path_to_pipelines_dir('fund_classifier_preprocessor_X.joblib'))
     pre_Y = load(path_to_pipelines_dir('fund_classifier_preprocessor_Y.joblib'))
 
@@ -46,8 +46,8 @@ def train(train_data, val_data):
         mode='auto', baseline=None, restore_best_weights=True
     )
 
-    model = tf.keras.models.load_model(path_to_models_dir('fund_classifier_model.h5'))
+    model = tf.keras.models.load_model(path_to_models_dir('model_fund_classifier.h5'))
     
     model.fit(X_tr, y_tr, validation_data=(X_te, y_te), epochs=100, callbacks=[es_cb])
 
-    model.save(path_to_models_dir('fund_classifier_model.h5'))
+    model.save(path_to_models_dir('model_fund_classifier.h5'))
