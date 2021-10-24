@@ -18,7 +18,6 @@ class DbManager():
         self.service_collection = 'service'
         self.company_collection = 'company'
         self.deals_collection = 'deal'
-        self.enums_collection = 'enums'
 
     def init_connection(self):
         logging.debug("Connecting to mongo on ({}:{}, {}:{})".format(self.host, self.port, self.user, self.password))
@@ -31,12 +30,6 @@ class DbManager():
     def close_conn(self):
         self.conn.close()
         self.conn = None
-
-    def init_enums(self):
-        jsons_path = './db/entity_enums'
-        for f in os.listdir(jsons_path):
-            js = loads(open(path.join(jsons_path, f), 'r').read())['config']
-            self.conn[self.db_name][self.enums_collection].insert_many(js)
 
     def save_service(self, entity: dict) -> str:
         try:

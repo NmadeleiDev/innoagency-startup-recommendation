@@ -181,7 +181,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
         return success_response({
             'funds': list([str(x) for x in services_frame[services_frame['type'] == 'VentureFund']['_id'].values]),
             'progressInstitute': list([str(x) for x in services_frame[services_frame['type'] == 'ProgressInstitute']['_id'].values]),
-            'accelerators': list([str(x) for x in services_frame[services_frame['type'] == 'Acelerator']['_id'].values])})
+            'accelerators': list([str(x) for x in services_frame[services_frame['type'] == 'Accelerator']['_id'].values])})
 
     @app.get("/recommend/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
     def get_reccomendation_by_id(id: str, response: Response):    
@@ -203,6 +203,6 @@ def apply_handlers(app: FastAPI, db: DbManager):
         return success_response({
             'funds': list([str(x) for x in services_frame[services_frame['type'] == 'VentureFund']['_id'].values]),
             'progressInstitute': list([str(x) for x in services_frame[services_frame['type'] == 'ProgressInstitute']['_id'].values]),
-            'accelerators': list([str(x) for x in services_frame[services_frame['type'] == 'Acelerator']['_id'].values])})
+            'accelerators': list([str(x) for x in services_frame[services_frame['type'] == 'Accelerator']['_id'].values])})
 
 

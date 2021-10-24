@@ -214,7 +214,7 @@ class AcceleratorModel(CommonEntityModel):
     def from_dataset(record: dict):
         naming_dict = {
             'ИНН организатора': ('inn', lambda x: str(int(to_num(x)))),
-            'Организатор полное название': ('name', to_str),
+            'Название программы': ('name', to_str),
 
             'Стадия стартапа': ('startup_stage', split_by_n1),
             'Рынок': ('market', split_by_n1),
