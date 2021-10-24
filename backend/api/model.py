@@ -207,10 +207,10 @@ class VentureFundModel(CommonEntityModel):
     fund_total_dol: Optional[float]
     num_of_investments: Optional[float]
     num_of_exits: Optional[float]
-
-    startup_stage__non_focus: Optional[List[str]]
-    tech_focus__non_focus: Optional[List[str]]
-    technologies__non_focus: Optional[List[str]]
+    market_non_focus: Optional[List[str]]
+    startup_stage_non_focus: Optional[List[str]]
+    tech_focus_non_focus: Optional[List[str]]
+    technologies_non_focus: Optional[List[str]]
 
 
 class AcceleratorModel(CommonEntityModel):

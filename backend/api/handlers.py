@@ -15,7 +15,7 @@ from prediction.utils import load_services
 
 
 def apply_handlers(app: FastAPI, db: DbManager):
-    service_types = Union[CompanyModel, VentureFundModel, AcceleratorModel, ProgressInstituteModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporationModel]
+    service_types = Union[VentureFundModel, AcceleratorModel, ProgressInstituteModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporationModel]
 
     @app.get("/test", status_code=200, response_model=DefaultResponseModel[dict], include_in_schema=False)
     def test_handler():
