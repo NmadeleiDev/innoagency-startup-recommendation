@@ -26,18 +26,18 @@ def apply_handlers(app: FastAPI, db: DbManager):
         """
         Возвращает список id сервисов, опционально фильтруя по GET параметру type
         """
-        ent, ok = db.get_all_entities_ids(type)
+        ent, ok = db.get_all_services_ids(type)
         if ok is False:
             response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
             return error_response('failed to get entities')
         return success_response({'entities': ent})
 
     @app.get("/company", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
-    def get_companies(response: Response, type: str = None):
+    def get_companies(response: Response):
         """
         Возвращает список id компаний
         """
-        ent, ok = db.get_all_companies_ids(type)
+        ent, ok = db.get_all_companies_ids()
         if ok is False:
             response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
             return error_response('failed to get entities')
@@ -72,7 +72,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
     @app.get("/company/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[CompanyModel])
     def get_entity_by_id(id: str, response: Response):
         """
-        Получить сущность по ее id
+        Получить компанию по ее id
         """
         entity, ok = db.get_company(id)
         if ok is False:

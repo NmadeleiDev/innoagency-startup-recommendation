@@ -109,7 +109,7 @@ class DbManager():
             return {}, False
         return res, True
 
-    def get_all_entities_ids(self, type_filter: str = None) -> Tuple[List[dict], bool]:
+    def get_all_services_ids(self, type_filter: str = None) -> Tuple[List[dict], bool]:
         try:
             res = self.conn[self.db_name][self.service_collection].find({} if type_filter is None else {'type': type_filter}, {"_id": 1})
         except Exception as e:
@@ -117,9 +117,9 @@ class DbManager():
             return [], False
         return [str(x['_id']) for x in res], True
 
-    def get_all_companies_ids(self, type_filter: str = None) -> Tuple[List[dict], bool]:
+    def get_all_companies_ids(self) -> Tuple[List[dict], bool]:
         try:
-            res = self.conn[self.db_name][self.service_collection].find({} if type_filter is None else {'type': type_filter}, {"_id": 1})
+            res = self.conn[self.db_name][self.company_collection].find({}, {"_id": 1})
         except Exception as e:
             logging.warn("Failed get_all_entities_ids: {}".format(e))
             return [], False
