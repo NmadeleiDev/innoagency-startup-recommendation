@@ -57,6 +57,7 @@ class CompanyModel(CommonEntityModel):
         obj = CompanyModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
+    type = 'Company'
     got_support_from: Optional[str]
     did_get_support: Optional[str]
     service: Optional[str]

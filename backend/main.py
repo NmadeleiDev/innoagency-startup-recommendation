@@ -14,7 +14,7 @@ db.init_connection()
 # db.init_enums()
 
 # try:
-copy_local_dataset_to_db()
+# copy_local_dataset_to_db()
 # except Exception as e:
 #     logging.error(e)
 

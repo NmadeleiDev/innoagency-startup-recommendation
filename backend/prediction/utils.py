@@ -1,12 +1,13 @@
 from os import path
 import pandas as pd
 import numpy as np
+from db.manager import DbManager
 
 path_to_models_dir = lambda x: path.join('/models/{}', *(x if isinstance(x, str) is False else [x]))
 path_to_pipelines_dir = lambda x: path.join('/pipelines/{}', *(x if isinstance(x, str) is False else [x]))
 
 
-def load_companies(db):
+def load_companies(db: DbManager) -> pd.DataFrame:
     companies = pd.DataFrame(db.get_companies())
     cat_cols = ['got_support_from', 'did_get_support', 'service', 'stage_of_development', 'msp_category', 'is_export', 'inno_cluster_member', 'skolcovo_member', 'is_inno_company', 'is_startup']
     companies[cat_cols] = companies[cat_cols].astype('category')
@@ -14,7 +15,7 @@ def load_companies(db):
     companies.replace(['', 'н.д.'], np.nan, inplace=True)
     return companies
 
-def load_deals(db):
+def load_deals(db: DbManager) -> pd.DataFrame:
     deals = pd.DataFrame(db.get_deals())
     deals[['round', 'deal_type']] = deals[['round', 'deal_type']].astype('category')
     # deals.drop(columns=['_id'], inplace=True)
@@ -22,14 +23,14 @@ def load_deals(db):
     deals = deals.applymap(lambda x: np.nan if isinstance(x, list) and len(x) == 0 else x)
     return deals
 
-def load_services(db):
+def load_services(db: DbManager) -> pd.DataFrame:
     services = pd.DataFrame(db.get_services())
     # services.drop(columns=['_id'], inplace=True)
     services.replace(['', 'н.д.'], np.nan, inplace=True)
     return services
 
 
-def group_deals_by_investor_type(deals,present_inns):
+def group_deals_by_investor_type(deals: pd.DataFrame, present_inns: set) -> pd.DataFrame:
     res = (deals[deals['deal_type'] == 'buy'].melt(id_vars=['startup_inn', 'round'], 
                value_vars=['gov_fund', 'private_fund', 'corp_fund', 'corp_investor', 'business_angel', 'accelerator'])
         .dropna()
@@ -48,7 +49,7 @@ def try_concat(arr):
     except Exception as e:
         return []
 
-def match_company_and_investor(deals, services, companies):
+def match_company_and_investor(deals: pd.DataFrame, services: pd.DataFrame, companies: pd.DataFrame) -> pd.DataFrame:
     ff = (
         deals[deals['deal_type'] == 'buy']
         .groupby(['startup_inn', 'round'])[['gov_fund', 'private_fund', 'corp_fund', 'corp_investor', 'business_angel', 'accelerator']]
