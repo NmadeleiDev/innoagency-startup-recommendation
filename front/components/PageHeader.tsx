@@ -6,6 +6,7 @@ import theme from 'styles/theme';
 interface Props {
   title: string;
   className?: string;
+  handleBack?: () => void;
 }
 
 const StyledDiv = styled.div`
@@ -16,6 +17,7 @@ const StyledDiv = styled.div`
     margin: 0;
     padding: 0;
     text-align: center;
+    text-transform: uppercase;
   }
 
   .back {
@@ -31,10 +33,10 @@ const StyledDiv = styled.div`
   }
 `;
 
-const PageHeader = ({ title, className }: Props) => {
+const PageHeader = ({ title, className, handleBack }: Props) => {
   const router = useRouter();
   const isHomePage = router.pathname === '/';
-  const handleBack = () => {
+  const handleBackDefault = () => {
     router.back();
   };
   return (
@@ -43,7 +45,7 @@ const PageHeader = ({ title, className }: Props) => {
         <BackIcon
           color={theme.colors.base.darkBG}
           className="back"
-          onClick={handleBack}
+          onClick={handleBack || handleBackDefault}
         />
       )}
       <h2>{title}</h2>

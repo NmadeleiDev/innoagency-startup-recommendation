@@ -138,18 +138,18 @@ const Info = () => {
     service: '',
     foundation_date: '',
     tech_focus: [],
-    stage_of_development: progectStage[0].id,
+    stage_of_development: '',
     market: [],
     technology: [],
     business_model: [],
     main_okved: '',
     okved_secondary: [],
-    msp_category: msp[0].id,
-    is_export: 'да',
-    inno_cluster_member: 'да',
-    skolcovo_member: 'да',
-    is_inno_company: 'да',
-    is_startup: 'да',
+    msp_category: '',
+    is_export: '',
+    inno_cluster_member: '',
+    skolcovo_member: '',
+    is_inno_company: '',
+    is_startup: '',
     current_profit: 0,
     current_profit_tax: 0,
     current_revenue: 0,
@@ -160,7 +160,7 @@ const Info = () => {
   };
 
   const handleDateChange = (date: Date | null) => {
-    const timestamp = date?.getTime() + '' || '';
+    const timestamp = date?.toISOString() || '';
     setState((state) => ({ ...state, foundation_date: timestamp }));
   };
 
@@ -194,20 +194,23 @@ const Info = () => {
       return handleError('ИНН не заполнен');
     }
     try {
-      const res: AxiosResponse<IApiResponse> = await api.post('/entity', state);
+      const res: AxiosResponse<IApiResponse> = await api.post(
+        '/company',
+        state
+      );
       console.log(res);
       if (res.status >= 400 && res.status < 500) {
-        handleError('Invalid request');
+        handleError('Неправильные данные');
       }
       if (res.data?.data?.id) {
         setState((state) => ({ ...state, id: res.data?.data?.id || '' }));
 
         dispatch(saveUserState(state));
-        router.push('/list');
+        router.push(`/list?id=${res.data?.data?.id}`);
       }
     } catch (e) {
       console.log(e);
-      toast.error('Server error');
+      handleError('Ошибка сохранения, попробуйте позже');
     }
   };
 
@@ -238,7 +241,7 @@ const Info = () => {
           type="date"
           onChange={handleInfoChange}
           onDateChange={handleDateChange}
-          value={+state.foundation_date}
+          value={state.foundation_date}
           placeholder="Дата основания компании"
         />
       </fieldset>

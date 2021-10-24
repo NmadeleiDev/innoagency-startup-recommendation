@@ -107,6 +107,7 @@ export const techFocus: KeyValue[] = [
 ];
 
 export const msp: KeyValue[] = [
+  { id: '', text: '' },
   { id: 'ип микро', text: 'ИП микро' },
   { id: 'ип малое', text: 'ИП малое' },
   { id: 'юл микро', text: 'ЮЛ микро' },
@@ -115,6 +116,7 @@ export const msp: KeyValue[] = [
 ];
 
 export const yesNo: KeyValue[] = [
+  { id: '', text: '' },
   { id: 'да', text: 'да' },
   { id: 'нет', text: 'нет' },
 ];
@@ -136,6 +138,7 @@ export const investmentRound: KeyValue[] = [
 ];
 
 export const progectStage: KeyValue[] = [
+  { id: '', text: '' },
   { id: '1500', text: 'Идея' },
   { id: '1501', text: 'Посевная' },
   { id: '1502', text: 'Ранний рост' },
@@ -148,45 +151,51 @@ export const investorType: KeyValue[] = [
   { id: '1602', text: 'ГОСУДАРСТВЕННЫЙ ФОНД' },
   { id: '1603', text: 'АКСЕЛЕРАТОР' },
 ];
+export type ServiceType =
+  | 'VentureFund'
+  | 'Accelerator'
+  | 'ProgressInstitute'
+  | 'EngeneeringCenter'
+  | 'BusinessIncubator'
+  | 'Corporation';
+export interface ServiceModel {
+  type: ServiceType;
+  _id: string;
+  inn: string;
+  name: string;
+  startup_stage: string[];
+  market: string[];
+  services: string[];
+  technologies: string[];
+  type_of_ownership: string;
+  investment_round: string[];
+  investition_from_dol: number;
+  investition_to_dol: number;
+  tech_focus: string[];
+  fund_total_rub: number;
+  fund_total_dol: number;
+  num_of_investments: number;
+  num_of_exits: number;
+}
 
 export interface VentureFondModel {
-  type: 'VentureFond';
-  id: number;
+  type: 'VentureFund';
+  _id: string;
   inn: string;
-  companyName: string;
-  companyDescription: string;
-  // В анкете тут только год, но дальше есть дочерние фодны, там полная дата.
-  // Предлагаю тут тоже сделать полную дату
-  // а еще в анкете она находится в разделе "детали"
-  // но, если делать childFonds массивом фондов, то дата создания должна быть тут
-  foundationDate: number;
-  fondCapital: number; //объем фонда в миллионах долларов
-  logo: string;
-  tags: {
-    averageCheque: number[]; //два числа [от, до], в долларах
-    markets: number[];
-    technologies: number[];
-  };
-  details: {
-    investmentRound: number;
-    ventureFondType: number;
-    ventureFondCountry: number;
-    focus: string; // ТЕХНОЛОГИЧЕСКИЙ ФОКУС ФОНДА, приоритеты инвестирования
-    // следующее поле бы неплохо добавить в формате этого же интерфейса, но на сайте у них только 3 поля
-    // childFonds: VentureFondModel[] - в идеале так надо
-    // либо делать остальные поля необязательными, тогда пройдем по контракту
-    childFonds: VentureFondModel[];
-    // childFonds: {
-    //   companyName: string;
-    //   fondCapital: number;
-    //   foundationDate: number;
-    // };
-  };
-  contacts: {
-    email: string;
-    phone: string;
-    site: string;
-  };
+  name?: string;
+  startup_stage?: string[];
+  market?: string[];
+  services?: string[];
+  technologies?: string[];
+  type_of_ownership?: string;
+  investment_round?: string[];
+  investition_from_dol?: number;
+  investition_to_dol?: number;
+  tech_focus?: string[];
+  fund_total_rub?: number;
+  fund_total_dol?: number;
+  num_of_investments?: number;
+  num_of_exits?: number;
 }
 
 export const ventureFondType: KeyValue[] = [
@@ -200,37 +209,23 @@ export const ventureFondCountry: KeyValue[] = [
   { id: '1801', text: 'Иностранный' },
 ];
 
-export interface AccelerationProgramModel {
-  type: 'AccelerationProgram';
-  id: number;
-  companyName: string;
-  companyDescription: string;
-  services: string[]; //ЧТО ПОЛУЧАЮТ СТАРТАПЫ В РАМКАХ ПРОГРАММЫ
-  forWhom: string[]; //ТРЕБОВАНИЯ К КОМПАНИЯМ-УЧАСТНИКАМ
-  logo: string;
-  tags: {
-    markets: number[];
-    technologies: number[];
-  };
-  details: {
-    focus: string[]; //НАПРАВЛЕНИЯ ПОИСКА ПРОЕКТОВ
-    programStatus: number;
-    participationConditions: number;
-    organizatorName: string; //НАЗВАНИЕ ОРГАНИЗАТОРА (инициатор/заказчик программы)
-    operatorName: string; //НАЗВАНИЕ ОПЕРАТОРА (Помогает структурировать и провести программу)
-    programStages: {
-      stageDateApplications: number;
-      stageDatePrepare: number;
-      stageDateStart: number;
-      stageDateDemo: number;
-      stageDatePost: number; //количество месяцев
-    };
-  };
-  contacts: {
-    email: string;
-    phone: string;
-    site: string;
-  };
+export interface AcceleratorModel {
+  type: 'Accelerator';
+  _id: string;
+  inn: string;
+  name?: string;
+  startup_stage?: string[];
+  market?: string[];
+  services?: string[];
+  technologies?: string[];
+  investition_from_dol?: number;
+  investition_to_dol?: number;
+  tech_focus?: string[];
+  geography?: number;
+  study_format?: string;
+  num_of_people_in_company_from?: number;
+  num_of_people_in_company_to?: number;
+  num_of_participants?: number;
 }
 
 export const programStatus: KeyValue[] = [

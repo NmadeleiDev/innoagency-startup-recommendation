@@ -2,8 +2,13 @@ import Image from 'next/image';
 import styled from 'styled-components';
 import { StarIcon } from 'components/Icon';
 import { Accelerator } from 'models/Accelerator';
+import {
+  AcceleratorModel,
+  ServiceModel,
+  VentureFondModel,
+} from 'models/Startup';
 
-const AcceleratorWrapper = styled.div`
+const Wrapper = styled.div`
   .title {
     grid-area: title;
   }
@@ -62,7 +67,7 @@ const AcceleratorWrapper = styled.div`
   @media (min-width: 400px) {
     padding-top: 1rem;
     padding-bottom: 1rem;
-    height: 200px;
+    /* height: 200px; */
     grid-gap: 0;
     grid-template-areas:
       'title'
@@ -79,27 +84,26 @@ const AcceleratorWrapper = styled.div`
   @media (min-width: 1200px) {
     height: 120px;
     grid-gap: 1rem;
+    grid-template-columns: 1fr 100px;
     grid-template-areas: 'title description';
   }
   .image {
     width: 100px;
   }
-  .title {
-    width: 200px;
-  }
 `;
 
-interface AcceleratorResultProps {
-  accelerator: Accelerator;
+interface Props {
+  item: VentureFondModel | AcceleratorModel;
+  onClick?: () => void;
 }
 
-const AcceleratorListItem = ({ accelerator }: AcceleratorResultProps) => {
+const ListItem = ({ item, onClick }: Props) => {
   return (
-    <AcceleratorWrapper>
-      <div className="title center">{accelerator.name}</div>
-      <div className="description">{accelerator.description}</div>
-    </AcceleratorWrapper>
+    <Wrapper onClick={onClick}>
+      <div className="title center">{item.name}</div>
+      <div className="description">{item.type}</div>
+    </Wrapper>
   );
 };
 
-export default AcceleratorListItem;
+export default ListItem;
