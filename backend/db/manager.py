@@ -1,6 +1,6 @@
 import os
 import logging
-from typing import List, Union
+from typing import List, Tuple, Union
 from bson.objectid import ObjectId
 import pymongo
 import os
@@ -88,7 +88,7 @@ class DbManager():
             return False
         return True
 
-    def get_service(self, id: str) -> Union[dict, bool]:
+    def get_service(self, id: str) -> Tuple[dict, bool]:
         try:
             res = self.conn[self.db_name][self.service_collection].find_one({'_id': ObjectId(id)})
         except Exception as e:
@@ -98,7 +98,7 @@ class DbManager():
             return {}, False
         return res, True
 
-    def get_company(self, id: str) -> Union[dict, bool]:
+    def get_company(self, id: str) -> Tuple[dict, bool]:
         try:
             res = self.conn[self.db_name][self.company_collection].find_one({'_id': ObjectId(id)})
         except Exception as e:
@@ -108,7 +108,7 @@ class DbManager():
             return {}, False
         return res, True
 
-    def get_all_entities_ids(self, type_filter: str = None) -> List[str]:
+    def get_all_entities_ids(self, type_filter: str = None) -> Tuple[List[dict], bool]:
         try:
             res = self.conn[self.db_name][self.service_collection].find({} if type_filter is None else {'type': type_filter}, {"_id": 1})
         except Exception as e:
@@ -116,7 +116,7 @@ class DbManager():
             return [], False
         return [str(x['_id']) for x in res], True
 
-    def get_all_companies_ids(self, type_filter: str = None) -> List[str]:
+    def get_all_companies_ids(self, type_filter: str = None) -> Tuple[List[dict], bool]:
         try:
             res = self.conn[self.db_name][self.service_collection].find({} if type_filter is None else {'type': type_filter}, {"_id": 1})
         except Exception as e:
@@ -124,7 +124,7 @@ class DbManager():
             return [], False
         return [str(x['_id']) for x in res], True
 
-    def get_companies(self) -> List[dict]:
+    def get_companies(self) -> Tuple[List[dict], bool]:
         try:
             res = self.conn[self.db_name][self.company_collection].find()
         except Exception as e:
@@ -132,7 +132,7 @@ class DbManager():
             return [], False
         return [x for x in res], True
 
-    def get_services(self, filter_type=None) -> List[dict]:
+    def get_services(self, filter_type=None) -> Tuple[List[dict], bool]:
         try:
             res = self.conn[self.db_name][self.service_collection].find({'type': filter_type} if filter_type is not None else None)
         except Exception as e:
@@ -140,7 +140,7 @@ class DbManager():
             return [], False
         return [x for x in res], True
 
-    def get_deals(self) -> List[dict]:
+    def get_deals(self) -> Tuple[List[dict], bool]:
         try:
             res = self.conn[self.db_name][self.deals_collection].find()
         except Exception as e:

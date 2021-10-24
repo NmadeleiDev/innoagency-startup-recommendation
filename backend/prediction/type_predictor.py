@@ -7,7 +7,7 @@ from db.manager import DbManager
 def predict(company):
     labels = ['accelerator', 'business_angel', 'corp_fund', 'corp_investor', 'gov_fund', 'private_fund']
     X = load(path_to_pipelines_dir('type_classifier_preprocessor_X.joblib')).transform(np.array([company]))
-    pred = tf.keras.models.load_model(path_to_models_dir('type_classifier_model.h5')).predict(X)[0]
+    pred = tf.keras.models.load_model(path_to_models_dir('type_classifier_model.h5'), compile=False).predict(X)[0]
     
     idx_sorted = np.argsort(pred)
 

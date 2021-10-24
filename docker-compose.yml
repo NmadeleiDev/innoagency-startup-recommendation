@@ -10,6 +10,7 @@ services:
       - ./dataset:/dataset
       - ./models:/models
       - ./pipelines:/pipelines
+      - ./custom_modules:/my_modules
     environment:
       MONGO_USER: ${MONGO_USER}
       MONGO_PASSWORD: ${MONGO_PASSWORD}
@@ -62,15 +63,15 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
-  front:
-    build:
-      context: ./front
-      dockerfile: Dockerfile
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.middlewares.test-compress.compress=true" 
-      - "traefik.http.routers.front.rule=Host(`${HOST:-localhost}`)"
-      - "traefik.http.routers.front.middlewares=test-compress" # apply middleware
+  # front:
+  #   build:
+  #     context: ./front
+  #     dockerfile: Dockerfile
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.middlewares.test-compress.compress=true" 
+  #     - "traefik.http.routers.front.rule=Host(`${HOST:-localhost}`)"
+  #     - "traefik.http.routers.front.middlewares=test-compress" # apply middleware
   db-mongo:
     image: mongo:5.0.3
     restart: always

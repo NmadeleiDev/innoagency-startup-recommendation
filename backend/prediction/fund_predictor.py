@@ -8,10 +8,10 @@ from db.manager import DbManager
 import pandas as pd
 
 def predict(company, services):
-    X = load(path_to_pipelines_dir('fund_classifier_preprocessor_X.joblib')).transform(np.array([company.rename(columns=lambda x: '{}__company'.format(x))]))
+    X = load(path_to_pipelines_dir('fund_classifier_preprocessor_X.joblib')).transform(company.rename(columns=lambda x: '{}__company'.format(x)))
     services_space = load(path_to_pipelines_dir('fund_classifier_preprocessor_Y.joblib')).transform(services.rename(columns=lambda x: '{}__investor'.format(x)))
 
-    proj = tf.keras.models.load_model(path_to_models_dir('fund_classifier_model.h5')).predict(X)[0]
+    proj = tf.keras.models.load_model(path_to_models_dir('model_fund_classifier.h5'), compile=False).predict(X)[0]
 
     idx_sorted = np.argsort(np.apply_along_axis(LA.norm, 1, services_space - proj, ord=2))
 

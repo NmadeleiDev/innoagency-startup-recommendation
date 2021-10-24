@@ -165,7 +165,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
             return error_response('failed to find entity')
         return success_response()
 
-    @app.post("/recommend", status_code=status.HTTP_201_CREATED, response_model=DefaultResponseModel[dict])
+    @app.post("/recommend", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
     def get_reccomendation(entity: CompanyModel, response: Response):    
         """
         Получить рекомендации для компании
@@ -179,11 +179,11 @@ def apply_handlers(app: FastAPI, db: DbManager):
         services_frame = services_frame.iloc[reco_idxs]
 
         return success_response({
-            'funds': services_frame[services_frame['type'] == 'VentureFund']['_id'].values,
-            'progressInstitute': services_frame[services_frame['type'] == 'ProgressInstitute']['_id'].values,
-            'accelerators': services_frame[services_frame['type'] == 'VentureFund']['_id'].values})
+            'funds': list([str(x) for x in services_frame[services_frame['type'] == 'VentureFund']['_id'].values]),
+            'progressInstitute': list([str(x) for x in services_frame[services_frame['type'] == 'ProgressInstitute']['_id'].values]),
+            'accelerators': list([str(x) for x in services_frame[services_frame['type'] == 'VentureFund']['_id'].values])})
 
-    @app.get("/recommend/{id}", status_code=status.HTTP_201_CREATED, response_model=DefaultResponseModel[dict])
+    @app.get("/recommend/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
     def get_reccomendation_by_id(id: str, response: Response):    
         """
         Получить рекомендации для компании по id (без передачи данных)
@@ -192,16 +192,17 @@ def apply_handlers(app: FastAPI, db: DbManager):
         if ok is False or entity is None or (entity is not None and entity['type'] != 'Company'):
             response.status_code = status.HTTP_404_NOT_FOUND
             return error_response('failed to find comapny with id={}'.format(id))
-        comp_frame = pd.DataFrame.from_dict(entity)
-        services_frame = load_services()
+        comp_frame = pd.DataFrame(
+            {k: v if isinstance(v, list) is False else str(v) for k, v in entity.items()}, index=[0])
+        services_frame = load_services(db)
 
         reco_idxs = fund_p.predict(comp_frame, services_frame)
 
         services_frame = services_frame.iloc[reco_idxs]
 
         return success_response({
-            'funds': services_frame[services_frame['type'] == 'VentureFund']['_id'].values,
-            'progressInstitute': services_frame[services_frame['type'] == 'ProgressInstitute']['_id'].values,
-            'accelerators': services_frame[services_frame['type'] == 'VentureFund']['_id'].values})
+            'funds': list([str(x) for x in services_frame[services_frame['type'] == 'VentureFund']['_id'].values]),
+            'progressInstitute': list([str(x) for x in services_frame[services_frame['type'] == 'ProgressInstitute']['_id'].values]),
+            'accelerators': list([str(x) for x in services_frame[services_frame['type'] == 'VentureFund']['_id'].values])})
 
 
