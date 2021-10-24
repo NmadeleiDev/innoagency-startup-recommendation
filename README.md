@@ -36,11 +36,32 @@ make up-c # с очисткой БД
 
 ### ML
 
-Папка ML содержит в себе Jupyter Notebooks, где продемонстрировано создание модели для персонализированных рекомендаций.
+Папка ML содержит в себе Jupyter Notebooks для подготовки данных и генерации рекомендаций.
+
+Всего в проекте используется 2 модели:
+
+- Класификатор для получения наиболее подходящего типа сервиса для компании (Частный фонд, гос. фонд, акселератор, частный инвестор, корпоративный инвестор)
+- Класификатор для получения наиболее подходящего сервиса для компании
+
+Описание notebooks и файлов:
+
+- dataprep.py - подготовка данных для обоих классификаторов
+- investor_classifier.ipynb - создание и обучение модели рекомендации сервиса для компании
+- type_classifier.ipynb - создание и обучение модели рекомендации типа сервиса для компании
 
 ### Backend
 
 Папка backend содержит код (python{FastAPI}) серверной части веб-приложения, API для приема запросов от клиентской части веб-приложения (frontend) и логику работы с обученной моделью.
+
+Бекенд взаимодействует с БД и производит следующие операции:
+
+- Получает, вставляет или удаляет (CRUD) сущности (стартапы, компании, акселераторы и сервисы)
+- Полученные данные подготавливает/трансформирует, используя процедуры, описанные в папке ML
+- Трансформирванные и подготовленные данные отправляет в обученную модель из папки ML и возвращает рекмендации клиенту.
+
+Ниже представлена диаграмма взаимодействий компонент стека.
+
+[![](https://mermaid.ink/svg/eyJjb2RlIjoiZmxvd2NoYXJ0IFRCXG4gICAgJSUgc3ViZ3JhcGggQmFja2VuZFxuICAgIEZbRnJvbnRdIC0tPnwxLiBHZXR0aW5nIGRhdGEgZnJvbSBmb3JtfCBCW0JhY2tlbmRdXG4gICAgQiA8LS0-fDIuIEZldGNoIERhdGEgQWJvdXQgU2VydmljZXN8IERCXG4gICAgQiA8LS0-fDMuIFByZXBhcmUgRGF0YSB3aXRoIHBpcGVsaW5lfCBNTFxuICAgIEIgPC0tPnw0LiBTZW5kIERhdGEgdG8gbW9kZWwgJiBnZXQgcHJlZGljdCBvZiBzZXJ2aWNlfCBNTFxuICAgICUlIGVuZFxuICAgIHN1YmdyYXBoIE1MXG4gICAgUFtTY2lraXQtbGVhcm4gUGlwZWxpbmVzXVxuICAgIE1bVGVuc29yZmxvdyBNb2RlbF1cbiAgICBlbmQiLCJtZXJtYWlkIjp7InRoZW1lIjoiZGFyayJ9LCJ1cGRhdGVFZGl0b3IiOmZhbHNlLCJhdXRvU3luYyI6dHJ1ZSwidXBkYXRlRGlhZ3JhbSI6ZmFsc2V9)](https://mermaid-js.github.io/mermaid-live-editor/edit#eyJjb2RlIjoiZmxvd2NoYXJ0IFRCXG4gICAgJSUgc3ViZ3JhcGggQmFja2VuZFxuICAgIEZbRnJvbnRdIC0tPnwxLiBHZXR0aW5nIGRhdGEgZnJvbSBmb3JtfCBCW0JhY2tlbmRdXG4gICAgQiA8LS0-fDIuIEZldGNoIERhdGEgQWJvdXQgU2VydmljZXN8IERCXG4gICAgQiA8LS0-fDMuIFByZXBhcmUgRGF0YSB3aXRoIHBpcGVsaW5lfCBNTFxuICAgIEIgPC0tPnw0LiBTZW5kIERhdGEgdG8gbW9kZWwgJiBnZXQgcHJlZGljdCBvZiBzZXJ2aWNlfCBNTFxuICAgICUlIGVuZFxuICAgIHN1YmdyYXBoIE1MXG4gICAgUFtTY2lraXQtbGVhcm4gUGlwZWxpbmVzXVxuICAgIE1bVGVuc29yZmxvdyBNb2RlbF1cbiAgICBlbmQiLCJtZXJtYWlkIjoie1xuICBcInRoZW1lXCI6IFwiZGFya1wiXG59IiwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ)
 
 ### Front
 
@@ -71,5 +92,3 @@ make up-c # с очисткой БД
 [![form](./images/frame2.png)](./images/frame2.png)
 
 ### Экран выданных рекмендаций сервисов Москвы
-
-
