@@ -1,6 +1,6 @@
-FROM continuumio/anaconda:2019.10-alpine
+FROM continuumio/anaconda3
 
-RUN /usr/local/bin/python -m pip install --upgrade pip
+RUN python -m pip install --upgrade pip
 RUN apt update && apt install -y uvicorn && pip install scikit-learn==0.22 pymongo fastapi[all] pandas dnspython openpyxl tensorflow
 RUN mkdir -p /app/
 
