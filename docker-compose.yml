@@ -8,6 +8,8 @@ services:
       - /etc/localtime:/etc/localtime/:ro
       - ./backend/:/app/:rw # для правки кода без перезагрузки
       - ./dataset:/dataset
+      - ./models:/models
+      - ./pipelines:/pipelines
     environment:
       MONGO_USER: ${MONGO_USER}
       MONGO_PASSWORD: ${MONGO_PASSWORD}

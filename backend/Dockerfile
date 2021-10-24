@@ -1,6 +1,7 @@
-FROM python:3.9.7-slim
+FROM continuumio/anaconda:2019.10-alpine
 
-RUN apt update && apt install -y uvicorn && pip install pymongo fastapi[all] pandas dnspython openpyxl
+RUN /usr/local/bin/python -m pip install --upgrade pip
+RUN apt update && apt install -y uvicorn && pip install scikit-learn==0.22 pymongo fastapi[all] pandas dnspython openpyxl tensorflow
 RUN mkdir -p /app/
 
 COPY . /app
