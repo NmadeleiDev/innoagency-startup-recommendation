@@ -1,10 +1,15 @@
 import logging
 from os import stat
 from fastapi import FastAPI, Response, status
+import pandas as pd
 
 from db.manager import DbManager
 from .utils import *
 from .model import *
+
+import prediction.fund_predictor as fund_p
+import prediction.type_predictor as type_p
+from prediction.utils import load_services
 
 
 def apply_handlers(app: FastAPI, db: DbManager):
@@ -30,39 +35,14 @@ def apply_handlers(app: FastAPI, db: DbManager):
         """
         Получить сущность по ее id
         """
-        b, ok = db.get_entity(id)
+        entity, ok = db.get_entity(id)
         if ok is False:
             response.status_code = status.HTTP_404_NOT_FOUND
             return error_response('failed to find entity')
         
-        if b['type'] == 'Company':
-            return success_response(CompanyModel(**b))
-        elif b['type'] == 'VentureFond':
-            return success_response(VentureFundModel(**b))
-        elif b['type'] == 'AccelerationProgram':
-            return success_response(AcceleratorModel(**b))
-        elif b['type'] == 'EngeneeringCenter':
-            return success_response(EngeneeringCenterModel(**b))
-        elif b['type'] == 'BusinessIncubator':
-            return success_response(BusinessIncubatorModel(**b))
-        elif b['type'] == 'Corporate':
-            return success_response(CorporationModel(**b))
-        elif b['type'] == 'ProgressInstitute':
-            return success_response(ProgressInstituteModel(**b))
-        else:
-            return error_response('Failed to find model for type={}'.format(b['type']))
-
-    @app.put("/entity/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
-    def update_entity_by_id(entity: possible_types, id: str, response: Response):
-        """
-        Обновить сущность по id. Принимает структуру любой сущности сервиса (CompanyModel, VentureFondModel, AccelerationProgramModel, CoworkingModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporateModel).
-        """
-        entity = entity.dict()
-        if entity['type'] == 'Company':
-            data = CompanyModel(**entity)
-        elif entity['type'] == 'VentureFond':
+        if entity['type'] == 'VentureFund':
             data = VentureFundModel(**entity)
-        elif entity['type'] == 'AccelerationProgram':
+        elif entity['type'] == 'Accelerator':
             data = AcceleratorModel(**entity)
         elif entity['type'] == 'ProgressInstitute':
             data = ProgressInstituteModel(**entity)
@@ -70,7 +50,42 @@ def apply_handlers(app: FastAPI, db: DbManager):
             data = EngeneeringCenterModel(**entity)
         elif entity['type'] == 'BusinessIncubator':
             data = BusinessIncubatorModel(**entity)
-        elif entity['type'] == 'Corporate':
+        elif entity['type'] == 'Corporation':
+            data = CorporationModel(**entity)
+        else:
+            return error_response('Failed to find model for type={}'.format(b['type']))
+        return success_response(data.dict())
+
+    @app.put("/company/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
+    def update_company_by_id(entity: possible_types, id: str, response: Response):
+        """
+        Обновить компанию по id.
+        """
+        entity = entity.dict()
+        data = CompanyModel(**entity)
+        ok = db.edit_entity(id, data.dict())
+        if ok is False:
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return error_response('failed to find entity')
+        return success_response()
+
+    @app.put("/service/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
+    def update_service_by_id(entity: possible_types, id: str, response: Response):
+        """
+        Обновить сервис по id.
+        """
+        entity = entity.dict()
+        if entity['type'] == 'VentureFund':
+            data = VentureFundModel(**entity)
+        elif entity['type'] == 'Accelerator':
+            data = AcceleratorModel(**entity)
+        elif entity['type'] == 'ProgressInstitute':
+            data = ProgressInstituteModel(**entity)
+        elif entity['type'] == 'EngeneeringCenter':
+            data = EngeneeringCenterModel(**entity)
+        elif entity['type'] == 'BusinessIncubator':
+            data = BusinessIncubatorModel(**entity)
+        elif entity['type'] == 'Corporation':
             data = CorporationModel(**entity)
         else:
             response.status_code = status.HTTP_400_BAD_REQUEST
@@ -81,33 +96,69 @@ def apply_handlers(app: FastAPI, db: DbManager):
             return error_response('failed to find entity')
         return success_response()
 
-    @app.post("/entity", status_code=status.HTTP_201_CREATED, response_model=DefaultResponseModel[dict])
-    def create_entity(entity: possible_types, response: Response):
+    @app.post("/company", status_code=status.HTTP_201_CREATED, response_model=DefaultResponseModel[dict])
+    def create_comapny(entity: CompanyModel, response: Response):
         """
-        Создать сущность. Принимает структуру любой сущности сервиса (CompanyModel, VentureFondModel, AccelerationProgramModel, CoworkingModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporateModel).
-        Возвращает id созданной сущности.
+        Создать запись о компании
         """
         entity = entity.dict()
-        if entity['type'] == 'Company':
-            data = CompanyModel(**entity)
-        elif entity['type'] == 'VentureFond':
-            data = VentureFundModel(**entity)
-        elif entity['type'] == 'AccelerationProgram':
-            data = AcceleratorModel(**entity)
-        elif entity['type'] == 'ProgressInstitute':
-            data = ProgressInstituteModel(**entity)
-        elif entity['type'] == 'EngeneeringCenter':
-            data = EngeneeringCenterModel(**entity)
-        elif entity['type'] == 'BusinessIncubator':
-            data = BusinessIncubatorModel(**entity)
-        elif entity['type'] == 'Corporate':
-            data = CorporationModel(**entity)
-        else:
-            response.status_code = status.HTTP_400_BAD_REQUEST
-            return error_response('Failed to find model for type={}'.format(entity['type']))
+        data = CompanyModel(**entity)
         id = db.save_service(data.dict())
         if id == "":
             response.status_code = status.HTTP_406_NOT_ACCEPTABLE
             return error_response('entity with such inn already exists')
         return success_response({'id': id})
+
+    @app.post("/service", status_code=status.HTTP_201_CREATED, response_model=DefaultResponseModel[dict])
+    def create_service(entity: VentureFundModel, response: Response):
+        """
+        Создать запись о сервисе
+        """
+        entity = entity.dict()
+        data = CompanyModel(**entity)
+        id = db.save_service(data.dict())
+        if id == "":
+            response.status_code = status.HTTP_406_NOT_ACCEPTABLE
+            return error_response('entity with such inn already exists')
+        return success_response({'id': id})
+
+    @app.post("/recommend", status_code=status.HTTP_201_CREATED, response_model=DefaultResponseModel[dict])
+    def get_reccomendation(entity: CompanyModel, response: Response):    
+        """
+        Получить рекомендации для компании
+        """
+
+        comp_frame = pd.DataFrame(entity.dict(), index=[0])
+        services_frame = load_services()
+
+        reco_idxs = fund_p.predict(comp_frame, services_frame)
+
+        services_frame = services_frame.iloc[reco_idxs]
+
+        return success_response({
+            'funds': services_frame[services_frame['type'] == 'VentureFund']['_id'].values,
+            'progressInstitute': services_frame[services_frame['type'] == 'ProgressInstitute']['_id'].values,
+            'accelerators': services_frame[services_frame['type'] == 'VentureFund']['_id'].values})
+
+    @app.get("/recommend/{id}", status_code=status.HTTP_201_CREATED, response_model=DefaultResponseModel[dict])
+    def get_reccomendation_by_id(id: str, response: Response):    
+        """
+        Получить рекомендации для компании по id (без передачи данных)
+        """
+        entity, ok = db.get_entity(id)
+        if ok is False or entity[type] != 'Company':
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return error_response('failed to find comapny with id={}'.format(id))
+        comp_frame = pd.DataFrame(entity.dict(), index=[0])
+        services_frame = load_services()
+
+        reco_idxs = fund_p.predict(comp_frame, services_frame)
+
+        services_frame = services_frame.iloc[reco_idxs]
+
+        return success_response({
+            'funds': services_frame[services_frame['type'] == 'VentureFund']['_id'].values,
+            'progressInstitute': services_frame[services_frame['type'] == 'ProgressInstitute']['_id'].values,
+            'accelerators': services_frame[services_frame['type'] == 'VentureFund']['_id'].values})
+
 

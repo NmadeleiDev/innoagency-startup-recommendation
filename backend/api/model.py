@@ -12,8 +12,9 @@ class DefaultResponseModel(GenericModel, Generic[DataT]):
     error: Optional[str] = None
     data: DataT
 
-split_by_n1 = lambda x: [i.strip().lower() for i in str(x).split('|')]
-split_by_n2 = lambda x: [i.strip().lower() for i in str(x).split(';')]
+split_by_n1 = lambda x: [i for i in map(lambda x: x.strip().lower(), str(x).split('|')) if len(i) > 0]
+split_by_n2 = lambda x: [i for i in map(lambda x: x.strip().lower(), str(x).split(';')) if len(i) > 0]
+split_by_n3 = lambda x: [i for i in map(lambda x: x.strip().lower(), str(x).split(',')) if len(i) > 0]
 
 placeholder_if_not_instanceof = lambda x, t, p: x if isinstance(x, t) else p
 to_str = lambda x: str(x).strip().lower()
@@ -86,27 +87,27 @@ class DealModel(BaseModel):
             'Наименование стартапа': ('startup_name', to_str),
             'ИНН': ('startup_inn', to_str),
 
-            'Государственный фонд': ('gov_fund', to_str),
+            'Государственный фонд': ('gov_fund', split_by_n3),
             'Государственный фонд_сумма, долл': ('gov_fund_sum_dol', to_num),
             'Государственный фонд_сумма, руб': ('gov_fund_sum_rub', to_num),
 
-            'Частный фонд': ('private_fund', to_str),
+            'Частный фонд': ('private_fund', split_by_n3),
             'Частный фонд_сумма, долл': ('private_fund_sum_dol', to_num),
             'Частный фонд_сумма, руб': ('private_fund_sum_rub', to_num),
 
-            'Корпоративный фонд': ('corp_fund', to_str),
+            'Корпоративный фонд': ('corp_fund', split_by_n3),
             'Корпоративный фонд_сумма, долл': ('corp_fund_sum_dol', to_num),
             'Корпоративный фонд_сумма, руб': ('corp_fund_sum_rub', to_num),
 
-            'Корпоративный инвестор': ('corp_investor', to_str),
+            'Корпоративный инвестор': ('corp_investor', split_by_n3),
             'Корпоративный инвестор_сумма, долл': ('corp_investor_sum_dol', to_num),
             'Корпоративный инвестор_сумма, руб': ('corp_investor_sum_rub', to_num),
 
-            'Бизнес-ангел': ('business_angel', to_str),
+            'Бизнес-ангел': ('business_angel', split_by_n3),
             'Бизнес-ангел_сумма, долл': ('business_angel_sum_dol', to_num),
             'Бизнес-ангел_сумма, руб': ('business_angel_sum_rub', to_num),
 
-            'Акселератор': ('accelerator', to_str),
+            'Акселератор': ('accelerator', split_by_n3),
             'Акселератор_сумма, долл': ('accelerator_sum_dol', to_num),
             'Акселератор_сумма, руб': ('accelerator_sum_rub', to_num),
 
@@ -123,27 +124,27 @@ class DealModel(BaseModel):
     startup_name: Optional[str]
     startup_inn: Optional[str]
 
-    gov_fund: Optional[str]
+    gov_fund: Optional[List[str]]
     gov_fund_sum_dol: Optional[float]
     gov_fund_sum_rub: Optional[float]
 
-    private_fund: Optional[str]
+    private_fund: Optional[List[str]]
     private_fund_sum_dol: Optional[float]
     private_fund_sum_rub: Optional[float]
 
-    corp_fund: Optional[str]
+    corp_fund: Optional[List[str]]
     corp_fund_sum_dol: Optional[float]
     corp_fund_sum_rub: Optional[float]
 
-    corp_investor: Optional[str]
+    corp_investor: Optional[List[str]]
     corp_investor_sum_dol: Optional[float]
     corp_investor_sum_rub: Optional[float]
 
-    business_angel: Optional[str]
+    business_angel: Optional[List[str]]
     business_angel_sum_dol: Optional[float]
     business_angel_sum_rub: Optional[float]
 
-    accelerator: Optional[str]
+    accelerator: Optional[List[str]]
     accelerator_sum_dol: Optional[float]
     accelerator_sum_rub: Optional[float]
 
@@ -152,6 +153,19 @@ class DealModel(BaseModel):
 
     round: Optional[str]
 
+# Дубль класса DealModel, но с дефолтом на тип покупок=вход, чтобы удобнее заносить в БД
+class DealBuyModel(DealModel):
+    @staticmethod
+    def from_dataset(record: dict):
+        return DealBuyModel(**DealModel.from_dataset(record).dict())
+    deal_type: Optional[str] = 'buy'
+
+# Дубль класса DealModel, но с дефолтом на тип покупок=выход, чтобы удобнее заносить в БД
+class DealSellModel(DealModel):
+    @staticmethod
+    def from_dataset(record: dict):
+        return DealSellModel(**DealModel.from_dataset(record).dict())
+    deal_type: Optional[str] = 'sell'
 
 class VentureFundModel(CommonEntityModel):
     @staticmethod
@@ -178,6 +192,7 @@ class VentureFundModel(CommonEntityModel):
         obj = VentureFundModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
+    type: str = 'VentureFund'
     startup_stage: Optional[List[str]]
     market: Optional[List[str]]
     services: Optional[List[str]]
@@ -217,6 +232,7 @@ class AcceleratorModel(CommonEntityModel):
         obj = AcceleratorModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
+    type: str = 'Accelerator'
     startup_stage: Optional[List[str]]
     market: Optional[List[str]]
     services: Optional[List[str]]
@@ -249,6 +265,7 @@ class BusinessIncubatorModel(CommonEntityModel):
         obj = BusinessIncubatorModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
+    type: str = 'BusinessIncubator'
     startup_stage: Optional[List[str]]
     market: Optional[List[str]]
     services: Optional[List[str]]
@@ -271,6 +288,7 @@ class ProgressInstituteModel(CommonEntityModel):
         obj = ProgressInstituteModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
+    type: str = 'ProgressInstitute'
     startup_stage: Optional[List[str]]
     services: Optional[List[str]]
     monetary_support: Optional[List[str]]
@@ -293,6 +311,7 @@ class EngeneeringCenterModel(CommonEntityModel):
         obj = EngeneeringCenterModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
+    type: str = 'EngeneeringCenter'
     market: Optional[List[str]]
     services: Optional[List[str]]
     technologies: Optional[List[str]]
@@ -318,6 +337,7 @@ class CorporationModel(CommonEntityModel):
         obj = CorporationModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
+    type: str = 'Corporation'
     okved_main: Optional[str]
     okved_secondary: Optional[List[str]]
     corp_stage: Optional[str]

@@ -66,14 +66,6 @@ class DbManager():
         except Exception as e:
             logging.warn("Failed to insert companies: {}".format(e))
 
-    def save_deal(self, entity: dict) -> str:
-        try:
-            res = self.conn[self.db_name][self.deals_collection].insert_one(entity)
-        except Exception as e:
-            logging.warn("Failed to insert deal: {}".format(e))
-            return ""
-        return str(res.inserted_id)
-
     def save_deals(self, entities: List[dict]):
         try:
             self.conn[self.db_name][self.deals_collection].insert_many(entities)
@@ -103,3 +95,27 @@ class DbManager():
             logging.warn("Failed get_all_entities_ids: {}".format(e))
             return [], False
         return [str(x['_id']) for x in res], True
+
+    def get_companies(self) -> List[dict]:
+        try:
+            res = self.conn[self.db_name][self.company_collection].find()
+        except Exception as e:
+            logging.warn("Failed get_all_entities_ids: {}".format(e))
+            return [], False
+        return [x for x in res], True
+
+    def get_services(self, filter_type=None) -> List[dict]:
+        try:
+            res = self.conn[self.db_name][self.service_collection].find({'type': filter_type} if filter_type is not None else None)
+        except Exception as e:
+            logging.warn("Failed get_all_entities_ids: {}".format(e))
+            return [], False
+        return [x for x in res], True
+
+    def get_deals(self) -> List[dict]:
+        try:
+            res = self.conn[self.db_name][self.deals_collection].find()
+        except Exception as e:
+            logging.warn("Failed get_all_entities_ids: {}".format(e))
+            return [], False
+        return [x for x in res], True
