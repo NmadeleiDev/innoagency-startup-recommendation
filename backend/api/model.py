@@ -10,7 +10,7 @@ DataT = TypeVar('DataT')
 class DefaultResponseModel(GenericModel, Generic[DataT]):
     status: bool
     error: Optional[str] = None
-    data: DataT
+    data: Optional[DataT]
 
 split_by_n1 = lambda x: [i for i in map(lambda x: x.strip().lower(), str(x).split('|')) if len(i) > 0]
 split_by_n2 = lambda x: [i for i in map(lambda x: x.strip().lower(), str(x).split(';')) if len(i) > 0]

@@ -10,7 +10,7 @@ def success_response(msg: dict = {}) -> DefaultResponseModel[dict]:
     return resp
 
 def error_response(msg: Union[str, None] = None) -> DefaultResponseModel[dict]:
-    resp = DefaultResponseModel[dict](data={}, error=msg, status=False)
+    resp = DefaultResponseModel[dict](error=msg, status=False)
     return resp
 
 
