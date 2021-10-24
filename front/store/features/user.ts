@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { StartupModel } from 'models/Startup';
+import { CompanyModel } from 'models/Startup';
 
 interface IUserState {
-  user: StartupModel | null;
+  user: CompanyModel | null;
 }
 
 const initialState: IUserState = {
@@ -16,7 +16,7 @@ const userSlice = createSlice({
     resetUserState() {
       return initialState;
     },
-    saveUserState(state, { payload }: PayloadAction<StartupModel>) {
+    saveUserState(state, { payload }: PayloadAction<CompanyModel>) {
       state.user = payload;
     },
   },
