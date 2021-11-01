@@ -23,8 +23,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.middlewares.test-compress.compress=true" 
       - "traefik.http.middlewares.backend-stripprefix.stripprefix.prefixes=/backend" # declare middleware
-      - "traefik.http.routers.backend.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/backend`)"
-      - "traefik.http.routers.backend.middlewares=test-compress,backend-stripprefix" # apply middleware
+      - "traefik.http.routers.inno-backend.rule=Host(`${HOST:-localhost}`) && PathPrefix(`/backend`)"
+      - "traefik.http.routers.inno-backend.middlewares=test-compress,backend-stripprefix" # apply middleware
 
   traefik: # Ingress and gateway
     image: "traefik:v2.5.1"
@@ -63,15 +63,18 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
-  # front:
-  #   build:
-  #     context: ./front
-  #     dockerfile: Dockerfile
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.middlewares.test-compress.compress=true" 
-  #     - "traefik.http.routers.front.rule=Host(`${HOST:-localhost}`)"
-  #     - "traefik.http.routers.front.middlewares=test-compress" # apply middleware
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+      # args:
+      #   NEXT_PUBLIC_BACKEND_HOSTNAME: startup-guide.ml
+      #   NEXT_PUBLIC_PROTOCOL: https
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.test-compress.compress=true" 
+      - "traefik.http.routers.inno-front.rule=Host(`${HOST:-localhost}`)"
+      - "traefik.http.routers.inno-front.middlewares=test-compress" # apply middleware
   db-mongo:
     image: mongo:5.0.3
     restart: always
