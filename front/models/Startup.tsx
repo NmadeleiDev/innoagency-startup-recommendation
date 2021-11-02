@@ -160,33 +160,17 @@ export type ServiceType =
   | 'Corporation';
 export interface ServiceModel {
   type: ServiceType;
-  _id: string;
   inn: string;
   name: string;
-  startup_stage: string[];
-  market: string[];
-  services: string[];
-  technologies: string[];
-  type_of_ownership: string;
-  investment_round: string[];
-  investition_from_dol: number;
-  investition_to_dol: number;
-  tech_focus: string[];
-  fund_total_rub: number;
-  fund_total_dol: number;
-  num_of_investments: number;
-  num_of_exits: number;
-}
-
-export interface VentureFondModel {
-  type: 'VentureFund';
-  _id: string;
-  inn: string;
-  name?: string;
+  description?: string;
   startup_stage?: string[];
   market?: string[];
   services?: string[];
   technologies?: string[];
+}
+
+export interface VentureFondModel extends ServiceModel {
+  type: 'VentureFund';
   type_of_ownership?: string;
   investment_round?: string[];
   investition_from_dol?: number;
@@ -209,15 +193,8 @@ export const ventureFondCountry: KeyValue[] = [
   { id: '1801', text: 'Иностранный' },
 ];
 
-export interface AcceleratorModel {
+export interface AcceleratorModel extends ServiceModel {
   type: 'Accelerator';
-  _id: string;
-  inn: string;
-  name?: string;
-  startup_stage?: string[];
-  market?: string[];
-  services?: string[];
-  technologies?: string[];
   investition_from_dol?: number;
   investition_to_dol?: number;
   tech_focus?: string[];
@@ -330,19 +307,10 @@ export const coworkingServices: KeyValue[] = [
 ];
 
 export interface InstituteModel {
-  type: 'Institute';
-  id: number;
-  inn: string;
-  companyName: string;
-  companyDescription: string;
-  foundationDate: number;
-  logo: string;
-  services: string[]; //ЧТО ПОЛУЧАЮТ СТАРТАПЫ
-  contacts: {
-    email: string;
-    phone: string;
-    site: string;
-  };
+  type:'ProgressInstitute';
+  startup_stage?: string[];
+  services?: string[];
+  monetary_support?: string[];
 }
 
 export interface CorporateModel {

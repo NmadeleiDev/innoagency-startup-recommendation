@@ -1,48 +1,13 @@
-import { GetStaticProps } from 'next';
 import styled from 'styled-components';
 import Button from 'components/Button';
 import PageHeader from 'components/PageHeader';
-import { FC } from 'react';
-import {
-  AcceleratorModel,
-  ServiceModel,
-  VentureFondModel,
-} from 'models/Startup';
-import { api, IApiResponse } from 'axiosConfig';
+import { AcceleratorModel, VentureFondModel } from 'models/Startup';
 import { useAppDispatch } from 'store/store';
 import { setDispayedService } from 'store/features/services';
-
-const StyledCategory = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  .header {
-    font-weight: 500;
-    text-transform: uppercase;
-  }
-
-  .text {
-    text-transform: initial;
-  }
-`;
-
-interface ICategoryProps {
-  header: string;
-  className: string;
-}
-
-const Category: FC<ICategoryProps> = ({ header, children, className }) => {
-  return (
-    <StyledCategory className={className}>
-      <div className="header">{header}</div>
-      <div className="text">{children}</div>
-    </StyledCategory>
-  );
-};
+import TagList from './TagList';
+import Category from './Category';
 
 const StyledDiv = styled.div`
-  padding: 1rem 0;
-
   .page-header {
     grid-area: header;
   }
@@ -75,6 +40,7 @@ const StyledDiv = styled.div`
     grid-area: tech;
   }
 
+  padding: 1rem 0;
   display: grid;
   grid-row-gap: 1rem;
   grid-template-areas:
@@ -87,33 +53,12 @@ const StyledDiv = styled.div`
     'services'
     'button';
 
-  .image {
-    width: 100px;
-  }
-
   .description {
-    padding: 0 2rem;
-  }
-  ul {
-    padding-left: 1.2rem;
-    list-style: none;
-  }
-
-  .services {
-    padding: 0 2rem;
   }
 
   .list {
-    padding: 0 2rem;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 1rem;
-    .image {
-      grid-column-start: 1;
-      grid-column-end: 2;
-      grid-row-start: 1;
-      grid-row-end: 3;
-    }
+    display: flex;
+    justify-content: space-evenly;
   }
 
   .button {
@@ -143,37 +88,11 @@ const StyledDiv = styled.div`
   }
 `;
 
-const TagListWrapper = styled.ul`
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-
-  .item {
-    padding: 10px;
-    border: ${({ theme }) => `1px solid ${theme.colors.base.darkBG}`};
-    color: ${({ theme }) => theme.colors.base.darkBG};
-  }
-`;
-interface TagListProps {
-  tags?: string[];
-}
-const TagList = ({ tags }: TagListProps) => {
-  return tags ? (
-    <TagListWrapper>
-      {tags.map((tag) => (
-        <li key={tag} className="item">
-          {tag}
-        </li>
-      ))}
-    </TagListWrapper>
-  ) : null;
-};
-
 interface Props {
   item: AcceleratorModel | VentureFondModel;
 }
 
-const ServiceItem = ({ item }: Props) => {
+const ServicePage = ({ item }: Props) => {
   const dispatch = useAppDispatch();
 
   const handleSubmit = () => {
@@ -216,11 +135,6 @@ const ServiceItem = ({ item }: Props) => {
         <Category header="Раунд инвестирования" className="status item">
           {item.startup_stage?.join(', ')}
         </Category>
-        {/* {item.type_of_ownership && (
-          <Category header="Тип фонда" className="ownership item">
-            {item.type_of_ownership}
-          </Category>
-        )} */}
       </div>
       <Category header="Рынки" className="market item">
         <TagList tags={item.market} />
@@ -252,4 +166,4 @@ const ServiceItem = ({ item }: Props) => {
   );
 };
 
-export default ServiceItem;
+export default ServicePage;
