@@ -13,6 +13,7 @@ const StyledDiv = styled.div`
   .main {
     grid-area: main;
     background-color: ${({ theme }) => theme.colors.base.lightBG};
+    padding: 0 2rem;
   }
   .footer {
     grid-area: footer;

@@ -11,20 +11,14 @@ import { setDispayedService } from 'store/features/services';
 const StyledDiv = styled.div`
   padding: 1rem 0;
 
-  .list {
-    grid-area: list;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .header {
+    text-align: center;
+    font-size: 1.2rem;
   }
-
-  .button {
-    grid-area: button;
-  }
-
-  display: grid;
-  grid-row-gap: 1rem;
-  grid-template-areas:
-    'list'
-    'button';
-
   .button {
     display: flex;
     justify-content: center;
@@ -32,6 +26,7 @@ const StyledDiv = styled.div`
 `;
 
 interface Props {
+  header: string;
   items: string[];
 }
 
@@ -54,7 +49,7 @@ const fetchData = async (items: string[]) => {
   return entities;
 };
 
-const List = ({ items }: Props) => {
+const List = ({ header, items }: Props) => {
   const dispatch = useAppDispatch();
   const [offset, setOffset] = useState(0);
   const NUMBER_OF_ITEMS_TO_SHOW = 3;
@@ -84,13 +79,14 @@ const List = ({ items }: Props) => {
 
   return (
     <StyledDiv>
+      <h3 className="header">{header}</h3>
       <div className="list">
         {displayedItems &&
           displayedItems.map((item) => {
             return (
               item && (
                 <ListItem
-                  key={item.inn}
+                  key={item.inn + item.name}
                   onClick={() => selectCurrentItem(item)}
                   item={item}
                 />
@@ -99,7 +95,9 @@ const List = ({ items }: Props) => {
           })}
       </div>
       <div className="button">
-        <Button onClick={handleShowMore}>Показать еще</Button>
+        <Button variant="secondary" onClick={handleShowMore}>
+          Показать еще
+        </Button>
       </div>
     </StyledDiv>
   );

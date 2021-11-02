@@ -17,6 +17,8 @@ interface IInputProps {
   options?: KeyValue[];
   values?: string[];
   type?: IInputType;
+  nolabel?: boolean;
+  label?: string;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   onDateChange?: (date: Date) => void;
   onFileUpload?: (url: string) => void;
@@ -27,66 +29,77 @@ interface IInputProps {
 type Props = IInputProps & React.HTMLProps<HTMLInputElement>;
 
 const StyledInput = styled.div<{ width?: number }>`
-  display: flex;
-  align-items: center;
-  margin: 1rem;
-  padding: 5px;
-  min-width: 200px;
-  background-color: ${({ theme }) => theme.colors.white};
-  border: ${({ theme }) => `1px solid ${theme.colors.base.border}`};
-  border-radius: 10px;
-  transition: 0.3s;
-
-  &:hover,
-  &:active,
-  &:focus-within {
-    border: ${({ theme }) => `1px solid ${theme.colors.base.darkBG}`};
+  .label {
+    margin-left: 0.6rem;
+    display: block;
   }
-
-  .input {
-    color: ${({ theme }) => theme.colors.base.darkBG};
-    width: 100%;
-    background-color: inherit;
-    font-size: 1rem;
-    padding: 1rem;
-    outline: none;
-    border: none;
-  }
-
-  .option {
-    font-size: 1rem;
+  .wrapper {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
     padding: 5px;
+    min-width: 200px;
+    background-color: ${({ theme }) => theme.colors.white};
+    border: ${({ theme }) => `1px solid ${theme.colors.base.border}`};
+    border-radius: 10px;
+    transition: 0.3s;
+
+    &:hover,
+    &:active,
+    &:focus-within {
+      border: ${({ theme }) => `1px solid ${theme.colors.base.darkBG}`};
+    }
+
+    .input {
+      color: ${({ theme }) => theme.colors.base.darkBG};
+      width: 100%;
+      background-color: inherit;
+      font-size: 1rem;
+      padding: 1rem;
+      outline: none;
+      border: none;
+    }
+
+    .option {
+      font-size: 1rem;
+      padding: 5px;
+    }
   }
 `;
 
 const StyledFileInput = styled.div`
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin: 1rem;
-  padding: 5px;
-
   .label {
-    text-align: center;
-    width: 100%;
-    background-color: ${({ theme }) => theme.colors.white};
-    border: ${({ theme }) => `1px solid ${theme.colors.base.border}`};
-    border-radius: 10px;
-    padding: 10px;
-    cursor: pointer;
-    transition: 0.3s;
+    display: block;
+  }
+  .wrapper {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin: 1rem;
+    padding: 5px;
 
-    &:hover {
-      border: ${({ theme }) => `1px solid ${theme.colors.base.darkBG}`};
+    .label {
+      text-align: center;
+      width: 100%;
+      background-color: ${({ theme }) => theme.colors.white};
+      border: ${({ theme }) => `1px solid ${theme.colors.base.border}`};
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+
+      &:hover {
+        border: ${({ theme }) => `1px solid ${theme.colors.base.darkBG}`};
+      }
     }
-  }
 
-  .image {
-    max-width: 200px;
-  }
+    .image {
+      max-width: 200px;
+    }
 
-  .none {
-    display: none;
+    .none {
+      display: none;
+    }
   }
 `;
 
@@ -106,45 +119,55 @@ const Input = (props: Props) => {
       throw new Error('onDateChange handler is not set!');
     }
     return (
-      <StyledInput width={props.width}>
-        <DatePicker
-          className="input"
-          selected={new Date(props.value || new Date())}
-          onChange={props.onDateChange}
-          locale="ru"
-          peekNextMonth
-          showMonthDropdown
-          showYearDropdown
-          dropdownMode="select"
-          placeholderText={props.placeholder}
-        />
+      <StyledInput className={props.className} width={props.width}>
+        {!props.nolabel && (
+          <label className="label">{props.label || props.placeholder}</label>
+        )}
+        <div className="wrapper">
+          <DatePicker
+            className="input"
+            selected={new Date(props.value || new Date())}
+            onChange={props.onDateChange}
+            locale="ru"
+            peekNextMonth
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            placeholderText={props.placeholder}
+          />
+        </div>
       </StyledInput>
     );
   }
 
   if (props.type === 'select') {
     return (
-      <StyledInput width={props.width}>
-        <select
-          multiple={props.multiple}
-          name={props.name}
-          placeholder={props.placeholder}
-          className="input"
-          onChange={props.onSelectChange}
-          value={props.values}
-        >
-          {props.options &&
-            props.options.map((option) => (
-              <option
-                key={option.id}
-                className="option"
-                // selected={props.values?.includes(option.id)}
-                value={option.id}
-              >
-                {option.text}
-              </option>
-            ))}
-        </select>
+      <StyledInput className={props.className} width={props.width}>
+        {!props.nolabel && (
+          <label className="label">{props.label || props.placeholder}</label>
+        )}
+        <div className="wrapper">
+          <select
+            multiple={props.multiple}
+            name={props.name}
+            placeholder={props.placeholder}
+            className="input"
+            onChange={props.onSelectChange}
+            value={props.values}
+          >
+            {props.options &&
+              props.options.map((option) => (
+                <option
+                  key={option.id}
+                  className="option"
+                  // selected={props.values?.includes(option.id)}
+                  value={option.id}
+                >
+                  {option.text}
+                </option>
+              ))}
+          </select>
+        </div>
       </StyledInput>
     );
   }
@@ -186,16 +209,19 @@ const Input = (props: Props) => {
   };
   if (props.type === 'file') {
     return (
-      <StyledFileInput>
-        <div className="image">
-          <NextImage
-            src={img || defaultLogo}
-            width={dimentions.width}
-            height={dimentions.height}
-            alt=""
-          />
-        </div>
-        <>
+      <StyledFileInput className={props.className}>
+        {!props.nolabel && (
+          <label className="label">{props.label || props.placeholder}</label>
+        )}
+        <div className="wrapper">
+          <div className="image">
+            <NextImage
+              src={img || defaultLogo}
+              width={dimentions.width}
+              height={dimentions.height}
+              alt=""
+            />
+          </div>
           <label htmlFor={props.name} className="label">
             Загрузить
           </label>
@@ -210,14 +236,17 @@ const Input = (props: Props) => {
             type={props.type}
             placeholder={props.placeholder}
           />
-        </>
+        </div>
       </StyledFileInput>
     );
   }
 
   return (
-    <StyledInput width={props.width}>
-      <>
+    <StyledInput className={props.className} width={props.width}>
+      {!props.nolabel && (
+        <label className="label">{props.label || props.placeholder}</label>
+      )}
+      <div className="wrapper">
         {props.startIcon}
         <input
           id={props.name}
@@ -229,7 +258,7 @@ const Input = (props: Props) => {
           placeholder={props.placeholder}
         />
         {props.endIcon}
-      </>
+      </div>
     </StyledInput>
   );
 };
