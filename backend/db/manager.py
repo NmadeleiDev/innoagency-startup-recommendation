@@ -153,7 +153,7 @@ class DbManager():
 
     def get_services(self, filter_type=None, include_description=True) -> Tuple[List[dict], bool]:
         try:
-            res = self.conn[self.db_name][self.service_collection].find({'type': filter_type} if filter_type is not None else None, {'description': -1} if include_description is False else None)
+            res = self.conn[self.db_name][self.service_collection].find({'type': filter_type} if filter_type is not None else None, {'description': False} if include_description is False else None)
         except Exception as e:
             logging.warn("Failed get_all_entities_ids: {}".format(e))
             return [], False

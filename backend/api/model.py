@@ -190,7 +190,7 @@ class VentureFundModel(CommonEntityModel):
             'Общий объем фондов, $ млн': ('fund_total_dol', to_num),
             'Количество инвестиций': ('num_of_investments', to_num),
             'Количество выходов': ('num_of_exits', to_num),
-            'Описание': ('description', to_str),
+            'Описание': ('description', str),
         }
 
         obj = VentureFundModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
@@ -236,7 +236,7 @@ class AcceleratorModel(CommonEntityModel):
             'Кол-во человек в команде, от': ('num_of_people_in_company_from', to_num),
             'Кол-во человек в команде, до': ('num_of_people_in_company_to', to_num),
             'Участники': ('num_of_participants', to_num),
-            'Описание': ('description', to_str),
+            'Описание': ('description', str),
 
         }
 
@@ -272,7 +272,7 @@ class BusinessIncubatorModel(CommonEntityModel):
             'Технологии': ('technologies', split_by_n1),
             'Форма собственности': ('type_of_ownership', to_str),
             'Технологический фокус': ('tech_focus', split_by_n1),
-            'Описание': ('description', to_str),
+            'Описание': ('description', str),
         }
 
         obj = BusinessIncubatorModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
@@ -297,7 +297,7 @@ class ProgressInstituteModel(CommonEntityModel):
             'Стадия стартапа': ('startup_stage', split_by_n1),
             'Сервисы': ('services', split_by_n1),
             'Финансовая поддержка': ('monetary_support', split_by_n1),
-            'Описание': ('description', to_str),
+            'Описание': ('description', str),
 
         }
 
@@ -323,7 +323,7 @@ class EngeneeringCenterModel(CommonEntityModel):
             'Технологии': ('technologies', split_by_n1),
             'Форма собственности': ('type_of_ownership', to_str),
             'Технологический фокус': ('tech_focus', split_by_n1),
-            'Описание': ('description', to_str),
+            'Описание': ('description', str),
 
         }
 
@@ -352,7 +352,7 @@ class CorporationModel(CommonEntityModel):
             'Рыночные ниши': ('market', split_by_n2),
             'Технологии': ('technologies', split_by_n2),
             'Бизнес-модель': ('business_model', split_by_n2),
-            'Описание': ('description', to_str),
+            'Описание': ('description', str),
         }
 
         obj = CorporationModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
