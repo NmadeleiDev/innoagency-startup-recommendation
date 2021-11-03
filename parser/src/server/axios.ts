@@ -2,8 +2,8 @@ import axios from 'axios';
 import log from '../logger/logger';
 import { delay } from './utils';
 const INITIAL_DELAY = 0,
-  TIMEOUT_STEP = 100,
-  RETRIES = 5;
+  TIMEOUT_STEP = 200,
+  RETRIES = 10;
 
 interface Response<T> {
   data: T;

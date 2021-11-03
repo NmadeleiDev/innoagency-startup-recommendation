@@ -15,6 +15,26 @@ import {
 import columnNames from './names.json';
 import { request } from '../server/axios';
 
+/**
+ * Converts data from this format
+      expl1130: '',
+      current1130: 68,
+      previous1130: 135,
+      beforePrevious1130: 10,
+ * into object with categories
+      "1230": {
+        id: "1230",
+        2017: 3565,
+        2018: 567,
+        2019: 7680,
+        2020: 2756,
+        column: "Дебиторская задолженность"
+      }
+ * @param obj raw data from TaxAgency
+ * @param columnNames human-readable names for data category
+ * @param period year, when data was published
+ * @returns 
+ */
 const convertToRows = (obj: any, columnNames: {}, period: number) =>
   Object.entries(obj).reduce((acc, cur) => {
     if (cur[0].search(/current|revious/) === -1) return acc;
@@ -70,6 +90,53 @@ export const getColumnNames = async () => {
   return report;
 };
 
+/**
+ * gets data in this format (with optional fields possible):
+    [
+      {
+        period: '2019',
+        'balance': {
+          "1230": {
+            id: "1230",
+            2017: 3565,
+            2018: 567,
+            2019: 7680,
+            column: "Дебиторская задолженность"
+          },
+          ...
+        },
+        'financialResult': {...},
+        'capitalChange': {...},
+        'fundsMovement': {...},
+      },
+      {
+        period: '2020',
+        'balance': {
+          "1230": {
+            id: "1230",
+            2018: 567,
+            2019: 7680,
+            2020: 2756,
+            column: "Дебиторская задолженность"
+          },
+          ...
+        },
+        'financialResult': {...},
+        'capitalChange': {...},
+        'fundsMovement': {...},
+      }]
+  * and collects data for all years in one object
+      "1230": {
+        id: "1230",
+        2017: 3565,
+        2018: 567,
+        2019: 7680,
+        2020: 2756,
+        column: "Дебиторская задолженность"
+      }
+ * @param details data objects by year (usually 2 different years)
+ * @returns data with all years collected in every categry
+ */
 const flattenDetails = (details): IDetails => {
   const detailsCategories = [
     'balance',
@@ -83,7 +150,28 @@ const flattenDetails = (details): IDetails => {
   for (let i = 1; i < sortedDetails.length; i++) {
     detailsCategories.forEach((category) => {
       log.trace(`Flattening category ${category}`, flattenedDetails[category]);
+      /**
+       * Here we pick categories (like "1230") only from the first item.
+       * This could lead to scenarios, where other items
+       * could have not this category.
+       *
+       * For cases when category is missing
+       * there is a guard with `continue`.
+       * But even if we remove it, we'll generate error
+       * when try to log some property of undefined
+       * and stop current iteration of forEach cycle.
+       *
+       * Or they cold have additional categories.
+       * We just skip these categories (could possibly be improved)
+       */
       for (let id in flattenedDetails[category]) {
+        if (!sortedDetails[i]?.[category]?.[id]) {
+          log.debug(
+            `Flattening id ${id}, not found`,
+            sortedDetails[i]?.[category]?.[id]
+          );
+          continue;
+        }
         log.trace(
           `Flattening id ${id}`,
           flattenedDetails[category][id],
@@ -102,6 +190,12 @@ const flattenDetails = (details): IDetails => {
   return flattenedDetails;
 };
 
+/**
+ * Find closest resulst on result set by company name
+ * @param result search result with content field (where actual results lie)
+ * @param query search string (usually name of a service)
+ * @returns search result with closest name
+ */
 export const findClosestResult = (
   result: ISearch,
   query: string | number
@@ -136,7 +230,7 @@ export class BONalogService {
    * @param query number
    * @return : Promise<IServiceResult>
    */
-  static async getInfo(query: string): Promise<IServiceResult> {
+  static async getInfo(query: string): Promise<IServiceResult | null> {
     const info: IServiceResult = {
       inn: query,
       search: null,
@@ -150,24 +244,30 @@ export class BONalogService {
           query
         )}&page=0`
       );
-      log.debug(`Found data by query ${query}`, search.data);
+      log.debug(`Found data by query ${query}`, search?.data);
       info.search = search.data;
       const content = findClosestResult(search.data, query);
       const id = content?.id;
       if (!id) {
-        return log.warn(`Id for query ${query} not found!`);
+        throw new Error(`Id for query ${query} not found!`);
       }
 
       const basicInfo = await request<IBasicInfo>(
         `https://bo.nalog.ru/nbo/organizations/${id}`
       );
-      log.debug(`Found basicInfo by ID ${id}`, basicInfo.data);
-      info.basicInfo = basicInfo.data;
+      log.debug(`Found basicInfo by ID ${id}`, basicInfo?.data);
+      if (!basicInfo) {
+        throw new Error(`basicInfo for query ${query} not found!`);
+      }
+      info.basicInfo = basicInfo?.data;
 
       const bfo = await request<IBFO[]>(
         `https://bo.nalog.ru/nbo/organizations/${id}/bfo`
       );
-      log.debug(`Found bfo by ID ${id}`, bfo.data);
+      log.debug(`Found bfo by ID ${id}`, bfo?.data);
+      if (!bfo) {
+        throw new Error(`bfo for query ${query} not found!`);
+      }
       const bfoIds: { id: number; period: string }[] = bfo.data.map((el) => ({
         id: el.id,
         period: el.period,
@@ -183,7 +283,7 @@ export class BONalogService {
           `Found details by ID ${bfoId.id} and period ${bfoId.period}`,
           details?.data
         );
-        if (!details.data) continue;
+        if (!details?.data) continue;
         details.data[0].period = bfoId.period;
         const detailsCategories = [
           'balance',
@@ -202,6 +302,7 @@ export class BONalogService {
 
         /*
          * // get addditional info
+         * // ATTENTION! more refinig is needed
 
         const detailsId = details.data[0].id;
         const detailsCategories = [
@@ -242,7 +343,7 @@ export class BONalogService {
       log.debug(`Info by query ${query}\n'`, info);
       return info;
     } catch (e) {
-      return log.error(e);
+      return info;
     }
   }
 }

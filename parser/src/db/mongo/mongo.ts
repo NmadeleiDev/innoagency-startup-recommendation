@@ -1,10 +1,9 @@
 import { MongoClient, UpdateResult, InsertOneResult } from 'mongodb';
 import log from '../../logger/logger';
 import { IService, IServiceResult } from '../../Models/NalogModel';
-import { DSN, DB_NAME } from './config';
+import { DSN, DB_NAME, COMPANY_COLLECTION, SERVICE_COLLECTION } from './config';
 
 export class MongoUser {
-  private _client = null;
   private _connection = null;
 
   constructor(doInit = false) {
@@ -13,8 +12,12 @@ export class MongoUser {
 
   async initConnection() {
     try {
-      this._connection = await MongoClient.connect(DSN);
-      log.info('Mongo connection succeded!');
+      if (!this._connection) {
+        this._connection = await MongoClient.connect(DSN);
+        log.info('Mongo connection succeded!');
+      } else {
+        log.info('Mongo already connected');
+      }
     } catch (e) {
       log.error('Failed to connect to mongo: ', e);
       throw 'Connection error!';
@@ -22,18 +25,14 @@ export class MongoUser {
   }
 
   get connection(): MongoClient {
-    return this._client;
+    return this._connection;
   }
 
-  get isConnected(): boolean {
-    return this._client && this._client.isConnected();
-  }
-
-  async updateServiceByInn(service: IService): Promise<UpdateResult> {
+  async updateServiceByInn(service: IService): Promise<boolean> {
     try {
       const res = await this._connection
         .db(DB_NAME)
-        .collection('service')
+        .collection(SERVICE_COLLECTION)
         .updateOne(
           { inn: service.inn },
           {
@@ -64,14 +63,56 @@ export class MongoUser {
           { upsert: true }
         );
       log.debug('DB updated: ', res);
-      // this could not be safe to return database query
-      // because database type could be predicted
-      // leave it here for verbose responce, remove in produnction
-      // Maybe replace with (service: IService) => Promise<Boolean>
-      return res;
+      return true;
     } catch (e) {
       log.error('Update service error: ', e);
-      throw e;
+      return false;
+    }
+  }
+
+  async updateServicesByInn(services: IService[]): Promise<boolean> {
+    try {
+      const bulk = this._connection
+        .db(DB_NAME)
+        .collection(SERVICE_COLLECTION)
+        .initializeUnorderedBulkOp();
+      console.log('bulk', bulk);
+      services.forEach((service) => {
+        bulk.find({ inn: service.inn }).update(
+          {
+            $set: {
+              shortName: service.shortName,
+              ogrn: service.ogrn,
+              address: service.address,
+              active: service.active,
+              primary: service.primary,
+              okved: service.okved,
+              okved2: service.okved2,
+              okopf: service.okopf,
+              okfs: service.okfs,
+              kpp: service.kpp,
+              registrationDate: service.registrationDate,
+              location: service.location,
+              authorizedCapital: service.authorizedCapital,
+              balance: service.balance,
+              financialResult: service.financialResult,
+              capitalChange: service.capitalChange,
+              fundsMovement: service.fundsMovement,
+            },
+            $setOnInsert: {
+              inn: service.inn,
+              name: service.name,
+            },
+          },
+          { upsert: true }
+        );
+      });
+      const res = await bulk.execute();
+      log.debug('DB updated: ', res);
+      return true;
+    } catch (e) {
+      log.error('Update service error: ', e);
+      return false;
     }
   }
 
@@ -79,7 +120,7 @@ export class MongoUser {
     try {
       const res = await this._connection
         .db(DB_NAME)
-        .collection('service')
+        .collection(SERVICE_COLLECTION)
         .insertOne(
           {
             inn: service.inn,
@@ -116,8 +157,8 @@ export class MongoUser {
     try {
       const res = await this._connection
         .db(DB_NAME)
-        .collection('')
-        .findOne({ name: name });
+        .collection(SERVICE_COLLECTION)
+        .findOne({ inn });
       return res as IServiceResult;
     } catch (e) {
       console.warn('Error find task by name: ', e);
@@ -125,11 +166,47 @@ export class MongoUser {
     }
   }
 
+  async listAllStartups(): Promise<string[] | null> {
+    try {
+      const res = await this._connection
+        .db(DB_NAME)
+        .collection(COMPANY_COLLECTION)
+        //find items we haven't updated yet
+        .find({ inn: { $ne: '0' }, location: { $exists: false } })
+        .map((item) => item.inn)
+        // .limit(20)
+        .toArray();
+      log.debug(res);
+      return res as string[];
+    } catch (e) {
+      log.error(e);
+      return null;
+    }
+  }
+
+  async listAllServices(): Promise<string[] | null> {
+    try {
+      const res = await this._connection
+        .db(DB_NAME)
+        .collection(SERVICE_COLLECTION)
+        //find items we haven't updated yet
+        .find({ inn: { $ne: '0' }, location: { $exists: false } })
+        .map((item) => item.inn)
+        // .limit(20)
+        .toArray();
+      log.debug(res);
+      return res as string[];
+    } catch (e) {
+      log.error(e);
+      return null;
+    }
+  }
+
   async closeConnection() {
-    if (!this.isConnected) return;
+    // if (!this._connection) return;
 
     try {
-      await this._client.close();
+      await this._connection.close();
     } catch (e) {
       console.log('Error closing mongo con: ', e);
     }
