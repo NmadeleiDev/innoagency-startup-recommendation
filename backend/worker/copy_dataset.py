@@ -25,6 +25,7 @@ def get_fund_strategy_faults(df):
     return pd.Series(res)
     
 def copy_local_dataset_to_db():
+    logging.info("Copying data...")
     deals = pd.read_excel(path.join(DATASET_PATH, 'Венчурные сделки 2017-2021.xlsx'), sheet_name=None, parse_dates=['Дата сделки (месяц)'])
     deals_buys = deals['Москва_Сделки']
     exits = deals['Москва_Выходы']
