@@ -36,7 +36,7 @@ def load_deals(db: DbManager) -> pd.DataFrame:
     return deals
 
 def load_services(db: DbManager) -> pd.DataFrame:
-    dd, ok = db.get_services()
+    dd, ok = db.get_services(include_description=False)
     if ok is False:
         raise Exception("Failed to load data!")
     services = pd.DataFrame(dd)

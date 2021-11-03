@@ -190,12 +190,14 @@ class VentureFundModel(CommonEntityModel):
             'Общий объем фондов, $ млн': ('fund_total_dol', to_num),
             'Количество инвестиций': ('num_of_investments', to_num),
             'Количество выходов': ('num_of_exits', to_num),
+            'Описание': ('description', to_str),
         }
 
         obj = VentureFundModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
     type: str = 'VentureFund'
+    description: Optional[str]
     startup_stage: Optional[List[str]]
     market: Optional[List[str]]
     services: Optional[List[str]]
@@ -234,12 +236,15 @@ class AcceleratorModel(CommonEntityModel):
             'Кол-во человек в команде, от': ('num_of_people_in_company_from', to_num),
             'Кол-во человек в команде, до': ('num_of_people_in_company_to', to_num),
             'Участники': ('num_of_participants', to_num),
+            'Описание': ('description', to_str),
+
         }
 
         obj = AcceleratorModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
     type: str = 'Accelerator'
+    description: Optional[str]
     startup_stage: Optional[List[str]]
     market: Optional[List[str]]
     services: Optional[List[str]]
@@ -267,12 +272,14 @@ class BusinessIncubatorModel(CommonEntityModel):
             'Технологии': ('technologies', split_by_n1),
             'Форма собственности': ('type_of_ownership', to_str),
             'Технологический фокус': ('tech_focus', split_by_n1),
+            'Описание': ('description', to_str),
         }
 
         obj = BusinessIncubatorModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
     type: str = 'BusinessIncubator'
+    description: Optional[str]
     startup_stage: Optional[List[str]]
     market: Optional[List[str]]
     services: Optional[List[str]]
@@ -290,12 +297,15 @@ class ProgressInstituteModel(CommonEntityModel):
             'Стадия стартапа': ('startup_stage', split_by_n1),
             'Сервисы': ('services', split_by_n1),
             'Финансовая поддержка': ('monetary_support', split_by_n1)
+            'Описание': ('description', to_str),
+
         }
 
         obj = ProgressInstituteModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
     type: str = 'ProgressInstitute'
+    description: Optional[str]
     startup_stage: Optional[List[str]]
     services: Optional[List[str]]
     monetary_support: Optional[List[str]]
@@ -313,12 +323,15 @@ class EngeneeringCenterModel(CommonEntityModel):
             'Технологии': ('technologies', split_by_n1),
             'Форма собственности': ('type_of_ownership', to_str),
             'Технологический фокус': ('tech_focus', split_by_n1),
+            'Описание': ('description', to_str),
+
         }
 
         obj = EngeneeringCenterModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
     type: str = 'EngeneeringCenter'
+    description: Optional[str]
     market: Optional[List[str]]
     services: Optional[List[str]]
     technologies: Optional[List[str]]
@@ -338,13 +351,15 @@ class CorporationModel(CommonEntityModel):
             'Стадия развития компании': ('corp_stage', to_str),
             'Рыночные ниши': ('market', split_by_n2),
             'Технологии': ('technologies', split_by_n2),
-            'Бизнес-модель': ('business_model', split_by_n2)
+            'Бизнес-модель': ('business_model', split_by_n2),
+            'Описание': ('description', to_str),
         }
 
         obj = CorporationModel(**{v[0]: v[1](record[k]) for k, v in naming_dict.items()})
         return obj
 
     type: str = 'Corporation'
+    description: Optional[str]
     okved_main: Optional[str]
     okved_secondary: Optional[List[str]]
     corp_stage: Optional[str]
