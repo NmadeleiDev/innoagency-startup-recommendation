@@ -187,7 +187,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
     @app.get("/recommend/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
     def get_reccomendation_by_id(id: str, response: Response, search_by: str ='id'):    
         """
-        Получить рекомендации для компании по id (без передачи данных)
+        Получить рекомендации для компании по id либо по ИНН (без передачи данных)
         """
         if search_by == 'inn':
             entity, ok = db.get_company_by_inn(id)
