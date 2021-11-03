@@ -187,13 +187,14 @@ def apply_handlers(app: FastAPI, db: DbManager):
         """
         Получить рекомендации для компании по id либо по ИНН (без передачи данных)
         """
-        if search_by == 'inn':
+        if search_by == SearchByEnum.inn:
             entity, ok = db.get_company_by_inn(id)
         else:
             entity, ok = db.get_company(id)
 
         if ok is not True or entity is None:
             response.status_code = status.HTTP_404_NOT_FOUND
+            logging.info('not found comapany with {}={}: {}'.format(search_by, id, entity))
             return error_response('failed to find comapany with {}={}: {}'.format(search_by, id, entity))
         comp_frame = pd.DataFrame(
             {k: v if isinstance(v, list) is False else str(v) for k, v in entity.items()}, index=[0])

@@ -111,7 +111,7 @@ class DbManager():
         try:
             res = self.conn[self.db_name][self.company_collection].find_one({'_id': ObjectId(id)})
         except Exception as e:
-            logging.warn("Failed to find entity: {}".format(e))
+            logging.warn("Failed to find company: {}".format(e))
             return {}, False
         if res is None:
             return {}, False
