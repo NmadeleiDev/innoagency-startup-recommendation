@@ -1,6 +1,5 @@
 from joblib import load
 from .utils import *
-import tensorflow as tf
 import numpy as np
 from db.manager import DbManager
 

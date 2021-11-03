@@ -1,4 +1,5 @@
 from os import path
+import tensorflow as tf
 import pandas as pd
 import numpy as np
 from db.manager import DbManager

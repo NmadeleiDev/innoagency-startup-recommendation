@@ -1,7 +1,7 @@
 FROM continuumio/anaconda3
 
 RUN python -m pip install --upgrade pip
-RUN apt update && apt install -y uvicorn && pip install scikit-learn==0.22 pymongo fastapi[all] pandas dnspython openpyxl tensorflow
+RUN apt update && apt install -y uvicorn && pip install scikit-learn==0.24.2 pymongo fastapi[all] pandas dnspython openpyxl tensorflow==2.2.0 tensorflow-estimator==2.2.0
 RUN mkdir -p /app/ && apt -y install cron
 
 COPY . /app

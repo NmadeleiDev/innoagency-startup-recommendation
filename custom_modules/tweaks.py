@@ -1,6 +1,5 @@
 import numpy as np
 import ast
-import logging
 
 def try_concat(arr):
     try:

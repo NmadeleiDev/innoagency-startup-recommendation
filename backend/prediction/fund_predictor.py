@@ -1,11 +1,8 @@
 from joblib import load
-from os import path
-import tensorflow as tf
 import numpy as np
 from numpy import linalg as LA
 from .utils import *
 from db.manager import DbManager
-import pandas as pd
 
 def predict(company, services):
     X = load(path_to_pipelines_dir('fund_classifier_preprocessor_X.joblib')).transform(company.rename(columns=lambda x: '{}__company'.format(x)))
