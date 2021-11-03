@@ -68,7 +68,9 @@ export const getCompanies = () => async (dispatch: AppDispatch) => {
 
 export const getCompanyById = (id: string) => async (dispatch: AppDispatch) => {
   try {
-    const { data } = await api.get<IApiResponse<CompanyModel>>(`/company/${id}`);
+    const { data } = await api.get<IApiResponse<CompanyModel>>(
+      `/company/${id}`
+    );
     console.log(data);
     if (data.data) {
       dispatch(saveUserState(data.data));
@@ -77,6 +79,21 @@ export const getCompanyById = (id: string) => async (dispatch: AppDispatch) => {
     console.log(e);
   }
 };
+
+export const getCompanyByINN =
+  (id: string) => async (dispatch: AppDispatch) => {
+    try {
+      const { data } = await api.get<IApiResponse<CompanyModel>>(
+        `/company/${id}?search_by=inn`
+      );
+      console.log(data);
+      if (data.data) {
+        dispatch(saveUserState(data.data));
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
 export const getRandomCompany = () => async (dispatch: AppDispatch) => {
   try {

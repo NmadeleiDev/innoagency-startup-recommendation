@@ -7,11 +7,13 @@ import { useAppDispatch } from 'store/store';
 import {
   getCompanies,
   getCompanyById,
+  getCompanyByINN,
   getRandomCompany,
 } from 'store/features/user';
 import Input from 'components/Input';
 import { ChangeEvent, useState } from 'react';
 import { useRouter } from 'next/dist/client/router';
+import { isINN } from './list';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -38,7 +40,8 @@ const Home: NextPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const getСomp = () => {
-    dispatch(getCompanyById(value));
+    if (isINN(value)) dispatch(getCompanyByINN(value));
+    else dispatch(getCompanyById(value));
     router.push(`/list?id=${value}`);
   };
 

@@ -34,7 +34,7 @@ const StyledDiv = styled.div`
   }
 `;
 
-const isINN = (id: string) => id.match(/\d+/)?.[0] === id;
+export const isINN = (id: string) => id.match(/\d+/)?.[0] === id;
 
 const getData = async (id: string) => {
   try {
