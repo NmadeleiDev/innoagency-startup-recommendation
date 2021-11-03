@@ -31,6 +31,14 @@ class DbManager():
         self.conn.close()
         self.conn = None
 
+    def count_services(self) -> int:
+        try:
+            count = self.conn[self.db_name][self.service_collection].count()
+        except Exception as e:
+            logging.warn("Failed to count services: {}".format(e))
+            return 0
+        return count
+
     def save_service(self, entity: dict) -> str:
         try:
             res = self.conn[self.db_name][self.service_collection].insert_one(entity)

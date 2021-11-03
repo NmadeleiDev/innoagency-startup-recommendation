@@ -12,7 +12,8 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S
 db = DbManager()
 db.init_connection()
 
-Thread(target=copy_local_dataset_to_db).start()
+if db.count_services() == 0:
+    Thread(target=copy_local_dataset_to_db).start()
 
 app = FastAPI(
     title="StartupGuide API",
