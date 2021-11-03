@@ -10,7 +10,7 @@ interface Props {
 }
 
 const StyledDiv = styled.div`
-  margin: 1rem 2rem;
+  margin: 1rem 0;
   position: relative;
 
   h2 {

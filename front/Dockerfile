@@ -1,5 +1,7 @@
 # Dockerfile
 FROM node:alpine3.12
+ARG NEXT_PUBLIC_BACKEND_HOSTNAME=localhost
+ARG NEXT_PUBLIC_PROTOCOL=localhost
 
 # create destination directory
 RUN mkdir -p /usr/src/nuxt-app

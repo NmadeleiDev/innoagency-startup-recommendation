@@ -15,6 +15,10 @@ const Wrapper = styled.div`
   .description {
     grid-area: description;
   }
+  .type {
+    grid-area: type;
+  }
+
   display: grid;
   grid-template-areas: 'title';
   grid-gap: 1rem;
@@ -22,6 +26,7 @@ const Wrapper = styled.div`
   overflow: hidden;
   padding: 0 2rem;
   cursor: pointer;
+  align-items: center;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.base.hover};
@@ -32,14 +37,8 @@ const Wrapper = styled.div`
     }
   }
 
-  .center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
-
   .title {
+    text-align: center;
     text-transform: uppercase;
     font-weight: 500;
     font-size: 1.1rem;
@@ -83,8 +82,8 @@ const Wrapper = styled.div`
   }
   @media (min-width: 1200px) {
     height: 120px;
-    grid-gap: 1rem;
-    grid-template-columns: 1fr 100px;
+    grid-gap: 2rem;
+    grid-template-columns: 1fr 2fr;
     grid-template-areas: 'title description';
   }
   .image {
@@ -97,11 +96,15 @@ interface Props {
   onClick?: () => void;
 }
 
+const defaultDescription = `Бесплатная программа для высокотехнологичных стартапов и компаний в сфере умного производства от крупнейшего в мире производителя стальных труб для нефтегазового сектора компании ТМК. Позволяет запустить пилот или стать партнером корпорациии. С каждым проектом проводится индивидуальная работа, алгоритм зависит от проработки проекта его готовности к внедрению.`;
+
 const ListItem = ({ item, onClick }: Props) => {
   return (
     <Wrapper onClick={onClick}>
-      <div className="title center">{item.name}</div>
-      <div className="description">{item.type}</div>
+      <div className="title">{item.name}</div>
+      <div className="description">
+        {item.description || defaultDescription}
+      </div>
     </Wrapper>
   );
 };

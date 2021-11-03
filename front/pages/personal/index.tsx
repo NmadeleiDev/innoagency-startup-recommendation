@@ -216,7 +216,6 @@ const Personal = () => {
       <PageHeader title="Информация о компании" className="page-header" />
       <fieldset className="mainInfo inputGroup">
         <legend className="inputGroupHeader">Основная информация</legend>
-        <label className="label">ИНН</label>
         <Input
           name="inn"
           type="number"
@@ -225,26 +224,23 @@ const Personal = () => {
           placeholder="ИНН"
           required
         />
-        <label className="label">Название компании</label>
         <Input
           name="name"
           onChange={handleInfoChange}
           value={state.name}
           placeholder="Название компании"
         />
-        <label className="label">Дата основания компании</label>
         <Input
           name="foundation_date"
           type="date"
           onChange={handleInfoChange}
           onDateChange={handleDateChange}
-          value={+state.foundation_date}
+          value={state.foundation_date}
           placeholder="Дата основания компании"
         />
       </fieldset>
       <fieldset className="tags inputGroup">
         <legend className="inputGroupHeader">Теги</legend>
-        <label className="label">Технологический фокус компании</label>
         <Input
           type="select"
           multiple
@@ -256,7 +252,6 @@ const Personal = () => {
           values={state.tech_focus}
           placeholder="Технологический фокус компании"
         />
-        <label className="label">Рынки</label>
         <Input
           type="select"
           multiple
@@ -267,7 +262,6 @@ const Personal = () => {
           values={state.market}
           placeholder="Рынки"
         />
-        <label className="label">Технологии</label>
         <Input
           type="select"
           id="technology"
@@ -278,7 +272,6 @@ const Personal = () => {
           values={state.technology}
           placeholder="Технологии"
         />
-        <label className="label">Бизнес-модель</label>
         <Input
           type="select"
           multiple
@@ -292,14 +285,12 @@ const Personal = () => {
       </fieldset>
       <fieldset className="details inputGroup">
         <legend className="inputGroupHeader">Детали</legend>
-        <label className="label">Основной ОКВЭД</label>
         <Input
           name="main_okved"
           onChange={handleInfoChange}
           value={state.main_okved}
           placeholder="Основной ОКВЭД (номер)"
         />
-        <label className="label">Стадия развития компании</label>
         <Input
           type="select"
           id="stage_of_development"
@@ -307,9 +298,8 @@ const Personal = () => {
           onSelectChange={handleDetailsChange}
           options={progectStage}
           value={state.stage_of_development}
-          placeholder="РынСтадия развития компаниики"
+          placeholder="Стадия развития компании"
         />
-        <label className="label">Категория МСП</label>
         <Input
           type="select"
           id="msp_category"
@@ -319,7 +309,6 @@ const Personal = () => {
           value={state.msp_category}
           placeholder="Категория МСП"
         />
-        <label className="label">Экспортер</label>
         <Input
           type="select"
           id="is_export"
@@ -329,9 +318,6 @@ const Personal = () => {
           value={state.is_export}
           placeholder="Экспортер"
         />
-        <label className="label">
-          Участник инновационного кластера города Москвы
-        </label>
         <Input
           type="select"
           id="inno_cluster_member"
@@ -341,7 +327,6 @@ const Personal = () => {
           value={state.inno_cluster_member}
           placeholder="Участник инновационного кластера города Москвы"
         />
-        <label className="label">Участник Сколково</label>
         <Input
           type="select"
           id="skolcovo_member"
@@ -351,7 +336,6 @@ const Personal = () => {
           value={state.skolcovo_member}
           placeholder="Участник Сколково"
         />
-        <label className="label">Инновационная компания</label>
         <Input
           type="select"
           id="is_inno_company"
@@ -361,7 +345,6 @@ const Personal = () => {
           value={state.is_inno_company}
           placeholder="Инновационная компания"
         />
-        <label className="label">Стартап</label>
         <Input
           type="select"
           id="is_startup"
@@ -374,7 +357,6 @@ const Personal = () => {
       </fieldset>
       <fieldset className="profit inputGroup">
         <legend className="inputGroupHeader">Данные о доходах</legend>
-        <label className="label">Чистая прибыль в год, $</label>
         <Input
           type="number"
           id="current_profit"
@@ -383,7 +365,6 @@ const Personal = () => {
           value={state.current_profit}
           placeholder="Чистая прибыль в год, $"
         />
-        <label className="label">Налог на прибыль в год, %</label>
         <Input
           type="number"
           id="current_profit_tax"
@@ -392,7 +373,6 @@ const Personal = () => {
           value={state.current_profit_tax}
           placeholder="Налог на прибыль в год, %"
         />
-        <label className="label">Валовая прибыль в год, $</label>
         <Input
           type="number"
           id="current_revenue"

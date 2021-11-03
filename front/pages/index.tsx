@@ -23,6 +23,11 @@ const StyledDiv = styled.div`
     min-width: 300px;
   }
 
+  .input {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   .login {
     margin-top: 3rem;
   }
@@ -51,10 +56,11 @@ const Home: NextPage = () => {
       </Link>
       <div className="login">
         <Input
-          className="item"
+          className="item input"
           onChange={handleChange}
           value={value}
-          placeholder="id стратапа"
+          nolabel
+          placeholder="Введите ИНН стратапа"
         />
         <Button className="item" variant="secondary" onClick={getСomp}>
           Получить рекомендацию
