@@ -109,6 +109,16 @@ class DbManager():
             return {}, False
         return res, True
 
+    def get_company_by_inn(self, inn: str) -> Tuple[dict, bool]:
+        try:
+            res = self.conn[self.db_name][self.company_collection].find_one({'inn': inn})
+        except Exception as e:
+            logging.warn("Failed to find company by inn: {}".format(e))
+            return {}, False
+        if res is None:
+            return {}, False
+        return res, True
+
     def get_all_services_ids(self, type_filter: str = None) -> Tuple[List[dict], bool]:
         try:
             res = self.conn[self.db_name][self.service_collection].find({} if type_filter is None else {'type': type_filter}, {"_id": 1})
