@@ -192,9 +192,9 @@ def apply_handlers(app: FastAPI, db: DbManager):
         else:
             entity, ok = db.get_company(id)
 
-        if ok is False or entity is None or (entity is not None and entity['type'] != 'Company'):
+        if ok is not True or entity is None:
             response.status_code = status.HTTP_404_NOT_FOUND
-            return error_response('failed to find comapny with {}={}'.format(search_by, id))
+            return error_response('failed to find comapany with {}={}: {}'.format(search_by, id, entity))
         comp_frame = pd.DataFrame(
             {k: v if isinstance(v, list) is False else str(v) for k, v in entity.items()}, index=[0])
         services_frame = load_services(db)

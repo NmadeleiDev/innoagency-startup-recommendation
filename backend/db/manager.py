@@ -107,17 +107,17 @@ class DbManager():
             return {}, False
         if res is None:
             return {}, False
-        return res, True
+        return dict(res), True
 
     def get_company_by_inn(self, inn: str) -> Tuple[dict, bool]:
         try:
-            res = self.conn[self.db_name][self.company_collection].find_one({'inn': inn})
+            res = self.conn[self.db_name][self.company_collection].find_one({'inn': str(inn)})
         except Exception as e:
             logging.warn("Failed to find company by inn: {}".format(e))
             return {}, False
         if res is None:
             return {}, False
-        return res, True
+        return dict(res), True
 
     def get_all_services_ids(self, type_filter: str = None) -> Tuple[List[dict], bool]:
         try:
