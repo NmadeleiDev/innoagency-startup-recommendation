@@ -296,7 +296,7 @@ class ProgressInstituteModel(CommonEntityModel):
 
             'Стадия стартапа': ('startup_stage', split_by_n1),
             'Сервисы': ('services', split_by_n1),
-            'Финансовая поддержка': ('monetary_support', split_by_n1)
+            'Финансовая поддержка': ('monetary_support', split_by_n1),
             'Описание': ('description', to_str),
 
         }
