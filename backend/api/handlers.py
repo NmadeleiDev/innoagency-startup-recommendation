@@ -68,11 +68,15 @@ def apply_handlers(app: FastAPI, db: DbManager):
         return success_response(data)
 
     @app.get("/company/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[CompanyModel])
-    def get_entity_by_id(id: str, response: Response):
+    def get_entity_by_id(id: str, response: Response, search_by: SearchByEnum = 'id'):
         """
-        Получить компанию по ее id
+        Получить компанию по ее id или ИНН
         """
-        entity, ok = db.get_company(id)
+        if search_by == SearchByEnum.inn:
+            entity, ok = db.get_company_by_inn(id)
+        else:
+            entity, ok = db.get_company(id)
+
         if ok is False:
             response.status_code = status.HTTP_404_NOT_FOUND
             return error_response('failed to find entity by id={}'.format(id))
@@ -194,8 +198,8 @@ def apply_handlers(app: FastAPI, db: DbManager):
 
         if ok is not True or entity is None:
             response.status_code = status.HTTP_404_NOT_FOUND
-            logging.info('not found comapany with {}={}: {}'.format(search_by, id, entity))
-            return error_response('failed to find comapany with {}={}: {}'.format(search_by, id, entity))
+            logging.info('not found company with {}={}: {}'.format(search_by, id, entity))
+            return error_response('failed to find company with {}={}: {}'.format(search_by, id, entity))
         comp_frame = pd.DataFrame(
             {k: v if isinstance(v, list) is False else str(v) for k, v in entity.items()}, index=[0])
         services_frame = load_services(db)
