@@ -1,3 +1,4 @@
+import logging
 from os import path
 import pandas as pd
 import numpy as np
@@ -57,5 +58,6 @@ def copy_local_dataset_to_db():
     db.save_companies([CompanyModel.from_dataset(x).dict() for x in companies.fillna(fillna_comp).to_dict(orient='records')])
 
     parse_non_focus_investments.parse_and_save()
+    logging.info("DB initialized!")
 
     db.close_conn()
