@@ -4,7 +4,6 @@ import PageHeader from 'components/PageHeader';
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import {
   businessModels,
-  investmentRound,
   markets,
   progectStage,
   CompanyModel,
@@ -16,7 +15,6 @@ import {
 import { useRouter } from 'next/dist/client/router';
 import { api, IApiResponse } from 'axiosConfig';
 import toast from 'react-hot-toast';
-import sanitizeHtml from 'sanitize-html';
 import { AxiosResponse } from 'axios';
 import { useAppDispatch } from 'store/store';
 import { saveUserState } from 'store/features/user';
