@@ -8,9 +8,10 @@ const protocol =
   process.env.NODE_ENV === 'production'
     ? process.env.NEXT_PUBLIC_PROTOCOL
     : 'http';
-
+const baseURL = `${protocol}://${host}/backend/`;
+console.log(baseURL);
 export const api = axios.create({
-  baseURL: `${protocol}://${host}/backend/`,
+  baseURL,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
   validateStatus: (status) => status >= 200 && status < 500,

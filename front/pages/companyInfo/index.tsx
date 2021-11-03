@@ -130,7 +130,7 @@ const Info = () => {
     got_support_from: '',
     did_get_support: '',
     service: '',
-    foundation_date: '',
+    foundation_date: new Date().toISOString(),
     tech_focus: [],
     stage_of_development: '',
     market: [],

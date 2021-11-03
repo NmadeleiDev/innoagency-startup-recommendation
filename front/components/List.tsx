@@ -93,6 +93,9 @@ const List = ({ header, items }: Props) => {
               )
             );
           })}
+        {(!displayedItems || !displayedItems.length) && (
+          <div>Нет подходящих сервисов</div>
+        )}
       </div>
       <div className="button">
         <Button variant="secondary" onClick={handleShowMore}>

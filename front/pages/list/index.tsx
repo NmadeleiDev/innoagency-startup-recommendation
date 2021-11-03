@@ -67,7 +67,12 @@ const getData = async (id: string) => {
  */
 const findCompanyByInn = async (inn: string) => {
   const client = await connect();
-  const res = await client.db(DB_NAME).collection('company').findOne({ inn });
+  // console.log(client, inn);
+  const res = await client
+    .db(DB_NAME)
+    .collection('company')
+    .findOne({ inn: `${inn}` });
+  console.log(res);
   return res;
 };
 
@@ -82,8 +87,11 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     INN contains only numbers, so if it's match equals to inn itself - this is INN
   */
   const isINN = (id: string) => id.match(/\d+/)?.[0] === id;
+  console.log(isINN(id), id.match(/\d+/)?.[0]);
   if (isINN(id)) {
     const company = await findCompanyByInn(id);
+    // console.log(`comapany`, company);
+    if (!company) return defaultResponse;
     const props = await getData(company?._id);
     return { props };
   }

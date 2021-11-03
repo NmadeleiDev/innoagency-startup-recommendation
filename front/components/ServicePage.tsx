@@ -54,6 +54,12 @@ const StyledDiv = styled.div`
     'button';
 
   .description {
+    padding: 2rem;
+    margin: 0 auto;
+    font-size: 1.2rem;
+    max-width: 1200px;
+    align-self: center;
+    /* border-bottom: 1px solid gray; */
   }
 
   .list {
@@ -122,6 +128,8 @@ const ServicePage = ({ item }: Props) => {
     }
   };
 
+  const defaultDescription = `Бесплатная программа для высокотехнологичных стартапов и компаний в сфере умного производства от крупнейшего в мире производителя стальных труб для нефтегазового сектора компании ТМК. Позволяет запустить пилот или стать партнером корпорациии. С каждым проектом проводится индивидуальная работа, алгоритм зависит от проработки проекта его готовности к внедрению.`;
+
   const handleBack = () => {
     dispatch(setDispayedService(null));
   };
@@ -135,6 +143,9 @@ const ServicePage = ({ item }: Props) => {
         <Category header="Раунд инвестирования" className="status item">
           {item.startup_stage?.join(', ')}
         </Category>
+      </div>
+      <div className="description">
+        {item.description || defaultDescription}
       </div>
       <Category header="Рынки" className="market item">
         <TagList tags={item.market} />
