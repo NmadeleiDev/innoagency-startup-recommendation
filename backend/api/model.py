@@ -4,6 +4,8 @@ from pydantic.generics import GenericModel
 from datetime import datetime, date
 from pandas import to_numeric, to_datetime, Timestamp
 from numpy import nan_to_num
+from enum import Enum
+
 
 DataT = TypeVar('DataT')
 
@@ -350,4 +352,6 @@ class CorporationModel(CommonEntityModel):
     technologies: Optional[List[str]]
     business_model: Optional[List[str]]
 
-
+class SearchByEnum(str, Enum):
+    inn = 'inn'
+    id = 'id'

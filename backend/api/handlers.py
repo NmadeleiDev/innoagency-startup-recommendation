@@ -7,12 +7,10 @@ import numpy as np
 from db.manager import DbManager
 from .utils import *
 from .model import *
-import json
 
 import prediction.fund_predictor as fund_p
 import prediction.type_predictor as type_p
 from prediction.utils import load_services
-
 
 def apply_handlers(app: FastAPI, db: DbManager):
     service_types = Union[VentureFundModel, AcceleratorModel, ProgressInstituteModel, EngeneeringCenterModel, BusinessIncubatorModel, CorporationModel]
@@ -185,7 +183,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
             'accelerators': list(np.unique([str(x) for x in services_frame[services_frame['type'] == 'Accelerator']['_id'].values]))})
 
     @app.get("/recommend/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
-    def get_reccomendation_by_id(id: str, response: Response, search_by: str ='id'):    
+    def get_reccomendation_by_id(id: str, response: Response, search_by: SearchByEnum = 'id'):    
         """
         Получить рекомендации для компании по id либо по ИНН (без передачи данных)
         """
