@@ -125,7 +125,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
         return success_response()
 
     @app.post("/company", status_code=status.HTTP_201_CREATED, response_model=DefaultResponseModel[dict])
-    def create_comapny(entity: CompanyModel, response: Response):
+    def create_company(entity: CompanyModel, response: Response):
         """
         Создать запись о компании
         """
@@ -165,7 +165,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
         return success_response()
 
     @app.post("/recommend", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
-    def get_reccomendation(entity: CompanyModel, response: Response):    
+    def get_recommendation(entity: CompanyModel, response: Response):    
         """
         Получить рекомендации для компании
         """
@@ -183,7 +183,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
             'accelerators': list(np.unique([str(x) for x in services_frame[services_frame['type'] == 'Accelerator']['_id'].values]))})
 
     @app.get("/recommend/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
-    def get_reccomendation_by_id(id: str, response: Response, search_by: SearchByEnum = 'id'):    
+    def get_recommendation_search(id: str, response: Response, search_by: SearchByEnum = 'id'):    
         """
         Получить рекомендации для компании по id либо по ИНН (без передачи данных)
         """
