@@ -63,18 +63,18 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
-  # front:
-  #   build:
-  #     context: ./front
-  #     dockerfile: Dockerfile
-  #     # args:
-  #     #   NEXT_PUBLIC_BACKEND_HOSTNAME: startup-guide.ml
-  #     #   NEXT_PUBLIC_PROTOCOL: https
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.middlewares.test-compress.compress=true" 
-  #     - "traefik.http.routers.inno-front.rule=Host(`${HOST:-localhost}`)"
-  #     - "traefik.http.routers.inno-front.middlewares=test-compress" # apply middleware
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+      # args:
+      #   NEXT_PUBLIC_BACKEND_HOSTNAME: startup-guide.ml
+      #   NEXT_PUBLIC_PROTOCOL: https
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.test-compress.compress=true" 
+      - "traefik.http.routers.inno-front.rule=Host(`${HOST:-localhost}`)"
+      - "traefik.http.routers.inno-front.middlewares=test-compress" # apply middleware
   db-mongo:
     image: mongo:5.0.3
     restart: always
