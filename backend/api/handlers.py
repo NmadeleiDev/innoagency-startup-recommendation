@@ -207,14 +207,16 @@ def apply_handlers(app: FastAPI, db: DbManager):
 
         imp_vals_cols = ['important_val_{}'.format(i) for i in range(1, 4)]
         services_frame[imp_vals_cols] = important_values[:, :3]
-        return_cols = ['_id', 'score'] + imp_vals_cols
+        return_cols = ['_id', 'name', 'type', 'score'] + imp_vals_cols
 
+        logging.info(services_frame[return_cols].to_numpy().tolist())
         return success_response({
-            'reco': {
-                'funds': services_frame[services_frame['type'] == 'VentureFund'][return_cols].values.tolist(),
-                'progressInstitute': services_frame[services_frame['type'] == 'ProgressInstitute'][return_cols].values.tolist(),
-                'accelerators': services_frame[services_frame['type'] == 'Accelerator'][return_cols].values.tolist()
-            },
+            # 'reco': {
+            #     'funds': services_frame[services_frame['type'] == 'VentureFund'][return_cols].values.tolist(),
+            #     'progressInstitute': services_frame[services_frame['type'] == 'ProgressInstitute'][return_cols].values.tolist(),
+            #     'accelerators': services_frame[services_frame['type'] == 'Accelerator'][return_cols].values.tolist()
+            # },
+            'reco': services_frame[return_cols][services_frame['score'] > 0.5].fillna({'name': ''}).to_numpy().tolist(),
             'metrics': metrics
         })
 
