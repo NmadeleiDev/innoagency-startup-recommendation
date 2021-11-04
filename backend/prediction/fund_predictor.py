@@ -12,12 +12,24 @@ def get_out_features(transformer):
     else:
         return [1]
 
+investor_metrics = ['type_of_ownership',
+ 'investition_from_dol',
+ 'investition_to_dol',
+ 'fund_total_rub',
+ 'fund_total_dol',
+ 'num_of_investments',
+ 'num_of_exits',
+ 'startup_stage',
+ 'market',
+ 'services',
+ 'technologies',
+ 'investment_round',
+ 'tech_focus']
+
 def predict(company, services):
     preprocessor_X = load(path_to_pipelines_dir('fund_classifier_preprocessor_X.joblib'))
     X = preprocessor_X.transform(company.rename(columns=lambda x: '{}__company'.format(x)))
     services_space = load(path_to_pipelines_dir('fund_classifier_preprocessor_Y.joblib')).transform(services.rename(columns=lambda x: '{}__investor'.format(x)))
-
-    target_metrics = [x for x in services.columns if x not in {'_id', }]
 
     proj = tf.keras.models.load_model(path_to_models_dir('model_fund_classifier.h5'), compile=False).predict(X)[0]
 
@@ -32,7 +44,7 @@ def predict(company, services):
 
     idx_sorted = np.argsort(distance)
 
-    return idx_sorted, score, metric_imp_sorted, target_metrics
+    return idx_sorted, score, metric_imp_sorted, investor_metrics
 
 def load_train_data():
     db = DbManager()
