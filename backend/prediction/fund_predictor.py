@@ -4,15 +4,35 @@ from numpy import linalg as LA
 from .utils import *
 from db.manager import DbManager
 
+def get_out_features(transformer):
+    if hasattr(transformer, 'n_features_'):
+        return [transformer.n_features_]
+    elif hasattr(transformer, 'categories_'):
+        return [len(x) for x in transformer.categories_]
+    else:
+        return [1]
+
 def predict(company, services):
-    X = load(path_to_pipelines_dir('fund_classifier_preprocessor_X.joblib')).transform(company.rename(columns=lambda x: '{}__company'.format(x)))
+    preprocessor_X = load(path_to_pipelines_dir('fund_classifier_preprocessor_X.joblib'))
+    X = preprocessor_X.transform(company.rename(columns=lambda x: '{}__company'.format(x)))
     services_space = load(path_to_pipelines_dir('fund_classifier_preprocessor_Y.joblib')).transform(services.rename(columns=lambda x: '{}__investor'.format(x)))
+
+    target_metrics = [x for x in services.columns if x not in {'_id', }]
 
     proj = tf.keras.models.load_model(path_to_models_dir('model_fund_classifier.h5'), compile=False).predict(X)[0]
 
-    idx_sorted = np.argsort(np.apply_along_axis(LA.norm, 1, services_space - proj, ord=2))
+    coords_lens = np.concatenate([get_out_features(t[1][-1]) for t in preprocessor_X.transformer_list])
 
-    return idx_sorted
+    err = services_space - proj
+    distance_by_coords = np.array([[np.mean((x[coords_lens[i - 1: i]]) ** 2) for i in range(1, len(coords_lens))] for x in err])
+    metric_imp_sorted = np.argsort(distance_by_coords, axis=1)
+    distance = np.apply_along_axis(LA.norm, 1, err, ord=2)
+    dist_mean = distance.mean()
+    score = dist_mean / (dist_mean + distance)
+
+    idx_sorted = np.argsort(distance)
+
+    return idx_sorted, score, metric_imp_sorted, target_metrics
 
 def load_train_data():
     db = DbManager()

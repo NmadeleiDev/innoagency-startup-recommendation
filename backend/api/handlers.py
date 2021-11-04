@@ -171,25 +171,14 @@ def apply_handlers(app: FastAPI, db: DbManager):
     @app.post("/recommend", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
     def get_recommendation(entity: CompanyModel, response: Response):    
         """
-        Получить рекомендации для компании
+        Получить рекомендации для компании по переданным данным
         """
-
-        comp_frame = pd.DataFrame(entity.dict(), index=[0])
-        services_frame = load_services(db)
-
-        reco_idxs = fund_p.predict(comp_frame, services_frame)
-
-        services_frame = services_frame.iloc[reco_idxs]
-
-        return success_response({
-            'funds': list(np.unique([str(x) for x in services_frame[services_frame['type'] == 'VentureFund']['_id'].values])),
-            'progressInstitute': list(np.unique([str(x) for x in services_frame[services_frame['type'] == 'ProgressInstitute']['_id'].values])),
-            'accelerators': list(np.unique([str(x) for x in services_frame[services_frame['type'] == 'Accelerator']['_id'].values]))})
+        return produce_reco_response(entity)
 
     @app.get("/recommend/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
     def get_recommendation_search(id: str, response: Response, search_by: SearchByEnum = 'id'):    
         """
-        Получить рекомендации для компании по id либо по ИНН (без передачи данных)
+        Получить рекомендации для компании из базы по id либо по ИНН (без передачи данных)
         """
         if search_by == SearchByEnum.inn:
             entity, ok = db.get_company_by_inn(id)
@@ -200,17 +189,32 @@ def apply_handlers(app: FastAPI, db: DbManager):
             response.status_code = status.HTTP_404_NOT_FOUND
             logging.info('not found company with {}={}: {}'.format(search_by, id, entity))
             return error_response('failed to find company with {}={}: {}'.format(search_by, id, entity))
+        
+        return produce_reco_response(entity)
+
+    def produce_reco_response(company: CompanyModel) -> DefaultResponseModel[dict]:
         comp_frame = pd.DataFrame(
-            {k: v if isinstance(v, list) is False else str(v) for k, v in entity.items()}, index=[0])
+            {k: v if isinstance(v, list) is False else str(v) for k, v in company.items()}, index=[0])
         services_frame = load_services(db)
 
-        reco_idxs = fund_p.predict(comp_frame, services_frame)
+        services_frame['_id'] = services_frame['_id'].astype(str)
+        services_frame.drop_duplicates(subset=['_id'], inplace=True)
 
-        services_frame = services_frame.iloc[reco_idxs]
+        reco_idxs, scores, important_values, metrics = fund_p.predict(comp_frame, services_frame)
+
+        services_frame['score'] = scores
+        services_frame = services_frame.iloc[reco_idxs].copy()
+
+        imp_vals_cols = ['important_val_{}'.format(i) for i in range(1, 4)]
+        services_frame[imp_vals_cols] = important_values[:, :3]
+        return_cols = ['_id', 'score'] + imp_vals_cols
 
         return success_response({
-            'funds': list(np.unique([str(x) for x in services_frame[services_frame['type'] == 'VentureFund']['_id'].values])),
-            'progressInstitute': list(np.unique([str(x) for x in services_frame[services_frame['type'] == 'ProgressInstitute']['_id'].values])),
-            'accelerators': list(np.unique([str(x) for x in services_frame[services_frame['type'] == 'Accelerator']['_id'].values]))})
-
+            'reco': {
+                'funds': services_frame[services_frame['type'] == 'VentureFund'][return_cols].values.tolist(),
+                'progressInstitute': services_frame[services_frame['type'] == 'ProgressInstitute'][return_cols].values.tolist(),
+                'accelerators': services_frame[services_frame['type'] == 'Accelerator'][return_cols].values.tolist()
+            },
+            'metrics': metrics
+        })
 
