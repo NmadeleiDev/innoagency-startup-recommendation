@@ -5,6 +5,8 @@ import { IRecomendation } from 'axiosConfig';
 import ListItem from 'components/ListItem';
 import ListHeader from 'components/ListHeader';
 import Button from 'components/Button';
+import { useAppDispatch, useAppSelector } from 'store/store';
+import { showNext } from 'store/features/services';
 
 const StyledDiv = styled.div`
   padding: 1rem 0;
@@ -93,7 +95,7 @@ const prepareMetrics = (
   items: number[]
 ): JSX.Element[] => {
   return items?.map((item) => (
-    <div key="el" className="imageWrapper">
+    <div key={item} className="imageWrapper">
       <Image
         className="image"
         width={50}
@@ -107,24 +109,20 @@ const prepareMetrics = (
 };
 
 const List = ({ items, metrics }: Props) => {
-  const [offset, setOffset] = useState(0);
-  const NUMBER_OF_ITEMS_TO_SHOW = 3;
+  const dispatch = useAppDispatch();
+  const offset = useAppSelector((state) => state.services.offset);
   const [displayedItems, setDisplayedItems] = useState<IRecomendation[]>([]);
 
   useEffect(() => {
     if (items.length === 0) return;
-    console.log(offset);
     (async () => {
-      const itemsToShow = items.slice(offset, offset + NUMBER_OF_ITEMS_TO_SHOW);
-      setDisplayedItems((displayedItems) => [
-        ...displayedItems,
-        ...itemsToShow,
-      ]);
+      const itemsToShow = items.slice(0, offset);
+      setDisplayedItems([...itemsToShow]);
     })();
   }, [items, offset]);
 
   const handleShowMore = () => {
-    setOffset((offset) => offset + NUMBER_OF_ITEMS_TO_SHOW);
+    dispatch(showNext());
   };
 
   if (items.length === 0) return null;

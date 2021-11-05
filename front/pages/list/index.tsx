@@ -104,8 +104,6 @@ const ListPage = ({
   reco,
   metrics,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  console.log(reco, metrics);
-
   return (
     <StyledDiv>
       <PageHeader title="Лучшие сервисы" className="page-header" />

@@ -1,24 +1,12 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AcceleratorModel, VentureFondModel } from 'models/Startup';
+import { createSlice } from '@reduxjs/toolkit';
+const NUMBER_OF_ITEMS_TO_SHOW = 3;
 
 interface IServiesState {
-  displayedItem: VentureFondModel | AcceleratorModel | null;
-  accelerators: AcceleratorModel[];
-  fonds: VentureFondModel[];
-  recomendations: {
-    accelerators: string[];
-    fonds: string[];
-  };
+  offset: number;
 }
 
 const initialState: IServiesState = {
-  displayedItem: null,
-  accelerators: [],
-  fonds: [],
-  recomendations: {
-    accelerators: [],
-    fonds: [],
-  },
+  offset: NUMBER_OF_ITEMS_TO_SHOW,
 };
 
 const servicesSlice = createSlice({
@@ -28,14 +16,11 @@ const servicesSlice = createSlice({
     resetServicesState() {
       return initialState;
     },
-    setDispayedService(
-      state,
-      { payload }: PayloadAction<AcceleratorModel | VentureFondModel | null>
-    ) {
-      state.displayedItem = payload;
+    showNext(state) {
+      state.offset += NUMBER_OF_ITEMS_TO_SHOW;
     },
   },
 });
 
-export const { resetServicesState, setDispayedService } = servicesSlice.actions;
+export const { resetServicesState, showNext } = servicesSlice.actions;
 export default servicesSlice.reducer;
