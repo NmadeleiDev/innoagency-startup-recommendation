@@ -83,7 +83,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
         
         if entity['type'] == 'Company':
             data = CompanyModel(**entity)
-            data.id = entity.get('id', '')
+            data.id = str(entity.get('_id', ''))
         else:
             response.status_code = status.HTTP_406_NOT_ACCEPTABLE
             return error_response('Failed to find model for type={}'.format(entity['type']))
