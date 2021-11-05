@@ -25,6 +25,7 @@ to_dt = lambda x: placeholder_if_not_instanceof(to_datetime(x, errors='coerce'),
 
 class CommonEntityModel(BaseModel):
     inn: str
+    id: Optional[str]
     name: Optional[str]
 
 class CompanyModel(CommonEntityModel):

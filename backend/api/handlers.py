@@ -44,7 +44,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
     @app.get("/service/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[service_types])
     def get_entity_by_id(id: str, response: Response):
         """
-        Получить сущность по ее id
+        Получить сервис по его id
         """
         entity, ok = db.get_service(id)
         if ok is False:
@@ -83,6 +83,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
         
         if entity['type'] == 'Company':
             data = CompanyModel(**entity)
+            data.id = entity.get('id', '')
         else:
             response.status_code = status.HTTP_406_NOT_ACCEPTABLE
             return error_response('Failed to find model for type={}'.format(entity['type']))
