@@ -3,6 +3,7 @@ import PageHeader from 'components/PageHeader';
 import List from 'components/List';
 import { api, backend, IApiResponse, IRecomendation } from 'axiosConfig';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { ServiceType } from 'models/Startup';
 
 const StyledDiv = styled.div`
   padding: 1rem 0;
@@ -40,15 +41,12 @@ const prepareReco = (items: (string | number)[][]): IRecomendation[] => {
   return items?.map((item) => ({
     id: item[0].toLocaleString(),
     name: item[1].toLocaleString(),
-    type: item[2].toLocaleString(),
+    type: item[2].toLocaleString() as ServiceType,
     score: +item[3],
     metrics: item.slice(4).map((el) => +el),
   }));
 };
 
-const prepareMetrics = (metrics: string[]) => {
-  return metrics.map((el) => el);
-};
 export interface IRecomendationsData {
   reco: (string | number)[][];
   metrics: string[];

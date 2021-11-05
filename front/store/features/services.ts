@@ -1,11 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {
-  AcceleratorModel,
-  CompanyModel,
-  msp,
-  progectStage,
-  VentureFondModel,
-} from 'models/Startup';
+import { AcceleratorModel, VentureFondModel } from 'models/Startup';
 
 interface IServiesState {
   displayedItem: VentureFondModel | AcceleratorModel | null;

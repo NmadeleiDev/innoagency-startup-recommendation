@@ -1,11 +1,8 @@
-import Link from 'next/link';
 import styled from 'styled-components';
-import { StarIcon } from 'components/Icon';
-import { IRecomendation } from 'axiosConfig';
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-columns: 1fr 100px 100px;
+  grid-template-columns: 1fr 100px 130px;
   align-items: center;
   grid-gap: 1rem;
   height: 70px;
@@ -33,8 +30,7 @@ const Wrapper = styled.div`
   @media (min-width: 800px) {
     padding-top: 1rem;
     padding-bottom: 1rem;
-    grid-gap: 0;
-    grid-template-columns: 1fr 100px 100px 200px;
+    grid-template-columns: 1fr 100px 130px 200px;
 
     .metrics {
       display: inline-block;
