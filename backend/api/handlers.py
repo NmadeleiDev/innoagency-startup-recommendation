@@ -216,7 +216,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
             #     'progressInstitute': services_frame[services_frame['type'] == 'ProgressInstitute'][return_cols].values.tolist(),
             #     'accelerators': services_frame[services_frame['type'] == 'Accelerator'][return_cols].values.tolist()
             # },
-            'reco': services_frame[return_cols][services_frame['score'] > 0.5].fillna({'name': ''}).to_numpy().tolist(),
+            'reco': services_frame[return_cols][services_frame['score'] > 0.5].fillna({'name': ''}).fillna(0).to_numpy().tolist(),
             'metrics': metrics
         })
 
