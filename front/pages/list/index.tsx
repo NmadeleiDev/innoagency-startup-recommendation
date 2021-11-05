@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import PageHeader from 'components/PageHeader';
 import List from 'components/List';
-import { api, IApiResponse, IRecomendation } from 'axiosConfig';
+import { api, backend, IApiResponse, IRecomendation } from 'axiosConfig';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 
 const StyledDiv = styled.div`
@@ -72,7 +72,7 @@ const getData = async ({
       query = '?search_by=id';
       value = id;
     }
-    const { data } = await api.get<IApiResponse<IRecomendationsData>>(
+    const { data } = await backend.get<IApiResponse<IRecomendationsData>>(
       `/recommend/${value}${query}`
     );
     // console.log(data);
