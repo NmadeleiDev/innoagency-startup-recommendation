@@ -16,6 +16,12 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
   validateStatus: (status) => status >= 200 && status < 500,
 });
+export const backend = axios.create({
+  baseURL: 'http://backend:2222/',
+  withCredentials: true,
+  headers: { 'Content-Type': 'application/json' },
+  validateStatus: (status) => status >= 200 && status < 500,
+});
 
 export interface IRecomendation {
   id: string;

@@ -12,7 +12,7 @@ import {
 import TagList from 'components/TagList';
 import Category from 'components/Category';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
-import { api, IApiResponse } from 'axiosConfig';
+import { backend, IApiResponse } from 'axiosConfig';
 import { useRouter } from 'next/dist/client/router';
 import Loader from 'components/Loader';
 
@@ -68,7 +68,6 @@ const StyledDiv = styled.div`
     font-size: 1.2rem;
     max-width: 1200px;
     align-self: center;
-    /* border-bottom: 1px solid gray; */
   }
 
   .list {
@@ -150,7 +149,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   console.log('getStaticProps', params);
   const id = params?.id;
   try {
-    const { data } = await api.get<IApiResponse<Service>>(`/service/${id}`);
+    const { data } = await backend.get<IApiResponse<Service>>(`/service/${id}`);
     console.log(data);
     return { props: { item: data.data } };
   } catch (e) {

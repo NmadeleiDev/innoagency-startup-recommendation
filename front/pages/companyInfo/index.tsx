@@ -198,8 +198,7 @@ const Info = () => {
       }
       if (res.data?.data?.id) {
         setState((state) => ({ ...state, id: res.data.data?.id || '' }));
-
-        dispatch(saveUserState(state));
+        dispatch(saveUserState({ ...state, id: res.data.data?.id }));
         router.push(`/list?id=${res.data.data.id}`);
       }
     } catch (e) {
