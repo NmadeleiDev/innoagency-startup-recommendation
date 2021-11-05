@@ -1,12 +1,20 @@
 import styled from 'styled-components';
 import Button from 'components/Button';
 import PageHeader from 'components/PageHeader';
-import { AcceleratorModel, VentureFondModel } from 'models/Startup';
+import {
+  AcceleratorModel,
+  BusinessIncubatorModel,
+  CorporationModel,
+  EngeneeringCenterModel,
+  ProgressInstituteModel,
+  VentureFondModel,
+} from 'models/Startup';
 import TagList from 'components/TagList';
 import Category from 'components/Category';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { api, IApiResponse } from 'axiosConfig';
 import { useRouter } from 'next/dist/client/router';
+import Loader from 'components/Loader';
 
 const StyledDiv = styled.div`
   .page-header {
@@ -95,12 +103,43 @@ const StyledDiv = styled.div`
   }
 `;
 
+const AccFundLayout = (item: VentureFondModel | AcceleratorModel) => (
+  <>
+    <div className="list">
+      <Category header="Тип" className="type item">
+        {item.type}
+      </Category>
+      <Category header="Раунд инвестирования" className="status item">
+        {item.startup_stage?.join(', ')}
+      </Category>
+    </div>
+    <div className="description">{item.description}</div>
+    <Category header="Рынки" className="market item">
+      <TagList tags={item.market} nonFocus={item.market_non_focus} />
+    </Category>
+    <Category header="Технологии" className="tech item">
+      <TagList tags={item.technologies} nonFocus={item.market_non_focus} />
+    </Category>
+    <Category header="Сервисы" className="services item">
+      <TagList tags={item.services} nonFocus={item.market_non_focus} />
+    </Category>
+    <Category header="Тех фокус" className="focus item">
+      <TagList tags={item.tech_focus} nonFocus={item.market_non_focus} />
+    </Category>
+  </>
+);
+
 type Service = VentureFondModel | AcceleratorModel;
+// | ProgressInstituteModel
+// | EngeneeringCenterModel
+// | BusinessIncubatorModel
+// | CorporationModel;
 
 export const getStaticPaths = () => {
   // list of items to statically prerender
   // (more - faslter loading time, slower build time)
-  const items = ['61831549b9ccd3672c133dc6', '61831549b9ccd3672c133d75'];
+  // ex ['61831549b9ccd3672c133dc6', '61831549b9ccd3672c133d75']
+  const items: string[] = [];
   return {
     paths: items.map((item) => ({ params: { id: item } })),
     fallback: true,
@@ -129,47 +168,36 @@ const ServicePage = ({
   console.log(item);
 
   const handleSubmit = () => {
-    console.log(item);
+    alert('Тут будет отправлена завяка');
   };
 
   const handleBack = () => {
     router.back();
   };
 
-  const content = item ? (
-    <>
-      <div className="list">
-        <Category header="Тип" className="type item">
-          {item.type}
-        </Category>
-        <Category header="Раунд инвестирования" className="status item">
-          {item.startup_stage?.join(', ')}
-        </Category>
-      </div>
-      <div className="description">{item.description}</div>
-      <Category header="Рынки" className="market item">
-        <TagList tags={item.market} nonFocus={item.market_non_focus} />
-      </Category>
-      <Category header="Технологии" className="tech item">
-        <TagList tags={item.technologies} nonFocus={item.market_non_focus} />
-      </Category>
-      <Category header="Сервисы" className="services item">
-        <TagList tags={item.services} nonFocus={item.market_non_focus} />
-      </Category>
-      <Category header="Тех фокус" className="focus item">
-        <TagList tags={item.tech_focus} nonFocus={item.market_non_focus} />
-      </Category>
-      <div className="button">
-        <Button onClick={handleSubmit}>Подать заявку</Button>
-      </div>
-    </>
-  ) : null;
+  let service = null;
+
+  if (item?.type === 'Accelerator' || item?.type === 'VentureFund') {
+    service = AccFundLayout(item);
+  }
+
+  const content =
+    router.isFallback || !item ? (
+      <Loader />
+    ) : (
+      <>
+        {service}
+        <div className="button">
+          <Button onClick={handleSubmit}>Подать заявку</Button>
+        </div>
+      </>
+    );
 
   return (
     <StyledDiv>
       <PageHeader
         handleBack={handleBack}
-        title={item.name || 'Сервис'}
+        title={item?.name || 'Сервис'}
         className="page-header"
       />
       {content}
