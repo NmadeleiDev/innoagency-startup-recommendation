@@ -17,11 +17,17 @@ export const api = axios.create({
   validateStatus: (status) => status >= 200 && status < 500,
 });
 
+export interface IRecomendation {
+  id: string;
+  name: string;
+  type: string;
+  score: number;
+  metrics: (number | JSX.Element)[];
+}
 export interface IData {
   id?: string;
-  funds?: string[];
-  accelerators?: string[];
-  progressInstitute?: string[];
+  reco: IRecomendation[];
+  metrics: string[];
 }
 
 export interface IApiResponse<T = IData> {

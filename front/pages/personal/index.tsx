@@ -20,6 +20,7 @@ import sanitizeHtml from 'sanitize-html';
 import { AxiosResponse } from 'axios';
 import { useAppDispatch, useAppSelector } from 'store/store';
 import { saveUserState } from 'store/features/user';
+import Button from 'components/Button';
 
 const StyledForm = styled.form`
   padding: 1rem 0;
@@ -45,8 +46,8 @@ const StyledForm = styled.form`
     grid-area: error;
   }
 
-  .button {
-    grid-area: button;
+  .buttons {
+    grid-area: buttons;
   }
 
   .success {
@@ -61,12 +62,11 @@ const StyledForm = styled.form`
     'tags'
     'details'
     'profit'
-    'button'
+    'buttons'
     'error'
     'success';
 
   .inputGroup {
-    margin: 0 1rem;
     border: none;
   }
 
@@ -85,8 +85,7 @@ const StyledForm = styled.form`
   }
 
   .button {
-    display: flex;
-    justify-content: center;
+    margin: 0 1rem;
   }
 
   .error {
@@ -103,6 +102,11 @@ const StyledForm = styled.form`
     font-size: 1.5rem;
     font-weight: 500;
     color: ${({ theme }) => theme.colors.primary};
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
   }
 
   .submitButton {
@@ -132,19 +136,19 @@ const StyledForm = styled.form`
       'mainInfo tags'
       'details tags'
       'details profit'
-      'button button'
+      'buttons buttons'
       'error error'
       'success success';
   }
 `;
 
 const Personal = () => {
-  const router = useRouter();
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.user);
+  const router = useRouter();
+  const user = useAppSelector((state) => state.user.user);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [state, setState] = useState<CompanyModel>(user.user);
+  const [state, setState] = useState<CompanyModel>(user);
 
   const handleInfoChange = (e: ChangeEvent<HTMLInputElement>) => {
     setState((state) => ({ ...state, [e.target.name]: e.target.value }));
@@ -209,6 +213,10 @@ const Personal = () => {
       console.log(e);
       handleError('Ошибка сохранения, попробуйте позже');
     }
+  };
+
+  const handleRecommend = () => {
+    router.push(`/list?id=${user.id}`);
   };
 
   return (
@@ -382,12 +390,23 @@ const Personal = () => {
           placeholder="Валовая прибыль в год, $"
         />
       </fieldset>
-      <div className="button">
-        <input
-          className="submitButton"
-          type="submit"
-          value="Сохранить данные"
-        />
+      <div className="buttons">
+        {/* <div className="button">
+          <input
+            className="submitButton"
+            type="submit"
+            value="Сохранить данные"
+          />
+        </div> */}
+
+        <Button>Сохранить данные</Button>
+        <Button
+          onClick={handleRecommend}
+          variant="secondary"
+          className="button"
+        >
+          Подобрать инвестора
+        </Button>
       </div>
       {error && (
         <div className="error">

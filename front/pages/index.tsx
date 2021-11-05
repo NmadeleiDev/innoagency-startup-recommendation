@@ -1,19 +1,15 @@
-import type { NextPage } from 'next';
+import { ChangeEvent, FormEvent, useState } from 'react';
+import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
+import type { NextPage } from 'next';
 import styled from 'styled-components';
+
+import { useAppDispatch, useAppSelector } from 'store/store';
+import { getCompanyByINN } from 'store/features/user';
 import Button from 'components/Button';
 import PageHeader from 'components/PageHeader';
-import { useAppDispatch } from 'store/store';
-import {
-  getCompanies,
-  getCompanyById,
-  getCompanyByINN,
-  getRandomCompany,
-} from 'store/features/user';
 import Input from 'components/Input';
-import { ChangeEvent, useState } from 'react';
-import { useRouter } from 'next/dist/client/router';
-import { isINN } from './list';
+import Loader from 'components/Loader';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -32,43 +28,89 @@ const StyledDiv = styled.div`
 
   .login {
     margin-top: 3rem;
+    text-align: center;
+
+    .header {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+
+      .name {
+        text-transform: uppercase;
+      }
+    }
+
+    .secondary {
+      .input {
+        background-color: ${({ theme }) => theme.colors.base.darkBG};
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
   }
 `;
 
 const Home: NextPage = () => {
-  const [value, setValue] = useState('');
+  const user = useAppSelector((state) => state.user.user);
+  const [loading, setLoading] = useState(false);
+  const [value, setValue] = useState(user.inn);
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const getСomp = () => {
-    if (isINN(value)) dispatch(getCompanyByINN(value));
-    else dispatch(getCompanyById(value));
-    router.push(`/list?id=${value}`);
-  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log(e.currentTarget.enterKeyHint);
     setValue(e.target.value);
   };
+
+  const handleEnter = (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    dispatch(getCompanyByINN(value));
+    router.push(`/list?inn=${value}`);
+  };
+
+  const loginForm = (
+    <form className="login" onSubmit={handleEnter}>
+      {user.inn === '' ? (
+        <>
+          <div className="header">или</div>
+          <Input
+            // hide input if already logged in
+            className={`item input ${user.inn === '' ? '' : 'hidden'}`}
+            onChange={handleChange}
+            value={value}
+            nolabel
+            placeholder="Введите ИНН стратапа"
+          />
+        </>
+      ) : (
+        <div className="header">
+          Вы вошли как <span className="name">{user.name}</span>
+        </div>
+      )}
+      {loading ? (
+        <Loader />
+      ) : (
+        <Button variant="secondary" className="item">
+          Получить рекомендации
+        </Button>
+      )}
+    </form>
+  );
 
   return (
     <StyledDiv>
       <PageHeader title="Домашнаяя страница" />
-      <Link href="/companyInfo">
-        <a>
-          <Button className="item">Заполнить анкету</Button>
-        </a>
-      </Link>
-      <div className="login">
-        <Input
-          className="item input"
-          onChange={handleChange}
-          value={value}
-          nolabel
-          placeholder="Введите ИНН стратапа"
-        />
-        <Button className="item" variant="secondary" onClick={getСomp}>
-          Получить рекомендацию
-        </Button>
-      </div>
+      {user.inn === '' && (
+        <Link href="/companyInfo">
+          <a>
+            <Button className="item">Заполнить анкету</Button>
+          </a>
+        </Link>
+      )}
+      {loginForm}
     </StyledDiv>
   );
 };

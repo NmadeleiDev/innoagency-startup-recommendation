@@ -1,12 +1,10 @@
-import ListItem from 'components/ListItem';
-import styled from 'styled-components';
-import { api, IApiResponse } from 'axiosConfig';
-import NextLink from 'components/Link';
-import Button from 'components/Button';
 import { useEffect, useState } from 'react';
-import { AcceleratorModel, VentureFondModel } from 'models/Startup';
-import { useAppDispatch } from 'store/store';
-import { setDispayedService } from 'store/features/services';
+import Image from 'next/image';
+import styled from 'styled-components';
+import { IRecomendation } from 'axiosConfig';
+import ListItem from 'components/ListItem';
+import ListHeader from 'components/ListHeader';
+import Button from 'components/Button';
 
 const StyledDiv = styled.div`
   padding: 1rem 0;
@@ -23,47 +21,129 @@ const StyledDiv = styled.div`
     display: flex;
     justify-content: center;
   }
+
+  .image {
+    width: 64px;
+  }
 `;
 
 interface Props {
-  header: string;
-  items: string[];
+  items: IRecomendation[];
+  metrics: string[];
 }
 
-const fetchData = async (items: string[]) => {
-  console.log(items);
+/**
+ * Тут, вероятно, должны быть метрики стартапа, а не корпораций
+ * мы же будем показывать, какие из предоставленных метрик
+ * больше всего повлияли на результат
+ *
+ * Общий объем фондов повторяется дважды (в руб и $)
+ */
 
-  const promises = items.map(async (item) => {
-    try {
-      const { data } = await api.get<
-        IApiResponse<VentureFondModel | AcceleratorModel>
-      >(`/service/${item}`);
-      return data.data;
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  });
-  const entities = await Promise.all(promises);
-  console.log(entities);
-  return entities;
+const metricsDictionary = {
+  type_of_ownership: {
+    title: 'Форма собственности',
+    icon: 'ownership-2-904171.png',
+  },
+  investition_from_dol: {
+    title: 'Объем инвестиций ОТ, $',
+    icon: 'investment-425-1130766.png',
+  },
+  investition_to_dol: {
+    title: 'Объем инвестиций ДО, $',
+    icon: 'investment-425-1130766.png',
+  },
+  fund_total_rub: {
+    title: 'Общий объем фондов, руб. млн',
+    icon: 'return-on-investment-4043536-3359389.png',
+  },
+  fund_total_dol: {
+    title: 'Общий объем фондов, $ млн',
+    icon: 'return-on-investment-4043536-3359389.png',
+  },
+  num_of_investments: {
+    title: 'Количество инвестиций',
+    icon: 'investment-436-1183102.png',
+  },
+  num_of_exits: {
+    title: 'Количество выходов',
+    icon: 'sign-2879075-2393903.png',
+  },
+  startup_stage: {
+    title: 'Стадия стартапа',
+    icon: 'startup_stage',
+  },
+  market: {
+    title: 'Рынок',
+    icon: 'market-52-346209.png',
+  },
+  services: {
+    title: 'Сервисы',
+    icon: 'service-2010794-1693925.png',
+  },
+  technologies: {
+    title: 'Технологии',
+    icon: 'technology-136-972886.png',
+  },
+  investment_round: {
+    title: 'Раунд инвестирования',
+    icon: 'stage-2-429690.png',
+  },
+  tech_focus: {
+    title: 'Технологический фокус',
+    icon: 'target-1662580-1411546.png',
+  },
+};
+type MetricsKey = keyof typeof metricsDictionary;
+
+const metrics: MetricsKey[] = [
+  'type_of_ownership',
+  'investition_from_dol',
+  'investition_to_dol',
+  'fund_total_rub',
+  'fund_total_dol',
+  'num_of_investments',
+  'num_of_exits',
+  'startup_stage',
+  'market',
+  'services',
+  'technologies',
+  'investment_round',
+  'tech_focus',
+];
+
+const prepareMetrics = (
+  metrics: MetricsKey[],
+  items: number[]
+): JSX.Element[] => {
+  return items?.map((item) => (
+    <div key="el" className="imageWrapper">
+      <Image
+        className="image"
+        width={55}
+        height={55}
+        src={'/icons/' + metricsDictionary[metrics[item]]?.icon || ''}
+        alt={metricsDictionary[metrics[item]].title}
+      />
+      <span className="tooltip">{metricsDictionary[metrics[item]].title}</span>
+    </div>
+  ));
 };
 
-const List = ({ header, items }: Props) => {
-  const dispatch = useAppDispatch();
+const List = ({ items, metrics }: Props) => {
   const [offset, setOffset] = useState(0);
   const NUMBER_OF_ITEMS_TO_SHOW = 3;
-  const [displayedItems, setDisplayedItems] = useState<
-    (VentureFondModel | AcceleratorModel | null)[]
-  >([]);
+  const [displayedItems, setDisplayedItems] = useState<IRecomendation[]>([]);
 
   useEffect(() => {
     if (items.length === 0) return;
     console.log(offset);
     (async () => {
       const itemsToShow = items.slice(offset, offset + NUMBER_OF_ITEMS_TO_SHOW);
-      const entities = await fetchData(itemsToShow);
-      setDisplayedItems((displayedItems) => [...displayedItems, ...entities]);
+      setDisplayedItems((displayedItems) => [
+        ...displayedItems,
+        ...itemsToShow,
+      ]);
     })();
   }, [items, offset]);
 
@@ -71,31 +151,28 @@ const List = ({ header, items }: Props) => {
     setOffset((offset) => offset + NUMBER_OF_ITEMS_TO_SHOW);
   };
 
-  const selectCurrentItem = (item: VentureFondModel | AcceleratorModel) => {
-    dispatch(setDispayedService(item));
-  };
-
   if (items.length === 0) return null;
 
   return (
     <StyledDiv>
-      <h3 className="header">{header}</h3>
       <div className="list">
+        <ListHeader
+          item={{
+            name: 'Название компании',
+            score: 'Совпадение',
+            type: 'Тип сервиса',
+            metrics: 'Наиболее влиятельные метрики',
+          }}
+        />
         {displayedItems &&
           displayedItems.map((item) => {
-            return (
-              item && (
-                <ListItem
-                  key={item.inn + item.name}
-                  onClick={() => selectCurrentItem(item)}
-                  item={item}
-                />
-              )
+            const modifiedItem = { ...item };
+            modifiedItem.metrics = prepareMetrics(
+              metrics as MetricsKey[],
+              item.metrics as number[]
             );
+            return item && <ListItem key={item.id} item={modifiedItem} />;
           })}
-        {(!displayedItems || !displayedItems.length) && (
-          <div>Нет подходящих сервисов</div>
-        )}
       </div>
       <div className="button">
         <Button variant="secondary" onClick={handleShowMore}>

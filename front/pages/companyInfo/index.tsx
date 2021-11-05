@@ -18,6 +18,7 @@ import toast from 'react-hot-toast';
 import { AxiosResponse } from 'axios';
 import { useAppDispatch } from 'store/store';
 import { saveUserState } from 'store/features/user';
+import Button from 'components/Button';
 
 const StyledForm = styled.form`
   padding: 1rem 0;
@@ -196,10 +197,10 @@ const Info = () => {
         handleError('Неправильные данные');
       }
       if (res.data?.data?.id) {
-        setState((state) => ({ ...state, id: res.data?.data?.id || '' }));
+        setState((state) => ({ ...state, id: res.data.data?.id || '' }));
 
         dispatch(saveUserState(state));
-        router.push(`/list?id=${res.data?.data?.id}`);
+        router.push(`/list?id=${res.data.data.id}`);
       }
     } catch (e) {
       console.log(e);
@@ -379,11 +380,7 @@ const Info = () => {
         />
       </fieldset>
       <div className="button">
-        <input
-          className="submitButton"
-          type="submit"
-          value="Подобрать инвестора"
-        />
+        <Button variant="secondary">Получить рекомендацию</Button>
       </div>
       {error && (
         <div className="error">

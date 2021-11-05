@@ -2,10 +2,11 @@ import styled from 'styled-components';
 import Button from 'components/Button';
 import PageHeader from 'components/PageHeader';
 import { AcceleratorModel, VentureFondModel } from 'models/Startup';
-import { useAppDispatch } from 'store/store';
-import { setDispayedService } from 'store/features/services';
-import TagList from './TagList';
-import Category from './Category';
+import TagList from 'components/TagList';
+import Category from 'components/Category';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { api, IApiResponse } from 'axiosConfig';
+import { useRouter } from 'next/dist/client/router';
 
 const StyledDiv = styled.div`
   .page-header {
@@ -94,44 +95,45 @@ const StyledDiv = styled.div`
   }
 `;
 
-interface Props {
-  item: AcceleratorModel | VentureFondModel;
-}
+type Service = VentureFondModel | AcceleratorModel;
 
-const ServicePage = ({ item }: Props) => {
-  const dispatch = useAppDispatch();
+export const getStaticPaths = () => {
+  // list of items to statically prerender
+  // (more - faslter loading time, slower build time)
+  const items = ['61831549b9ccd3672c133dc6', '61831549b9ccd3672c133d75'];
+  return {
+    paths: items.map((item) => ({ params: { id: item } })),
+    fallback: true,
+  };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  console.log('getStaticProps', params);
+  const id = params?.id;
+  try {
+    const { data } = await api.get<IApiResponse<Service>>(`/service/${id}`);
+    console.log(data);
+    return { props: { item: data.data } };
+  } catch (e) {
+    console.log(e);
+  }
+  return { props: {} };
+};
+
+const ServicePage = ({
+  item,
+}: {
+  item: Service;
+}): InferGetStaticPropsType<typeof getStaticProps> => {
+  const router = useRouter();
+  console.log(item);
 
   const handleSubmit = () => {
     console.log(item);
   };
 
-  /**
-   * Gets number and formats string, adding "год" with correct ending
-   * @param age interger number, average age of startups
-   * @returns formatted string
-   */
-  const formatAge = (age: number) => {
-    const delimeter = age % 10;
-    if (age < 1) return 'меньше года';
-    if (age > 10 || age < 14) {
-      return `${age} лет`;
-    }
-    switch (delimeter) {
-      case 1:
-        return `${age} год`;
-      case 2:
-      case 3:
-      case 4:
-        return `${age} года`;
-      default:
-        return `${age} лет`;
-    }
-  };
-
-  const defaultDescription = `Бесплатная программа для высокотехнологичных стартапов и компаний в сфере умного производства от крупнейшего в мире производителя стальных труб для нефтегазового сектора компании ТМК. Позволяет запустить пилот или стать партнером корпорациии. С каждым проектом проводится индивидуальная работа, алгоритм зависит от проработки проекта его готовности к внедрению.`;
-
   const handleBack = () => {
-    dispatch(setDispayedService(null));
+    router.back();
   };
 
   const content = item ? (
@@ -144,20 +146,18 @@ const ServicePage = ({ item }: Props) => {
           {item.startup_stage?.join(', ')}
         </Category>
       </div>
-      <div className="description">
-        {item.description || defaultDescription}
-      </div>
+      <div className="description">{item.description}</div>
       <Category header="Рынки" className="market item">
-        <TagList tags={item.market} />
+        <TagList tags={item.market} nonFocus={item.market_non_focus} />
       </Category>
       <Category header="Технологии" className="tech item">
-        <TagList tags={item.technologies} />
+        <TagList tags={item.technologies} nonFocus={item.market_non_focus} />
       </Category>
       <Category header="Сервисы" className="services item">
-        <TagList tags={item.services} />
+        <TagList tags={item.services} nonFocus={item.market_non_focus} />
       </Category>
       <Category header="Тех фокус" className="focus item">
-        <TagList tags={item.tech_focus} />
+        <TagList tags={item.tech_focus} nonFocus={item.market_non_focus} />
       </Category>
       <div className="button">
         <Button onClick={handleSubmit}>Подать заявку</Button>
@@ -178,3 +178,26 @@ const ServicePage = ({ item }: Props) => {
 };
 
 export default ServicePage;
+
+/**
+ * Gets number and formats string, adding "год" with correct ending
+ * @param age interger number, average age of startups
+ * @returns formatted string
+ */
+const formatAge = (age: number) => {
+  const delimeter = age % 10;
+  if (age < 1) return 'меньше года';
+  if (age > 10 || age < 14) {
+    return `${age} лет`;
+  }
+  switch (delimeter) {
+    case 1:
+      return `${age} год`;
+    case 2:
+    case 3:
+    case 4:
+      return `${age} года`;
+    default:
+      return `${age} лет`;
+  }
+};

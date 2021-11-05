@@ -163,10 +163,10 @@ export interface ServiceModel {
   inn: string;
   name: string;
   description?: string;
-  startup_stage?: string[];
-  market?: string[];
-  services?: string[];
-  technologies?: string[];
+  market_non_focus: string[] | null;
+  startup_stage_non_focus: string[] | null;
+  tech_focus_non_focus: string[] | null;
+  technologies_non_focus: string[] | null;
 }
 
 export interface VentureFondModel extends ServiceModel {
@@ -180,6 +180,10 @@ export interface VentureFondModel extends ServiceModel {
   fund_total_dol?: number;
   num_of_investments?: number;
   num_of_exits?: number;
+  startup_stage?: string[];
+  market?: string[];
+  services?: string[];
+  technologies?: string[];
 }
 
 export const ventureFondType: KeyValue[] = [
@@ -195,6 +199,10 @@ export const ventureFondCountry: KeyValue[] = [
 
 export interface AcceleratorModel extends ServiceModel {
   type: 'Accelerator';
+  startup_stage?: string[];
+  market?: string[];
+  services?: string[];
+  technologies?: string[];
   investition_from_dol?: number;
   investition_to_dol?: number;
   tech_focus?: string[];
@@ -217,73 +225,40 @@ export const participationConditions: KeyValue[] = [
   { id: '2002', text: 'Доля в компании' },
 ];
 
-export interface BusinessIncubatorModel {
+export interface BusinessIncubatorModel extends ServiceModel {
   type: 'BusinessIncubator';
-  id: number;
-  inn: string;
-  companyName: string;
-  companyDescription: string;
-  foundationDate: number;
-  services: string[]; //ЧТО ПОЛУЧАЮТ СТАРТАПЫ
-  logo: string;
-  tags: {
-    markets: number[];
-    technologies: number[];
-  };
-  details: {
-    focus: string[];
-    incubatorForWhom: string;
-  };
-  contacts: {
-    email: string;
-    phone: string;
-    site: string;
-  };
+  startup_stage?: string[];
+  market?: string[];
+  services?: string[];
+  technologies?: string[];
+  type_of_ownership?: string;
+  tech_focus?: string[];
 }
 
-export interface EngeneeringCenterModel {
+export interface EngeneeringCenterModel extends ServiceModel {
   type: 'EngeneeringCenter';
-  id: number;
-  inn: string;
-  companyName: string;
-  companyDescription: string;
-  foundationDate: number;
-  services: string[]; //ЧТО ПОЛУЧАЮТ СТАРТАПЫ
-  logo: string;
-  tags: {
-    markets: number[];
-    technologies: number[];
-  };
-  details: {
-    focus: string[]; //ОТРАСЛЕВОЙ И ТЕХНОЛОГИЧЕСКИЙ ФОКУС
-  };
-  contacts: {
-    email: string;
-    phone: string;
-    site: string;
-  };
+  market?: string[];
+  services?: string[];
+  technologies?: string[];
+  type_of_ownership?: string;
+  tech_focus?: string[];
 }
 
-export interface CoworkingModel {
-  type: 'Coworking';
-  id: number;
-  inn: string;
-  companyName: string;
-  companyDescription: string;
-  foundationDate: number;
-  logo: string;
-  details: {
-    address: string;
-    coworkingFormat: number[]; // ФОРМАТЫ ПРОСТРАНСТВ
-    coworkingServices: number[]; // СЕРВИСЫ
-    photos: string[];
-  };
-  contacts: {
-    email: string;
-    phone: string;
-    site: string;
-  };
-}
+// export interface CoworkingModel extends ServiceModel {
+//   type: 'Coworking';
+//   investition_from_dol?: number;
+//   investition_to_dol?: number;
+//   tech_focus?: string[];
+//   geography?: number;
+//   study_format?: string;
+//   num_of_people_in_company_from?: number;
+//   num_of_people_in_company_to?: number;
+//   num_of_participants?: number;
+//   market_non_focus: string[] | null;
+//   startup_stage_non_focus: string[] | null;
+//   tech_focus_non_focus: string[] | null;
+//   technologies_non_focus: string[] | null;
+// }
 
 export const coworkingFormat: KeyValue[] = [
   { id: '2100', text: 'Незакрепленные рабочие места' },
@@ -306,37 +281,19 @@ export const coworkingServices: KeyValue[] = [
   { id: '2211', text: 'Мероприятия' },
 ];
 
-export interface InstituteModel {
-  type:'ProgressInstitute';
+export interface ProgressInstituteModel extends ServiceModel {
+  type: 'ProgressInstitute';
   startup_stage?: string[];
   services?: string[];
   monetary_support?: string[];
 }
 
-export interface CorporateModel {
-  type: 'Corporate';
-  id: number;
-  inn: string;
-  companyName: string;
-  companyDescription: string;
-  foundationDate: number;
-  logo: string;
-  tags: {
-    markets: number[];
-    technologies: number[];
-  };
-  details: {
-    focus: string[]; //СФЕРА ТЕХНОЛОГИЧЕСКИХ ИНТЕРЕСОВ
-    //ИНСТРУМЕНТЫ ИННОВАЦИЙ, название поля взял с сайта
-    corporationInnovation: {
-      name: string;
-      link: string;
-    };
-  };
-  contacts: {
-    corporationDevelopmentOfInnovations: string;
-    email: string;
-    phone: string;
-    site: string;
-  };
+export interface CorporationModel extends ServiceModel {
+  type: 'Corporation';
+  okved_main?: string;
+  okved_secondary?: string[];
+  corp_stage?: string;
+  market?: string[];
+  technologies?: string[];
+  business_model?: string[];
 }

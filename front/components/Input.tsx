@@ -7,7 +7,14 @@ import 'react-datepicker/dist/react-datepicker.css';
 import defaultLogo from 'public/defaultLogo.png';
 import { KeyValue } from 'models/Startup';
 
-type IInputType = 'text' | 'number' | 'password' | 'date' | 'file' | 'select';
+type IInputType =
+  | 'text'
+  | 'number'
+  | 'password'
+  | 'date'
+  | 'file'
+  | 'select'
+  | 'submit';
 
 interface IInputProps {
   width?: number;
@@ -67,6 +74,46 @@ const StyledInput = styled.div<{ width?: number }>`
   }
 `;
 
+const StyledSubmitInput = styled.div`
+  display: flex;
+  justify-content: center;
+  position: relative;
+
+  &::after {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff22;
+    content: '';
+    transition: 0.3s;
+  }
+
+  &:hover,
+  &:active,
+  &:focus-within {
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  .input {
+    font-size: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    outline: none;
+    border: none;
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.text.lighter};
+    min-height: 4rem;
+    min-width: 10rem;
+    padding: 2rem;
+    cursor: pointer;
+  }
+`;
+
 const StyledFileInput = styled.div`
   .label {
     display: block;
@@ -86,10 +133,26 @@ const StyledFileInput = styled.div`
       border-radius: 10px;
       padding: 10px;
       cursor: pointer;
-      transition: 0.3s;
+      position: relative;
 
-      &:hover {
-        border: ${({ theme }) => `1px solid ${theme.colors.base.darkBG}`};
+      &::after {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #ffffff22;
+        content: '';
+        transition: 0.3s;
+      }
+
+      &:hover,
+      &:active,
+      &:focus-within {
+        &::after {
+          opacity: 1;
+        }
       }
     }
 
@@ -112,6 +175,20 @@ const Input = (props: Props) => {
       img && URL.revokeObjectURL(img);
     };
   }, [img]);
+
+  if (props.type === 'submit') {
+    return (
+      <StyledSubmitInput className={props.className}>
+        <input
+          onSubmit={props.onClick}
+          className="input"
+          type="submit"
+          value={props.value}
+          // onClick={props.onClick}
+        />
+      </StyledSubmitInput>
+    );
+  }
 
   if (props.type === 'date') {
     registerLocale('ru', ru);

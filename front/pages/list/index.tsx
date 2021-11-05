@@ -1,9 +1,7 @@
 import styled from 'styled-components';
 import PageHeader from 'components/PageHeader';
 import List from 'components/List';
-import { api, IApiResponse } from 'axiosConfig';
-import { useAppSelector } from 'store/store';
-import ServicePage from 'components/ServicePage';
+import { api, IApiResponse, IRecomendation } from 'axiosConfig';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 
 const StyledDiv = styled.div`
@@ -32,65 +30,93 @@ const StyledDiv = styled.div`
     display: flex;
     justify-content: center;
   }
+
+  .notify {
+    font-size: 1.5rem;
+    text-align: center;
+  }
 `;
+const prepareReco = (items: (string | number)[][]): IRecomendation[] => {
+  return items?.map((item) => ({
+    id: item[0].toLocaleString(),
+    name: item[1].toLocaleString(),
+    type: item[2].toLocaleString(),
+    score: +item[3],
+    metrics: item.slice(4).map((el) => +el),
+  }));
+};
 
-export const isINN = (id: string) => id.match(/\d+/)?.[0] === id;
+const prepareMetrics = (metrics: string[]) => {
+  return metrics.map((el) => el);
+};
+export interface IRecomendationsData {
+  reco: (string | number)[][];
+  metrics: string[];
+}
+export interface IRecomendations {
+  reco: IRecomendation[];
+  metrics: string[];
+}
 
-const getData = async (id: string) => {
+const getData = async ({
+  id,
+  inn,
+}: {
+  id?: string;
+  inn?: string;
+}): Promise<IRecomendations> => {
   try {
-    let query = '';
-    if (isINN(id)) query = '?search_by=inn';
-    const { data } = await api.get<IApiResponse>(`/recommend/${id}${query}`);
-    console.log(data);
+    let query = '?search_by=inn';
+    let value = inn;
+    if (id) {
+      query = '?search_by=id';
+      value = id;
+    }
+    const { data } = await api.get<IApiResponse<IRecomendationsData>>(
+      `/recommend/${value}${query}`
+    );
+    // console.log(data);
     if (data.data) {
-      const accelerators = data.data.accelerators || [];
-      const funds = data.data.funds || [];
-      const institutes = data.data.progressInstitute || [];
-
-      return {
-        accelerators,
-        funds,
-        institutes,
-      };
+      const reco = prepareReco(data.data.reco);
+      const metrics = data.data.metrics;
+      return { reco, metrics };
     }
   } catch (e) {
     console.error(e);
   }
   return {
-    accelerators: [],
-    funds: [],
-    institutes: [],
+    reco: [],
+    metrics: [],
   };
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const id = query.id?.toString();
+  const inn = query.inn?.toString();
   const defaultResponse = {
-    props: { accelerators: [], funds: [], institutes: [] },
+    props: { reco: [], metrics: [] },
   };
-  if (!id) return defaultResponse;
-  const props = await getData(id);
-  console.log(props);
+  if (!id && !inn) return defaultResponse;
+  const props = await getData({ id, inn });
+  // console.log(props);
   return { props };
 };
 
 const ListPage = ({
-  accelerators,
-  funds,
-  institutes,
+  reco,
+  metrics,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const { displayedItem } = useAppSelector((state) => state.services);
-  console.log(accelerators, funds, institutes);
+  console.log(reco, metrics);
 
-  return displayedItem === null ? (
+  return (
     <StyledDiv>
-      <PageHeader title="Идеальные инвесторы" className="page-header" />
-      <List header="Акселераторы" items={accelerators} />
-      <List header="Венчурные фонды" items={funds} />
-      <List header="Институты" items={institutes} />
+      <PageHeader title="Лучшие сервисы" className="page-header" />
+      {reco.length ? (
+        <List items={reco} metrics={metrics} />
+      ) : (
+        <div className="notify">Рекомендации не найдены</div>
+      )}
     </StyledDiv>
-  ) : (
-    <ServicePage item={displayedItem} />
   );
 };
 
