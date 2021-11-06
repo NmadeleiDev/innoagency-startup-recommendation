@@ -12,19 +12,16 @@ def get_out_features(transformer):
     else:
         return [1]
 
-investor_metrics = ['type_of_ownership',
- 'investition_from_dol',
- 'investition_to_dol',
- 'fund_total_rub',
- 'fund_total_dol',
- 'num_of_investments',
- 'num_of_exits',
- 'startup_stage',
- 'market',
- 'services',
- 'technologies',
- 'investment_round',
- 'tech_focus']
+investor_metrics = ['investition_from_dol__investor',
+                    'investition_to_dol__investor',
+                    'fund_total_rub__investor',
+                    'num_of_investments__investor',
+                    'startup_stage__investor',
+                    'market__investor',
+                    'services__investor',
+                    'technologies__investor',
+                    'investment_round__investor',
+                    'tech_focus__investor']
 
 def predict(company, services):
     preprocessor_X = load(path_to_pipelines_dir('fund_classifier_preprocessor_X.joblib'))
