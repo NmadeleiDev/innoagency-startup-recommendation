@@ -80,9 +80,9 @@ const getCompany = async (id: string, query: string) => {
       console.log('Response from server: ', data);
       if (data.error) error = data.error;
     }
-  } catch (e) {
-    console.log(e);
-  } finally {
+    throw new Error(error);
+  } catch (err) {
+    console.log(err);
     throw new Error(error);
   }
 };

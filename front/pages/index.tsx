@@ -80,14 +80,13 @@ const Home: NextPage = () => {
     e.preventDefault();
     setLoading(true);
     dispatch(getCompanyByINN(value))
-      .then((res) => {
-        console.log(res);
+      .then(() => {
         router.push(`/list?inn=${value}`);
       })
       .catch((err) => {
         handleError(err.message);
+        setLoading(false);
       });
-    setLoading(false);
   };
 
   const loginForm = (
