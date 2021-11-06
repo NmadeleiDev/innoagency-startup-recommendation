@@ -50,12 +50,19 @@ const StyledDiv = styled.div`
       display: none;
     }
   }
+
+  .error {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    color: ${({ theme }) => theme.colors.secondary};
+  }
 `;
 
 const Home: NextPage = () => {
   const user = useAppSelector((state) => state.user.user);
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState(user.inn);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const dispatch = useAppDispatch();
 
@@ -64,11 +71,22 @@ const Home: NextPage = () => {
     setValue(e.target.value);
   };
 
+  const handleError = (error: string) => {
+    setError(error);
+    setTimeout(() => setError(null), 5000);
+  };
+
   const handleEnter = (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    dispatch(getCompanyByINN(value));
-    router.push(`/list?inn=${value}`);
+    dispatch(getCompanyByINN(value))
+      .then(() => {
+        router.push(`/list?inn=${value}`);
+      })
+      .catch((err) => {
+        handleError(err.message);
+        setLoading(false);
+      });
   };
 
   const loginForm = (
@@ -111,6 +129,7 @@ const Home: NextPage = () => {
         </Link>
       )}
       {loginForm}
+      {error && <div className="error">{error}</div>}
     </StyledDiv>
   );
 };

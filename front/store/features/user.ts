@@ -66,33 +66,36 @@ export const getCompanies = () => async (dispatch: AppDispatch) => {
   }
 };
 
-export const getCompanyById = (id: string) => async (dispatch: AppDispatch) => {
+const getCompany = async (id: string, query: string) => {
+  let error = 'Ошибка сервера, смотри лог в консоли';
   try {
     const { data } = await api.get<IApiResponse<CompanyModel>>(
-      `/company/${id}`
+      `/company/${id}${query}`
     );
-    console.log(data);
     if (data.data) {
-      dispatch(saveUserState(data.data));
+      return data.data;
+    } else if (data.error?.includes('failed to find entity')) {
+      error = `Не удалось найти компанию`;
+    } else {
+      console.log('Response from server: ', data);
+      if (data.error) error = data.error;
     }
-  } catch (e) {
-    console.log(e);
+    throw new Error(error);
+  } catch (err) {
+    console.log(err);
+    throw new Error(error);
   }
 };
 
+export const getCompanyById = (id: string) => async (dispatch: AppDispatch) => {
+  const data = await getCompany(id, '?search_by=id');
+  dispatch(saveUserState(data));
+};
+
 export const getCompanyByINN =
-  (id: string) => async (dispatch: AppDispatch) => {
-    try {
-      const { data } = await api.get<IApiResponse<CompanyModel>>(
-        `/company/${id}?search_by=inn`
-      );
-      console.log(data);
-      if (data.data) {
-        dispatch(saveUserState(data.data));
-      }
-    } catch (e) {
-      console.log(e);
-    }
+  (inn: string) => async (dispatch: AppDispatch) => {
+    const data = await getCompany(inn, '?search_by=inn');
+    dispatch(saveUserState(data));
   };
 
 export const getRandomCompany = () => async (dispatch: AppDispatch) => {
