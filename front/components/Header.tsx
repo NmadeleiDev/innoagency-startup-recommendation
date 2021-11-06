@@ -89,7 +89,7 @@ const Header = ({ className }: Props) => {
       </Link>
       <NextLink href={inn === '' ? '/create' : '/personal'}>
         <Button className="personal" variant="secondary">
-          {inn === '' ? 'Создать аккаунт' : 'Личный кабинет'}
+          {inn === '' ? 'Регистрация' : 'Личный кабинет'}
         </Button>
       </NextLink>
     </StyledDiv>

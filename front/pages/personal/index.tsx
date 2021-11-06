@@ -19,7 +19,7 @@ import toast from 'react-hot-toast';
 import sanitizeHtml from 'sanitize-html';
 import { AxiosResponse } from 'axios';
 import { useAppDispatch, useAppSelector } from 'store/store';
-import { saveUserState } from 'store/features/user';
+import { resetUserState, saveUserState } from 'store/features/user';
 import Button from 'components/Button';
 
 const StyledForm = styled.form`
@@ -216,8 +216,15 @@ const Personal = () => {
     }
   };
 
-  const handleRecommend = () => {
+  const handleRecommend = (e: FormEvent) => {
+    e.preventDefault();
     router.push(`/list?id=${user.id}`);
+  };
+
+  const handleLogout = (e: FormEvent) => {
+    e.preventDefault();
+    dispatch(resetUserState());
+    router.push('/');
   };
 
   return (
@@ -392,13 +399,16 @@ const Personal = () => {
         />
       </fieldset>
       <div className="buttons">
-        <Button>Сохранить данные</Button>
+        <Button className="button">Сохранить данные</Button>
         <Button
           onClick={handleRecommend}
           variant="secondary"
           className="button"
         >
           Подобрать инвестора
+        </Button>
+        <Button onClick={handleLogout} variant="secondary" className="button">
+          Выйти
         </Button>
       </div>
       {error && (
