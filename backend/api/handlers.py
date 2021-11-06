@@ -210,7 +210,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
         services_frame[imp_vals_cols] = important_values[:, :3]
         return_cols = ['_id', 'name', 'type', 'score'] + imp_vals_cols
 
-        logging.info(services_frame[return_cols].to_numpy().tolist())
+        # logging.info(services_frame[return_cols].to_numpy().tolist())
         return success_response({
             # 'reco': {
             #     'funds': services_frame[services_frame['type'] == 'VentureFund'][return_cols].values.tolist(),

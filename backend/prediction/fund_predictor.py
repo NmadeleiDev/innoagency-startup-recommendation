@@ -1,3 +1,4 @@
+import logging
 from joblib import load
 import numpy as np
 from numpy import linalg as LA
@@ -12,16 +13,16 @@ def get_out_features(transformer):
     else:
         return [1]
 
-investor_metrics = ['investition_from_dol__investor',
-                    'investition_to_dol__investor',
-                    'fund_total_rub__investor',
-                    'num_of_investments__investor',
-                    'startup_stage__investor',
-                    'market__investor',
-                    'services__investor',
-                    'technologies__investor',
-                    'investment_round__investor',
-                    'tech_focus__investor']
+investor_metrics = ['investition_from_dol',
+                    'investition_to_dol',
+                    'fund_total_rub',
+                    'num_of_investments',
+                    'startup_stage',
+                    'market',
+                    'services',
+                    'technologies',
+                    'investment_round',
+                    'tech_focus']
 
 def predict(company, services):
     preprocessor_X = load(path_to_pipelines_dir('fund_classifier_preprocessor_X.joblib'))
@@ -33,7 +34,7 @@ def predict(company, services):
     coords_lens = np.concatenate([get_out_features(t[1][-1]) for t in preprocessor_X.transformer_list])
 
     err = services_space - proj
-    distance_by_coords = np.array([[np.mean((x[coords_lens[i - 1: i]]) ** 2) for i in range(1, len(coords_lens))] for x in err])
+    distance_by_coords = np.array([[np.mean((x[coords_lens[i - 1: i]]) ** 2) for i in range(1, len(investor_metrics))] for x in err])
     metric_imp_sorted = np.argsort(distance_by_coords, axis=1)
     distance = np.apply_along_axis(LA.norm, 1, err, ord=2)
     dist_mean = distance.mean()
