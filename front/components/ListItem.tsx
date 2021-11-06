@@ -6,7 +6,7 @@ import { IRecomendation } from 'axiosConfig';
 const Wrapper = styled.div`
   a {
     display: grid;
-    grid-template-columns: 1fr 100px 100px;
+    grid-template-columns: 1fr 100px 130px;
     align-items: center;
     grid-gap: 1rem;
     height: 100px;
@@ -52,7 +52,6 @@ const Wrapper = styled.div`
         box-shadow: 2px 2px 10px ${({ theme }) => theme.colors.base.border};
         padding: 0.5em;
         max-width: 250px;
-        /* height: 60px; */
         z-index: 2;
       }
       &:hover .tooltip {
@@ -63,8 +62,7 @@ const Wrapper = styled.div`
     @media (min-width: 800px) {
       padding-top: 1rem;
       padding-bottom: 1rem;
-      grid-gap: 0;
-      grid-template-columns: 1fr 100px 100px 200px;
+      grid-template-columns: 1fr 100px 130px 200px;
 
       .metrics {
         display: flex;
@@ -86,6 +84,15 @@ interface Props {
   item: IRecomendation;
 }
 
+export const types = {
+  VentureFund: 'Венчурный фонд',
+  Accelerator: 'Акселератор',
+  ProgressInstitute: 'Институт развития',
+  EngeneeringCenter: 'Инжиниринговый центр',
+  BusinessIncubator: 'Бизнес инкубатор',
+  Corporation: 'Корпорация',
+};
+
 const ListItem = ({ item }: Props) => {
   return (
     <Wrapper>
@@ -93,7 +100,7 @@ const ListItem = ({ item }: Props) => {
         <a>
           <div className="title">{item.name}</div>
           <div className="score">{(item.score * 100).toFixed(2)}%</div>
-          <div className="type">{item.type}</div>
+          <div className="type">{types[item.type]}</div>
           <div className="metrics">{item.metrics}</div>
         </a>
       </Link>

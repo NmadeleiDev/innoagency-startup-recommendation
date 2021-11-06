@@ -5,6 +5,8 @@ import { IRecomendation } from 'axiosConfig';
 import ListItem from 'components/ListItem';
 import ListHeader from 'components/ListHeader';
 import Button from 'components/Button';
+import { useAppDispatch, useAppSelector } from 'store/store';
+import { showNext } from 'store/features/services';
 
 const StyledDiv = styled.div`
   padding: 1rem 0;
@@ -32,33 +34,25 @@ interface Props {
   metrics: string[];
 }
 
-/**
- * Тут, вероятно, должны быть метрики стартапа, а не корпораций
- * мы же будем показывать, какие из предоставленных метрик
- * больше всего повлияли на результат
- *
- * Общий объем фондов повторяется дважды (в руб и $)
- */
-
 const metricsDictionary = {
   type_of_ownership: {
     title: 'Форма собственности',
     icon: 'ownership-2-904171.png',
   },
   investition_from_dol: {
-    title: 'Объем инвестиций ОТ, $',
+    title: 'Объем инвестиций',
     icon: 'investment-425-1130766.png',
   },
   investition_to_dol: {
-    title: 'Объем инвестиций ДО, $',
+    title: 'Объем инвестиций',
     icon: 'investment-425-1130766.png',
   },
   fund_total_rub: {
-    title: 'Общий объем фондов, руб. млн',
+    title: 'Объем фондов',
     icon: 'return-on-investment-4043536-3359389.png',
   },
   fund_total_dol: {
-    title: 'Общий объем фондов, $ млн',
+    title: 'Объем фондов',
     icon: 'return-on-investment-4043536-3359389.png',
   },
   num_of_investments: {
@@ -70,7 +64,7 @@ const metricsDictionary = {
     icon: 'sign-2879075-2393903.png',
   },
   startup_stage: {
-    title: 'Стадия стартапа',
+    title: 'Стадия стартапа при инвестировании',
     icon: 'startup_stage',
   },
   market: {
@@ -96,32 +90,16 @@ const metricsDictionary = {
 };
 type MetricsKey = keyof typeof metricsDictionary;
 
-const metrics: MetricsKey[] = [
-  'type_of_ownership',
-  'investition_from_dol',
-  'investition_to_dol',
-  'fund_total_rub',
-  'fund_total_dol',
-  'num_of_investments',
-  'num_of_exits',
-  'startup_stage',
-  'market',
-  'services',
-  'technologies',
-  'investment_round',
-  'tech_focus',
-];
-
 const prepareMetrics = (
   metrics: MetricsKey[],
   items: number[]
 ): JSX.Element[] => {
   return items?.map((item) => (
-    <div key="el" className="imageWrapper">
+    <div key={item} className="imageWrapper">
       <Image
         className="image"
-        width={55}
-        height={55}
+        width={50}
+        height={50}
         src={'/icons/' + metricsDictionary[metrics[item]]?.icon || ''}
         alt={metricsDictionary[metrics[item]].title}
       />
@@ -131,24 +109,20 @@ const prepareMetrics = (
 };
 
 const List = ({ items, metrics }: Props) => {
-  const [offset, setOffset] = useState(0);
-  const NUMBER_OF_ITEMS_TO_SHOW = 3;
+  const dispatch = useAppDispatch();
+  const offset = useAppSelector((state) => state.services.offset);
   const [displayedItems, setDisplayedItems] = useState<IRecomendation[]>([]);
 
   useEffect(() => {
     if (items.length === 0) return;
-    console.log(offset);
     (async () => {
-      const itemsToShow = items.slice(offset, offset + NUMBER_OF_ITEMS_TO_SHOW);
-      setDisplayedItems((displayedItems) => [
-        ...displayedItems,
-        ...itemsToShow,
-      ]);
+      const itemsToShow = items.slice(0, offset);
+      setDisplayedItems([...itemsToShow]);
     })();
   }, [items, offset]);
 
   const handleShowMore = () => {
-    setOffset((offset) => offset + NUMBER_OF_ITEMS_TO_SHOW);
+    dispatch(showNext());
   };
 
   if (items.length === 0) return null;
@@ -161,7 +135,7 @@ const List = ({ items, metrics }: Props) => {
             name: 'Название компании',
             score: 'Совпадение',
             type: 'Тип сервиса',
-            metrics: 'Наиболее влиятельные метрики',
+            metrics: 'Наибольшее совпадение по параметрам',
           }}
         />
         {displayedItems &&

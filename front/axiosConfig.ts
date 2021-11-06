@@ -1,9 +1,12 @@
 import axios from 'axios';
+import { ServiceType } from 'models/Startup';
 export const CancelToken = axios.CancelToken;
 const host =
   process.env.NODE_ENV === 'production'
     ? process.env.NEXT_PUBLIC_BACKEND_HOSTNAME
     : 'localhost';
+const backendHost =
+  process.env.NODE_ENV === 'production' ? 'backend:2222' : 'localhost/backend';
 const protocol =
   process.env.NODE_ENV === 'production'
     ? process.env.NEXT_PUBLIC_PROTOCOL
@@ -17,7 +20,7 @@ export const api = axios.create({
   validateStatus: (status) => status >= 200 && status < 500,
 });
 export const backend = axios.create({
-  baseURL: 'http://backend:2222/',
+  baseURL: `http://${backendHost}/`,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
   validateStatus: (status) => status >= 200 && status < 500,
@@ -26,7 +29,7 @@ export const backend = axios.create({
 export interface IRecomendation {
   id: string;
   name: string;
-  type: string;
+  type: ServiceType;
   score: number;
   metrics: (number | JSX.Element)[];
 }

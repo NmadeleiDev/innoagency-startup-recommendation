@@ -391,14 +391,6 @@ const Personal = () => {
         />
       </fieldset>
       <div className="buttons">
-        {/* <div className="button">
-          <input
-            className="submitButton"
-            type="submit"
-            value="Сохранить данные"
-          />
-        </div> */}
-
         <Button>Сохранить данные</Button>
         <Button
           onClick={handleRecommend}

@@ -41,9 +41,9 @@ interface TagListProps {
   nonFocus?: string[] | null;
 }
 const TagList = ({ tags, nonFocus }: TagListProps) => {
-  return tags ? (
+  return (
     <TagListWrapper>
-      {tags.map((tag) => (
+      {tags?.map((tag) => (
         <li key={tag} className="item">
           {tag}
         </li>
@@ -55,7 +55,7 @@ const TagList = ({ tags, nonFocus }: TagListProps) => {
         </li>
       ))}
     </TagListWrapper>
-  ) : null;
+  );
 };
 
 export default TagList;

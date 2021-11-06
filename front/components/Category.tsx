@@ -4,6 +4,7 @@ import styled from 'styled-components';
 const StyledCategory = styled.div`
   display: flex;
   flex-direction: column;
+  text-align: center;
 
   .header {
     font-weight: 500;
@@ -17,7 +18,7 @@ const StyledCategory = styled.div`
 
 interface ICategoryProps {
   header: string;
-  className: string;
+  className?: string;
 }
 
 const Category: FC<ICategoryProps> = ({ header, children, className }) => {
