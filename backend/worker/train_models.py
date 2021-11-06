@@ -15,4 +15,4 @@ def train_models():
 
 # Дообучение модели, запускается по cron
 if __name__ == 'main':
-    train_model()
+    train_models()

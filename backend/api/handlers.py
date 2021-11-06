@@ -89,7 +89,7 @@ def apply_handlers(app: FastAPI, db: DbManager):
             return error_response('Failed to find model for type={}'.format(entity['type']))
         return success_response(data)
 
-    @app.put("/company/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[CompanyModel])
+    @app.put("/company/{id}", status_code=status.HTTP_200_OK, response_model=DefaultResponseModel[dict])
     def update_company_by_id(entity: CompanyModel, id: str, response: Response):
         """
         Обновить компанию по id.
