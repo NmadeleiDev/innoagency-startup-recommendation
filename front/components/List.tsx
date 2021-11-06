@@ -132,7 +132,7 @@ const List = ({ items, metrics }: Props) => {
       <div className="list">
         <ListHeader
           item={{
-            name: 'Название компании',
+            name: 'Название сервиса',
             score: 'Совпадение',
             type: 'Тип сервиса',
             metrics: 'Наибольшее совпадение по параметрам',

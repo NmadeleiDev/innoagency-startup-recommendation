@@ -4,6 +4,8 @@ import List from 'components/List';
 import { api, backend, IApiResponse, IRecomendation } from 'axiosConfig';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { ServiceType } from 'models/Startup';
+import NextLink from 'components/Link';
+import { useRouter } from 'next/dist/client/router';
 
 const StyledDiv = styled.div`
   padding: 1rem 0;
@@ -33,8 +35,16 @@ const StyledDiv = styled.div`
   }
 
   .notify {
-    font-size: 1.5rem;
     text-align: center;
+    .text {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .link {
+      color: ${({ theme }) => theme.colors.primary};
+      text-decoration: underline;
+      cursor: pointer;
+    }
   }
 `;
 const prepareReco = (items: (string | number)[][]): IRecomendation[] => {
@@ -104,13 +114,22 @@ const ListPage = ({
   reco,
   metrics,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const router = useRouter();
+  const { inn } = router.query;
   return (
     <StyledDiv>
       <PageHeader title="Лучшие сервисы" className="page-header" />
       {reco.length ? (
         <List items={reco} metrics={metrics} />
       ) : (
-        <div className="notify">Рекомендации не найдены</div>
+        <div className="notify">
+          <div className="text">
+            Компания{inn ? ` с инн ${JSON.stringify(inn)} ` : ''} не найдена
+          </div>
+          <NextLink className="link" href="/">
+            На главную
+          </NextLink>
+        </div>
       )}
     </StyledDiv>
   );
