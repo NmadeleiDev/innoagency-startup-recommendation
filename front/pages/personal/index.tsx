@@ -154,6 +154,11 @@ const Personal = () => {
     setState((state) => ({ ...state, [e.target.name]: e.target.value }));
   };
 
+  const handleOkvedSecondaryChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newOkveds = e.currentTarget.value.replaceAll(',', ' ').split(/\s+/);
+    setState((state) => ({ ...state, okved_secondary: newOkveds }));
+  };
+
   const handleDateChange = (date: Date | null) => {
     const timestamp = date?.getTime() + '' || '';
     setState((state) => ({ ...state, foundation_date: timestamp }));
@@ -196,10 +201,13 @@ const Personal = () => {
     if (!state.inn) {
       return handleError('ИНН не заполнен');
     }
+    // prevent empty values if last comma is set
+    const filteredOkveds = state.okved_secondary.filter((el) => el !== '');
+    const data: CompanyModel = { ...state, okved_secondary: filteredOkveds };
     try {
       const res: AxiosResponse<IApiResponse> = await api.put(
         `/company/${state.id}`,
-        state
+        data
       );
       console.log(res);
       if (res.status >= 400 && res.status < 500) {
@@ -306,6 +314,12 @@ const Personal = () => {
           onChange={handleInfoChange}
           value={state.main_okved}
           placeholder="Основной ОКВЭД (номер)"
+        />
+        <Input
+          name="main_okved"
+          onChange={handleOkvedSecondaryChange}
+          value={state.okved_secondary.join(', ')}
+          placeholder="Основной ОКВЭД (номера через пробел и/или запятую)"
         />
         <Input
           type="select"
