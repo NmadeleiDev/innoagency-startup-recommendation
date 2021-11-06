@@ -19,7 +19,7 @@ import toast from 'react-hot-toast';
 import sanitizeHtml from 'sanitize-html';
 import { AxiosResponse } from 'axios';
 import { useAppDispatch, useAppSelector } from 'store/store';
-import { saveUserState } from 'store/features/user';
+import { resetUserState, saveUserState } from 'store/features/user';
 import Button from 'components/Button';
 
 const StyledForm = styled.form`
@@ -154,6 +154,11 @@ const Personal = () => {
     setState((state) => ({ ...state, [e.target.name]: e.target.value }));
   };
 
+  const handleOkvedSecondaryChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newOkveds = e.currentTarget.value.replaceAll(',', ' ').split(/\s+/);
+    setState((state) => ({ ...state, okved_secondary: newOkveds }));
+  };
+
   const handleDateChange = (date: Date | null) => {
     const timestamp = date?.getTime() + '' || '';
     setState((state) => ({ ...state, foundation_date: timestamp }));
@@ -163,6 +168,7 @@ const Personal = () => {
     const selected = [...e.target.children]
       .filter((child) => (child as HTMLOptionElement).selected)
       .map((child) => (child as HTMLOptionElement).value);
+    console.log(selected);
     setState((state) => ({
       ...state,
       [e.target.name]: selected,
@@ -195,10 +201,13 @@ const Personal = () => {
     if (!state.inn) {
       return handleError('ИНН не заполнен');
     }
+    // prevent empty values if last comma is set
+    const filteredOkveds = state.okved_secondary.filter((el) => el !== '');
+    const data: CompanyModel = { ...state, okved_secondary: filteredOkveds };
     try {
       const res: AxiosResponse<IApiResponse> = await api.put(
-        `/entity${state.id}`,
-        state
+        `/company/${state.id}`,
+        data
       );
       console.log(res);
       if (res.status >= 400 && res.status < 500) {
@@ -215,8 +224,15 @@ const Personal = () => {
     }
   };
 
-  const handleRecommend = () => {
+  const handleRecommend = (e: FormEvent) => {
+    e.preventDefault();
     router.push(`/list?id=${user.id}`);
+  };
+
+  const handleLogout = (e: FormEvent) => {
+    e.preventDefault();
+    dispatch(resetUserState());
+    router.push('/');
   };
 
   return (
@@ -300,6 +316,12 @@ const Personal = () => {
           placeholder="Основной ОКВЭД (номер)"
         />
         <Input
+          name="main_okved"
+          onChange={handleOkvedSecondaryChange}
+          value={state.okved_secondary.join(', ')}
+          placeholder="Основной ОКВЭД (номера через пробел и/или запятую)"
+        />
+        <Input
           type="select"
           id="stage_of_development"
           name="stage_of_development"
@@ -371,7 +393,7 @@ const Personal = () => {
           name="current_profit"
           onChange={handleInfoChange}
           value={state.current_profit}
-          placeholder="Чистая прибыль в год, $"
+          placeholder="Чистая прибыль в год, тыс. руб"
         />
         <Input
           type="number"
@@ -379,7 +401,7 @@ const Personal = () => {
           name="current_profit_tax"
           onChange={handleInfoChange}
           value={state.current_profit_tax}
-          placeholder="Налог на прибыль в год, %"
+          placeholder="Налог на прибыль в год, тыс. руб"
         />
         <Input
           type="number"
@@ -387,17 +409,20 @@ const Personal = () => {
           name="current_revenue"
           onChange={handleInfoChange}
           value={state.current_revenue}
-          placeholder="Валовая прибыль в год, $"
+          placeholder="Валовая прибыль в год, тыс. руб"
         />
       </fieldset>
       <div className="buttons">
-        <Button>Сохранить данные</Button>
+        <Button className="button">Сохранить данные</Button>
         <Button
           onClick={handleRecommend}
           variant="secondary"
           className="button"
         >
           Подобрать инвестора
+        </Button>
+        <Button onClick={handleLogout} variant="secondary" className="button">
+          Выйти
         </Button>
       </div>
       {error && (

@@ -359,7 +359,7 @@ const Info = () => {
           name="current_profit"
           onChange={handleInfoChange}
           value={state.current_profit}
-          placeholder="Чистая прибыль в год, $"
+          placeholder="Чистая прибыль в год, тыс. руб"
         />
         <Input
           type="number"
@@ -367,7 +367,7 @@ const Info = () => {
           name="current_profit_tax"
           onChange={handleInfoChange}
           value={state.current_profit_tax}
-          placeholder="Налог на прибыль в год, %"
+          placeholder="Налог на прибыль в год, тыс. руб"
         />
         <Input
           type="number"
@@ -375,7 +375,7 @@ const Info = () => {
           name="current_revenue"
           onChange={handleInfoChange}
           value={state.current_revenue}
-          placeholder="Валовая прибыль в год, $"
+          placeholder="Валовая прибыль в год, тыс. руб"
         />
       </fieldset>
       <div className="button">
