@@ -2,9 +2,10 @@ import styled from 'styled-components';
 import { useRouter } from 'next/dist/client/router';
 import { BackIcon } from 'components/Icon';
 import theme from 'styles/theme';
+import { FC } from 'react';
 
 interface Props {
-  title: string;
+  title?: string;
   className?: string;
   handleBack?: () => void;
 }
@@ -31,9 +32,19 @@ const StyledDiv = styled.div`
   .back:hover {
     transform: scale(1.1);
   }
+
+  .header {
+    max-width: 60%;
+    margin: 0 auto;
+
+    a {
+      color: ${({ theme }) => theme.colors.primary};
+      text-decoration: underline;
+    }
+  }
 `;
 
-const PageHeader = ({ title, className, handleBack }: Props) => {
+const PageHeader: FC<Props> = ({ title, className, handleBack, children }) => {
   const router = useRouter();
   const isHomePage = router.pathname === '/';
   const handleBackDefault = () => {
@@ -48,7 +59,7 @@ const PageHeader = ({ title, className, handleBack }: Props) => {
           onClick={handleBack || handleBackDefault}
         />
       )}
-      <h2>{title}</h2>
+      <h2 className="header">{children ? children : title}</h2>
     </StyledDiv>
   );
 };

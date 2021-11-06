@@ -6,6 +6,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { ServiceType } from 'models/Startup';
 import NextLink from 'components/Link';
 import { useRouter } from 'next/dist/client/router';
+import { useAppSelector } from 'store/store';
 
 const StyledDiv = styled.div`
   padding: 1rem 0;
@@ -115,10 +116,13 @@ const ListPage = ({
   metrics,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
+  const name = useAppSelector((state) => state.user.user.name);
   const { inn } = router.query;
   return (
     <StyledDiv>
-      <PageHeader title="Лучшие сервисы" className="page-header" />
+      <PageHeader className="page-header">
+        Лучшие сервисы для компании <NextLink href="/personal">{name}</NextLink>
+      </PageHeader>
       {reco.length ? (
         <List items={reco} metrics={metrics} />
       ) : (

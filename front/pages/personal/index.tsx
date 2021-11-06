@@ -163,6 +163,7 @@ const Personal = () => {
     const selected = [...e.target.children]
       .filter((child) => (child as HTMLOptionElement).selected)
       .map((child) => (child as HTMLOptionElement).value);
+    console.log(selected);
     setState((state) => ({
       ...state,
       [e.target.name]: selected,
@@ -197,7 +198,7 @@ const Personal = () => {
     }
     try {
       const res: AxiosResponse<IApiResponse> = await api.put(
-        `/entity${state.id}`,
+        `/company/${state.id}`,
         state
       );
       console.log(res);
@@ -371,7 +372,7 @@ const Personal = () => {
           name="current_profit"
           onChange={handleInfoChange}
           value={state.current_profit}
-          placeholder="Чистая прибыль в год, $"
+          placeholder="Чистая прибыль в год, тыс. руб"
         />
         <Input
           type="number"
@@ -379,7 +380,7 @@ const Personal = () => {
           name="current_profit_tax"
           onChange={handleInfoChange}
           value={state.current_profit_tax}
-          placeholder="Налог на прибыль в год, %"
+          placeholder="Налог на прибыль в год, тыс. руб"
         />
         <Input
           type="number"
@@ -387,7 +388,7 @@ const Personal = () => {
           name="current_revenue"
           onChange={handleInfoChange}
           value={state.current_revenue}
-          placeholder="Валовая прибыль в год, $"
+          placeholder="Валовая прибыль в год, тыс. руб"
         />
       </fieldset>
       <div className="buttons">

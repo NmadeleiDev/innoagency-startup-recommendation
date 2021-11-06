@@ -70,6 +70,7 @@ const StyledInput = styled.div<{ width?: number }>`
     .option {
       font-size: 1rem;
       padding: 5px;
+      text-transform: capitalize;
     }
   }
 `;
@@ -230,15 +231,22 @@ const Input = (props: Props) => {
             placeholder={props.placeholder}
             className="input"
             onChange={props.onSelectChange}
-            value={props.values}
+            value={props.values?.map((value) => value.toLocaleLowerCase())}
           >
             {props.options &&
               props.options.map((option) => (
                 <option
                   key={option.id}
                   className="option"
-                  // selected={props.values?.includes(option.id)}
-                  value={option.id}
+                  selected={
+                    // !props.multiple && props.values
+                    //   ? !!props.values.find(
+                    //       (value) => value === option.text.toLocaleLowerCase()
+                    //     )
+                    // : props.value === option.text.toLocaleLowerCase()
+                    props.value === option.text.toLocaleLowerCase()
+                  }
+                  value={option.text.toLocaleLowerCase()}
                 >
                   {option.text}
                 </option>
