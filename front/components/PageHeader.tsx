@@ -14,13 +14,6 @@ const StyledDiv = styled.div`
   margin: 1rem 0;
   position: relative;
 
-  h2 {
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    text-transform: uppercase;
-  }
-
   .back {
     position: absolute;
     top: 0;
@@ -34,8 +27,12 @@ const StyledDiv = styled.div`
   }
 
   .header {
-    max-width: 60%;
+    max-width: 470px;
+    padding: 0 1rem;
     margin: 0 auto;
+    word-wrap: break-word;
+    text-align: center;
+    text-transform: uppercase;
 
     a {
       color: ${({ theme }) => theme.colors.primary};

@@ -122,7 +122,7 @@ const Home: NextPage = () => {
     <StyledDiv>
       <PageHeader title="Домашнаяя страница" />
       {user.inn === '' && (
-        <Link href="/companyInfo">
+        <Link href="/create">
           <a>
             <Button className="item">Заполнить анкету</Button>
           </a>

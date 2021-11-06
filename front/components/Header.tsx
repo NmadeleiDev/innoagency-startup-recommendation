@@ -5,6 +5,8 @@ import startupLogo from 'public/startup-guide-logo.svg';
 import { AimIcon } from './Icon';
 import Button from './Button';
 import NextLink from './Link';
+import { useRouter } from 'next/dist/client/router';
+import { useAppSelector } from 'store/store';
 
 const StyledDiv = styled.div`
   display: grid;
@@ -67,6 +69,8 @@ interface Props {
 }
 
 const Header = ({ className }: Props) => {
+  const inn = useAppSelector((state) => state.user.user.inn);
+
   return (
     <StyledDiv className={className}>
       <div className="aim">
@@ -83,9 +87,9 @@ const Header = ({ className }: Props) => {
           </h1>
         </a>
       </Link>
-      <NextLink href="/personal">
+      <NextLink href={inn === '' ? '/create' : '/personal'}>
         <Button className="personal" variant="secondary">
-          Личный кабинет
+          {inn === '' ? 'Создать аккаунт' : 'Личный кабинет'}
         </Button>
       </NextLink>
     </StyledDiv>
