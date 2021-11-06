@@ -70,7 +70,25 @@ const StyledInput = styled.div<{ width?: number }>`
     .option {
       font-size: 1rem;
       padding: 5px;
-      text-transform: capitalize;
+      text-transform: lowercase;
+    }
+
+    position: relative;
+    .tooltip-text {
+      display: none;
+      position: absolute;
+      top: 120%;
+      right: 0px;
+      background-color: ${({ theme }) => theme.colors.base.lightBG};
+      color: ${({ theme }) => theme.colors.text.dark};
+      border: 1px solid ${({ theme }) => theme.colors.base.border};
+      box-shadow: 2px 2px 10px ${({ theme }) => theme.colors.base.border};
+      padding: 0.5em;
+      max-width: 250px;
+      z-index: 2;
+    }
+    &:hover .tooltip-text {
+      display: block;
     }
   }
 `;
@@ -231,20 +249,23 @@ const Input = (props: Props) => {
             placeholder={props.placeholder}
             className="input"
             onChange={props.onSelectChange}
-            value={props.values?.map((value) => value.toLocaleLowerCase())}
+            // use values only for multiple select
+            value={
+              props.multiple
+                ? props.values?.map((value) => value.toLocaleLowerCase())
+                : undefined
+            }
           >
             {props.options &&
               props.options.map((option) => (
                 <option
                   key={option.id}
                   className="option"
+                  // use selected only for single select
                   selected={
-                    // !props.multiple && props.values
-                    //   ? !!props.values.find(
-                    //       (value) => value === option.text.toLocaleLowerCase()
-                    //     )
-                    // : props.value === option.text.toLocaleLowerCase()
-                    props.value === option.text.toLocaleLowerCase()
+                    props.multiple
+                      ? undefined
+                      : props.value === option.text.toLocaleLowerCase()
                   }
                   value={option.text.toLocaleLowerCase()}
                 >
@@ -252,6 +273,13 @@ const Input = (props: Props) => {
                 </option>
               ))}
           </select>
+          {props.multiple && (
+            <span className="tooltip-text">
+              Используйте клавишу &lt;CTRL&gt;, чтобы добавить или убрать один
+              элемент. Используйте клавишу &lt;SHIFT&gt;, чтобы выбрать
+              несколько элементов подряд.
+            </span>
+          )}
         </div>
       </StyledInput>
     );

@@ -21,9 +21,24 @@ const StyledDiv = styled.div`
     min-width: 300px;
   }
 
-  .input {
-    margin-left: 0;
-    margin-right: 0;
+  .tooltip {
+    position: relative;
+    .tooltip-text {
+      display: none;
+      position: absolute;
+      top: 120%;
+      right: 0px;
+      background-color: ${({ theme }) => theme.colors.base.lightBG};
+      color: ${({ theme }) => theme.colors.text.dark};
+      border: 1px solid ${({ theme }) => theme.colors.base.border};
+      box-shadow: 2px 2px 10px ${({ theme }) => theme.colors.base.border};
+      padding: 0.5em;
+      max-width: 250px;
+      z-index: 2;
+    }
+    &:hover .tooltip-text {
+      display: block;
+    }
   }
 
   .login {
@@ -89,23 +104,41 @@ const Home: NextPage = () => {
       });
   };
 
+  const getGreeting = () => {
+    const hours = new Date().getHours();
+    if (hours < 6) return 'Доброй ночи, ';
+    else if (hours < 12) return 'Доброе утро, ';
+    else if (hours < 18) return 'Добрый день, ';
+    else return 'Добрый вечер, ';
+  };
+
+  const greeting = getGreeting();
+
   const loginForm = (
     <form className="login" onSubmit={handleEnter}>
       {user.inn === '' ? (
         <>
           <div className="header">или</div>
-          <Input
-            // hide input if already logged in
-            className={`item input ${user.inn === '' ? '' : 'hidden'}`}
-            onChange={handleChange}
-            value={value}
-            nolabel
-            placeholder="Введите ИНН стратапа"
-          />
+          <div className="tooltip">
+            <Input
+              // hide input if already logged in
+              className={`${user.inn === '' ? '' : 'hidden'}`}
+              onChange={handleChange}
+              value={value}
+              nolabel
+              placeholder="Введите ИНН стратапа"
+            />
+            <span className="tooltip-text">
+              Вы можете заполнить анкету для новой компании по кнопке
+              &quot;Заполнить анкету&quot; или войти по ИНН существующей в базе
+              компании
+            </span>
+          </div>
         </>
       ) : (
         <div className="header">
-          Вы вошли как <span className="name">{user.name}</span>
+          {greeting}
+          <span className="name">{user.name}</span>
         </div>
       )}
       {loading ? (
