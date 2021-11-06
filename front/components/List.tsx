@@ -65,7 +65,7 @@ const metricsDictionary = {
   },
   startup_stage: {
     title: 'Стадия стартапа при инвестировании',
-    icon: 'startup_stage',
+    icon: 'stage-1658648-1408380.png',
   },
   market: {
     title: 'Рынок',
@@ -94,6 +94,7 @@ const prepareMetrics = (
   metrics: MetricsKey[],
   items: number[]
 ): JSX.Element[] => {
+  console.log(metrics, items);
   return items?.map((item) => (
     <div key={item} className="imageWrapper">
       <Image
@@ -101,9 +102,9 @@ const prepareMetrics = (
         width={50}
         height={50}
         src={'/icons/' + metricsDictionary[metrics[item]]?.icon || ''}
-        alt={metricsDictionary[metrics[item]].title}
+        alt={metricsDictionary[metrics[item]]?.title}
       />
-      <span className="tooltip">{metricsDictionary[metrics[item]].title}</span>
+      <span className="tooltip">{metricsDictionary[metrics[item]]?.title}</span>
     </div>
   ));
 };
