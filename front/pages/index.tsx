@@ -93,6 +93,7 @@ const Home: NextPage = () => {
 
   const handleEnter = (e: FormEvent) => {
     e.preventDefault();
+    if (value === '') return handleError('Введите ИНН');
     setLoading(true);
     dispatch(getCompanyByINN(value))
       .then(() => {
