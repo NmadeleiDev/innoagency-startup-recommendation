@@ -138,7 +138,7 @@ const Home: NextPage = () => {
       ) : (
         <div className="header">
           {greeting}
-          <span className="name">{user.name}</span>
+          <span className="name">{user.name || 'компания без имени'}</span>
         </div>
       )}
       {loading ? (

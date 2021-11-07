@@ -5,7 +5,6 @@ import startupLogo from 'public/startup-guide-logo.svg';
 import { AimIcon } from './Icon';
 import Button from './Button';
 import NextLink from './Link';
-import { useRouter } from 'next/dist/client/router';
 import { useAppSelector } from 'store/store';
 
 const StyledDiv = styled.div`

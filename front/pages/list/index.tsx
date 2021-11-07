@@ -121,7 +121,8 @@ const ListPage = ({
   return (
     <StyledDiv>
       <PageHeader className="page-header">
-        Лучшие сервисы для компании <NextLink href="/personal">{name}</NextLink>
+        Лучшие сервисы для компании{' '}
+        <NextLink href="/personal">{name || 'компании без имени'}</NextLink>
       </PageHeader>
       {reco.length ? (
         <List items={reco} metrics={metrics} />
