@@ -2,6 +2,7 @@ import logging
 from joblib import load
 import numpy as np
 from numpy import linalg as LA
+from numpy.lib.shape_base import apply_along_axis
 from .utils import *
 from db.manager import DbManager
 
@@ -13,33 +14,32 @@ def get_out_features(transformer):
     else:
         return [1]
 
-investor_metrics = ['stage_of_development',
- 'main_okved',
- 'msp_category',
- 'is_export',
- 'inno_cluster_member',
- 'skolcovo_member',
- 'is_inno_company',
- 'is_startup',
- 'tech_focus',
+investor_metrics = ['investition_dol',
+ 'fund_total_rub',
+ 'num_of_investments',
+ 'startup_stage',
  'market',
- 'technology',
- 'business_model',
- 'okved_secondary']
+ 'services',
+ 'technologies',
+ 'investment_round',
+ 'tech_focus']
 
 def predict(company, services):
     preprocessor_X = load(path_to_pipelines_dir('fund_classifier_preprocessor_X.joblib'))
     X = preprocessor_X.transform(company.rename(columns=lambda x: '{}__company'.format(x)))
-    services_space = load(path_to_pipelines_dir('fund_classifier_preprocessor_Y.joblib')).transform(services.rename(columns=lambda x: '{}__investor'.format(x)))
+    preprocessor_Y = load(path_to_pipelines_dir('fund_classifier_preprocessor_Y.joblib'))
+    services_space = preprocessor_Y.transform(services.rename(columns=lambda x: '{}__investor'.format(x)))
 
     proj = tf.keras.models.load_model(path_to_models_dir('model_fund_classifier.h5'), compile=False).predict(X)[0]
 
-    coords_lens = np.concatenate([get_out_features(t[1][-1]) for t in preprocessor_X.transformer_list])
+    # coords_lens = np.concatenate([get_out_features(t[1][-1]) for t in preprocessor_Y.transformer_list])
+    coords_lens = [ 1, 1, 1, 1,  5, 27, 12, 17,  5,  2]
 
-    # logging.info(f"CHECK: {(len(coords_lens), len(investor_metrics))}")
+    logging.info(f"CHECK: {(len(coords_lens), len(investor_metrics), coords_lens)}")
     err = services_space - proj
     distance_by_coords = np.array([[np.mean((x[coords_lens[i - 1: i]]) ** 2) for i in range(1, len(investor_metrics))] for x in err])
     metric_imp_sorted = np.argsort(distance_by_coords, axis=1)
+    metric_imp_sorted = np.apply_along_axis(lambda x: np.unique([i if i != 1 else 0 for i in x]), 1, metric_imp_sorted)
     distance = np.apply_along_axis(LA.norm, 1, err, ord=2)
     dist_mean = distance.mean()
     score = dist_mean / (dist_mean + distance)
