@@ -13,16 +13,19 @@ def get_out_features(transformer):
     else:
         return [1]
 
-investor_metrics = ['investition_from_dol',
-                    'investition_to_dol',
-                    'fund_total_rub',
-                    'num_of_investments',
-                    'startup_stage',
-                    'market',
-                    'services',
-                    'technologies',
-                    'investment_round',
-                    'tech_focus']
+investor_metrics = ['stage_of_development',
+ 'main_okved',
+ 'msp_category',
+ 'is_export',
+ 'inno_cluster_member',
+ 'skolcovo_member',
+ 'is_inno_company',
+ 'is_startup',
+ 'tech_focus',
+ 'market',
+ 'technology',
+ 'business_model',
+ 'okved_secondary']
 
 def predict(company, services):
     preprocessor_X = load(path_to_pipelines_dir('fund_classifier_preprocessor_X.joblib'))
@@ -33,6 +36,7 @@ def predict(company, services):
 
     coords_lens = np.concatenate([get_out_features(t[1][-1]) for t in preprocessor_X.transformer_list])
 
+    # logging.info(f"CHECK: {(len(coords_lens), len(investor_metrics))}")
     err = services_space - proj
     distance_by_coords = np.array([[np.mean((x[coords_lens[i - 1: i]]) ** 2) for i in range(1, len(investor_metrics))] for x in err])
     metric_imp_sorted = np.argsort(distance_by_coords, axis=1)
