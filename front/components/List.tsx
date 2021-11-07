@@ -47,6 +47,10 @@ const metricsDictionary = {
     title: 'Объем инвестиций',
     icon: 'investment-425-1130766.png',
   },
+  investition_dol: {
+    title: 'Объем инвестиций',
+    icon: 'investment-425-1130766.png',
+  },
   fund_total_rub: {
     title: 'Объем фондов',
     icon: 'return-on-investment-4043536-3359389.png',
@@ -94,7 +98,6 @@ const prepareMetrics = (
   metrics: MetricsKey[],
   items: number[]
 ): JSX.Element[] => {
-  console.log(metrics, items);
   return items?.map((item) => (
     <div key={item} className="imageWrapper">
       <Image
